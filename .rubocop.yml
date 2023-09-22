@@ -12,6 +12,9 @@ AllCops:
 Layout/LineLength:
   Max: 120
 
+Layout/ExtraSpacing:
+  AllowBeforeTrailingComments: true
+
 Style/ClassAndModuleChildren:
   Enabled:
     false
