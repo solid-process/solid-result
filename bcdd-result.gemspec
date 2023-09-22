@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "A result abstraction (monad based) for Ruby"
   spec.homepage = "https://github.com/b-cdd/result"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 2.7.0"
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
 
