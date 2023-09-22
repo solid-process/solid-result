@@ -28,4 +28,20 @@ class BCDD::ResultTest < Minitest::Test
     assert_equal :err, BCDD::Result.new(type: :err, value: 0).type
     assert_equal :no, BCDD::Result.new(type: :no, value: nil).type
   end
+
+  test '#success?' do
+    result = BCDD::Result.new(type: :ok, value: 1)
+
+    assert_raises(BCDD::Result::Error::NotImplemented) { result.success? }
+
+    assert_raises(BCDD::Result::Error::NotImplemented) { result.success?(:ok) }
+  end
+
+  test '#failure?' do
+    result = BCDD::Result.new(type: :err, value: 0)
+
+    assert_raises(BCDD::Result::Error::NotImplemented) { result.failure? }
+
+    assert_raises(BCDD::Result::Error::NotImplemented) { result.failure?(:err) }
+  end
 end

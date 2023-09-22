@@ -11,5 +11,13 @@ module BCDD
       @type = type.to_sym
       @value = value
     end
+
+    def success?(_type = nil)
+      raise Error::NotImplemented
+    end
+
+    def failure?(_type = nil)
+      raise Error::NotImplemented
+    end
   end
 end
