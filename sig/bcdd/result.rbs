@@ -1,6 +1,10 @@
 module BCDD
-  module Result
+  class Result
     VERSION: String
-    # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+
+    attr_reader type: Symbol
+    attr_reader value: untyped
+
+    def initialize: (type: Symbol, value: untyped) -> void
   end
 end

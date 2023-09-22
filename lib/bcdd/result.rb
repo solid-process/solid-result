@@ -3,8 +3,12 @@
 require_relative 'result/version'
 
 module BCDD
-  module Result
-    class Error < StandardError; end
-    # Your code goes here...
+  class Result
+    attr_reader :type, :value
+
+    def initialize(type:, value:)
+      @type = type.to_sym
+      @value = value
+    end
   end
 end
