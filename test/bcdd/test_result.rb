@@ -3,30 +3,29 @@
 require 'test_helper'
 
 class BCDD::TestResult < Minitest::Test
-  def test_that_it_has_a_version_number
+  test 'should has a version number' do
     refute_nil ::BCDD::Result::VERSION
   end
 
-  def test_initialize_errors
-    error = assert_raises(ArgumentError) { BCDD::Result.new(type: :ok) }
+  test '#initialize errors' do
+    error1 = assert_raises(ArgumentError) { BCDD::Result.new(type: :ok) }
+    error2 = assert_raises(ArgumentError) { BCDD::Result.new(value: 1) }
+    error3 = assert_raises(ArgumentError) { BCDD::Result.new }
 
-    assert_equal 'missing keyword: :value', error.message
+    assert_equal 'missing keyword: :value', error1.message
 
-    error = assert_raises(ArgumentError) { BCDD::Result.new(value: 1) }
+    assert_equal 'missing keyword: :type', error2.message
 
-    assert_equal 'missing keyword: :type', error.message
-
-    error = assert_raises(ArgumentError) { BCDD::Result.new }
-
-    assert_equal 'missing keywords: :type, :value', error.message
+    assert_equal 'missing keywords: :type, :value', error3.message
   end
 
-  def test_value
+  test '#value' do
     assert_equal 1, BCDD::Result.new(type: :ok, value: 1).value
+
     assert_nil BCDD::Result.new(type: :ok, value: nil).value
   end
 
-  def test_type
+  test '#type' do
     assert_equal :ok, BCDD::Result.new(type: :ok, value: 1).type
     assert_equal :ok, BCDD::Result.new(type: :ok, value: nil).type
 
