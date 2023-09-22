@@ -2,11 +2,7 @@
 
 require 'test_helper'
 
-class BCDD::TestResult < Minitest::Test
-  test 'should has a version number' do
-    refute_nil ::BCDD::Result::VERSION
-  end
-
+class BCDD::ResultTest < Minitest::Test
   test '#initialize errors' do
     error1 = assert_raises(ArgumentError) { BCDD::Result.new(type: :ok) }
     error2 = assert_raises(ArgumentError) { BCDD::Result.new(value: 1) }
@@ -27,9 +23,9 @@ class BCDD::TestResult < Minitest::Test
 
   test '#type' do
     assert_equal :ok, BCDD::Result.new(type: :ok, value: 1).type
-    assert_equal :ok, BCDD::Result.new(type: :ok, value: nil).type
+    assert_equal :yes, BCDD::Result.new(type: :yes, value: nil).type
 
     assert_equal :err, BCDD::Result.new(type: :err, value: 0).type
-    assert_equal :err, BCDD::Result.new(type: :err, value: nil).type
+    assert_equal :no, BCDD::Result.new(type: :no, value: nil).type
   end
 end

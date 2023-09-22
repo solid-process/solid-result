@@ -16,5 +16,7 @@ Layout/ExtraSpacing:
   AllowBeforeTrailingComments: true
 
 Style/ClassAndModuleChildren:
-  Enabled:
-    false
+  Enabled: false
+
+Minitest/MultipleAssertions:
+  Enabled: false
