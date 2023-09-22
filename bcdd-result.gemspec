@@ -4,7 +4,7 @@ require_relative "lib/bcdd/result/version"
 
 Gem::Specification.new do |spec|
   spec.name = "bcdd-result"
-  spec.version = Bcdd::Result::VERSION
+  spec.version = BCDD::Result::VERSION
   spec.authors = ["Rodrigo Serradura"]
   spec.email = ["rodrigo.serradura@gmail.com"]
 

@@ -2,7 +2,7 @@
 
 require_relative "result/version"
 
-module Bcdd
+module BCDD
   module Result
     class Error < StandardError; end
     # Your code goes here...
