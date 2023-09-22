@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "result/version"
+require_relative 'result/version'
 
 module BCDD
   module Result
