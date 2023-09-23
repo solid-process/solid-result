@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module BCDD
-  class Result
+module BCDD::Result
+  class Base
     attr_reader :type, :value
 
     def initialize(type:, value:)
@@ -18,7 +18,7 @@ module BCDD
     end
 
     def value_or(&_block)
-      raise NotImplementedError
+      raise Error::NotImplemented
     end
 
     def ==(other)

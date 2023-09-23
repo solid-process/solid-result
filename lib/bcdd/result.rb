@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-module BCDD
-  class Result
-    require_relative 'result/version'
-    require_relative 'result/error'
-    require_relative 'result/base'
-    require_relative 'result/failure'
-    require_relative 'result/success'
-  end
+require_relative 'result/version'
+
+module BCDD::Result
+  require_relative 'result/error'
+  require_relative 'result/base'
+  require_relative 'result/failure'
+  require_relative 'result/success'
+
+  private_constant :Base
 end

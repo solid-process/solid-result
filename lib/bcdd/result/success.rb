@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module BCDD
-  class Result::Success < Result
+module BCDD::Result
+  class Success < Base
     def success?(type = nil)
       type.nil? || type == self.type
     end

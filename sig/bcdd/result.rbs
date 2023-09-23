@@ -1,18 +1,18 @@
 module BCDD
-  class Result
+  module Result
     VERSION: String
   end
 end
 
-module BCDD
-  class Result::Error < ::StandardError
-    class NotImplemented < Result::Error
+module BCDD::Result
+  class Error < ::StandardError
+    class NotImplemented < Error
     end
   end
 end
 
-module BCDD
-  class Result
+module BCDD::Result
+  class Base
     attr_reader type: Symbol
     attr_reader value: untyped
 
@@ -31,20 +31,13 @@ module BCDD
     def inspect: -> String
   end
 end
+
+module BCDD::Result
+  class Failure < BCDD::Result::Base
   end
 end
 
-module BCDD
-  class Result::Base < Result
-  end
-end
-
-module BCDD
-  class Result::Failure < Result
-  end
-end
-
-module BCDD
-  class Result::Success < Result
+module BCDD::Result
+  class Success < BCDD::Result::Base
   end
 end
