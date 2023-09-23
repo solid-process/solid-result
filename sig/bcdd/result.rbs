@@ -35,9 +35,13 @@ end
 module BCDD::Result
   class Failure < BCDD::Result::Base
   end
+
+  def self.Success: (Symbol type, untyped value) -> BCDD::Result::Success
 end
 
 module BCDD::Result
   class Success < BCDD::Result::Base
   end
+
+  def self.Failure: (Symbol type, untyped value) -> BCDD::Result::Failure
 end

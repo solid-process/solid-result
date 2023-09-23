@@ -14,4 +14,8 @@ module BCDD::Result
       value
     end
   end
+
+  def self.Success(type, value = nil)
+    Success.new(type: type, value: value)
+  end
 end

@@ -14,4 +14,8 @@ module BCDD::Result
       yield
     end
   end
+
+  def self.Failure(type, value = nil)
+    Failure.new(type: type, value: value)
+  end
 end
