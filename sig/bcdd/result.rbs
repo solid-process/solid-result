@@ -25,6 +25,8 @@ module BCDD
 
     def ==: (untyped) -> bool
     alias eql? ==
+
+    def hash: -> Integer
   end
 end
 

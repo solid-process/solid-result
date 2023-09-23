@@ -56,4 +56,13 @@ class BCDD::Result::SuccessTest < Minitest::Test
     refute result.eql?(BCDD::Result::Failure.new(type: :ok, value: 2))
     refute result.eql?(BCDD::Result.new(type: :ok, value: 2))
   end
+
+  test '#hash' do
+    result = BCDD::Result::Success.new(type: :ok, value: 2)
+
+    assert_equal result.hash, BCDD::Result::Success.new(type: :ok, value: 2).hash
+
+    refute_equal result.hash, BCDD::Result::Failure.new(type: :ok, value: 2).hash
+    refute_equal result.hash, BCDD::Result.new(type: :ok, value: 2).hash
+  end
 end

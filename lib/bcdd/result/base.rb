@@ -25,5 +25,9 @@ module BCDD
       self.class == other.class && type == other.type && value == other.value
     end
     alias eql? ==
+
+    def hash
+      [self.class, type, value].hash
+    end
   end
 end
