@@ -29,5 +29,9 @@ module BCDD
     def hash
       [self.class, type, value].hash
     end
+
+    def inspect
+      format('#<%<class_name>s type=%<type>p value=%<value>p>', class_name: self.class.name, type: type, value: value)
+    end
   end
 end

@@ -77,4 +77,10 @@ class BCDD::Result::BaseTest < Minitest::Test
     refute_equal result.hash, BCDD::Result.new(type: :ok, value: 3).hash
     refute_equal result.hash, BCDD::Result.new(type: :yes, value: 2).hash
   end
+
+  test '#inspect' do
+    result = BCDD::Result.new(type: :ok, value: 2)
+
+    assert_equal '#<BCDD::Result type=:ok value=2>', result.inspect
+  end
 end

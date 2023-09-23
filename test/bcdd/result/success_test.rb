@@ -65,4 +65,10 @@ class BCDD::Result::SuccessTest < Minitest::Test
     refute_equal result.hash, BCDD::Result::Failure.new(type: :ok, value: 2).hash
     refute_equal result.hash, BCDD::Result.new(type: :ok, value: 2).hash
   end
+
+  test '#inspect' do
+    result = BCDD::Result::Success.new(type: :ok, value: 2)
+
+    assert_equal '#<BCDD::Result::Success type=:ok value=2>', result.inspect
+  end
 end

@@ -27,6 +27,10 @@ module BCDD
     alias eql? ==
 
     def hash: -> Integer
+
+    def inspect: -> String
+  end
+end
   end
 end
 
