@@ -5,6 +5,8 @@ require_relative 'result/error'
 
 module BCDD
   class Result
+    require_relative 'result/failure'
+
     attr_reader :type, :value
 
     def initialize(type:, value:)

@@ -22,3 +22,8 @@ module BCDD
     def failure?: (Symbol ?_type) -> bool
   end
 end
+
+module BCDD
+  class Result::Failure < Result
+  end
+end
