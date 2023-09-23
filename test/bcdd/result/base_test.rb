@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class BCDD::ResultTest < Minitest::Test
+class BCDD::Result::BaseTest < Minitest::Test
   test '#initialize errors' do
     error1 = assert_raises(ArgumentError) { BCDD::Result.new(type: :ok) }
     error2 = assert_raises(ArgumentError) { BCDD::Result.new(value: 1) }

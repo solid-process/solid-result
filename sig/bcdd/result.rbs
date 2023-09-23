@@ -18,8 +18,8 @@ module BCDD
 
     def initialize: (type: Symbol, value: untyped) -> void
 
-    def success?: (Symbol ?_type) -> bool
-    def failure?: (Symbol ?_type) -> bool
+    def success?: (Symbol ?type) -> bool
+    def failure?: (Symbol ?type) -> bool
   end
 end
 
