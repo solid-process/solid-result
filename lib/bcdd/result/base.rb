@@ -33,5 +33,8 @@ module BCDD::Result
     def inspect
       format('#<%<class_name>s type=%<type>p value=%<value>p>', class_name: self.class.name, type: type, value: value)
     end
+
+    alias data value
+    alias data_or value_or
   end
 end

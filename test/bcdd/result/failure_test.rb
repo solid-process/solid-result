@@ -41,5 +41,19 @@ module BCDD::Result
 
       assert_equal '#<BCDD::Result::Failure type=:err value=2>', result.inspect
     end
+
+    test '#data' do
+      result = Failure.new(type: :err, value: 3)
+
+      assert_equal 3, result.data
+
+      assert_equal result.method(:value), result.method(:data)
+    end
+
+    test '#data_or' do
+      result = Failure.new(type: :err, value: nil)
+
+      assert_equal(0, result.data_or { 0 })
+    end
   end
 end

@@ -92,5 +92,17 @@ module BCDD::Result
 
       assert_equal "#<#{Abstract.name} type=:ok value=2>", result.inspect
     end
+
+    test '#data' do
+      result = Abstract.new(type: :ok, value: 2)
+
+      assert_equal result.method(:value), result.method(:data)
+    end
+
+    test '#data_or' do
+      result = Abstract.new(type: :ok, value: 2)
+
+      assert_equal result.method(:value_or), result.method(:data_or)
+    end
   end
 end

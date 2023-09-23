@@ -13,6 +13,8 @@ module BCDD::Result
     def value_or
       value
     end
+
+    alias data_or value_or
   end
 
   def self.Success(type, value = nil)

@@ -29,6 +29,9 @@ module BCDD::Result
     def hash: -> Integer
 
     def inspect: -> String
+
+    alias data value
+    alias data_or value_or
   end
 end
 

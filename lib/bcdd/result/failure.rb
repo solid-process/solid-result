@@ -13,6 +13,8 @@ module BCDD::Result
     def value_or
       yield
     end
+
+    alias data_or value_or
   end
 
   def self.Failure(type, value = nil)
