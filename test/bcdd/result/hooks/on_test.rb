@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module BCDD::Result
-  class HooksOnTest < Minitest::Test
+  class OnHookTest < Minitest::Test
     test '#on' do
       result = Success.new(type: :okay, value: 1)
 
