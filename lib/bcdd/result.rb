@@ -6,6 +6,7 @@ require_relative 'result/error'
 module BCDD
   class Result
     require_relative 'result/failure'
+    require_relative 'result/success'
 
     attr_reader :type, :value
 
