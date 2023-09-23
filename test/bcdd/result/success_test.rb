@@ -28,4 +28,10 @@ class BCDD::Result::SuccessTest < Minitest::Test
 
     refute result.failure?(:ok)
   end
+
+  test '#value_or' do
+    result = BCDD::Result::Success.new(type: :ok, value: 1)
+
+    assert_equal(1, result.value_or { 0 })
+  end
 end

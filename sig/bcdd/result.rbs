@@ -20,6 +20,13 @@ module BCDD
 
     def success?: (Symbol ?type) -> bool
     def failure?: (Symbol ?type) -> bool
+
+    def value_or: { () -> untyped } -> untyped
+  end
+end
+
+module BCDD
+  class Result::Base < Result
   end
 end
 

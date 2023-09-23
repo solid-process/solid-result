@@ -9,5 +9,9 @@ module BCDD
     def failure?(_type = nil)
       false
     end
+
+    def value_or
+      value
+    end
   end
 end

@@ -44,4 +44,10 @@ class BCDD::Result::BaseTest < Minitest::Test
 
     assert_raises(BCDD::Result::Error::NotImplemented) { result.failure?(:err) }
   end
+
+  test '#value_or' do
+    result = BCDD::Result.new(type: :ok, value: 1)
+
+    assert_raises(NotImplementedError) { result.value_or { 0 } }
+  end
 end

@@ -16,5 +16,9 @@ module BCDD
     def failure?(_type = nil)
       raise Error::NotImplemented
     end
+
+    def value_or(&_block)
+      raise NotImplementedError
+    end
   end
 end
