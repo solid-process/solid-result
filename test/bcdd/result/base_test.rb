@@ -50,4 +50,22 @@ class BCDD::Result::BaseTest < Minitest::Test
 
     assert_raises(NotImplementedError) { result.value_or { 0 } }
   end
+
+  test '#==' do
+    result = BCDD::Result.new(type: :ok, value: 2)
+
+    assert_equal result, BCDD::Result.new(type: :ok, value: 2)
+
+    refute_equal result, BCDD::Result.new(type: :ok, value: 3)
+    refute_equal result, BCDD::Result.new(type: :yes, value: 2)
+  end
+
+  test '#eql?' do
+    result = BCDD::Result.new(type: :ok, value: 2)
+
+    assert result.eql?(BCDD::Result.new(type: :ok, value: 2))
+
+    refute result.eql?(BCDD::Result.new(type: :ok, value: 3))
+    refute result.eql?(BCDD::Result.new(type: :yes, value: 2))
+  end
 end

@@ -34,4 +34,26 @@ class BCDD::Result::FailureTest < Minitest::Test
 
     assert_equal(0, result.value_or { 0 })
   end
+
+  test '#==' do
+    result = BCDD::Result::Failure.new(type: :err, value: 2)
+
+    assert_equal result, BCDD::Result::Failure.new(type: :err, value: 2)
+
+    refute_equal result, BCDD::Result::Failure.new(type: :err, value: 3)
+    refute_equal result, BCDD::Result::Failure.new(type: :no, value: 2)
+    refute_equal result, BCDD::Result::Success.new(type: :err, value: 2)
+    refute_equal result, BCDD::Result.new(type: :err, value: 2)
+  end
+
+  test 'eql?' do
+    result = BCDD::Result::Failure.new(type: :no, value: 'no')
+
+    assert result.eql?(BCDD::Result::Failure.new(type: :no, value: 'no'))
+
+    refute result.eql?(BCDD::Result::Failure.new(type: :err, value: 3))
+    refute result.eql?(BCDD::Result::Failure.new(type: :no, value: 2))
+    refute result.eql?(BCDD::Result::Success.new(type: :err, value: 2))
+    refute result.eql?(BCDD::Result.new(type: :err, value: 2))
+  end
 end

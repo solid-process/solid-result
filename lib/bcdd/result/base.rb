@@ -20,5 +20,10 @@ module BCDD
     def value_or(&_block)
       raise NotImplementedError
     end
+
+    def ==(other)
+      self.class == other.class && type == other.type && value == other.value
+    end
+    alias eql? ==
   end
 end

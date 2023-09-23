@@ -22,6 +22,9 @@ module BCDD
     def failure?: (Symbol ?type) -> bool
 
     def value_or: { () -> untyped } -> untyped
+
+    def ==: (untyped) -> bool
+    alias eql? ==
   end
 end
 
