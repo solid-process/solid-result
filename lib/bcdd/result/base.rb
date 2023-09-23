@@ -44,10 +44,18 @@ module BCDD::Result
     end
     alias on_type on
 
+    def on_success(*types)
+      tap { yield(value, type) if success? && allowed_to_handle?(types) }
+    end
+
     private
 
     def expected_type?(types)
       types.any?(type)
+    end
+
+    def allowed_to_handle?(types)
+      types.empty? || expected_type?(types)
     end
   end
 end

@@ -40,9 +40,12 @@ module BCDD::Result
 
     alias on_type on
 
+    def on_success: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
+
     private
 
     def expected_type?: (Array[Symbol]) -> bool
+    def allowed_to_handle?: (Array[Symbol]) -> bool
   end
 end
 
