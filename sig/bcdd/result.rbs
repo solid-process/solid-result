@@ -38,6 +38,8 @@ module BCDD::Result
 
     def on: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
 
+    alias on_type on
+
     private
 
     def expected_type?: (Array[Symbol]) -> bool

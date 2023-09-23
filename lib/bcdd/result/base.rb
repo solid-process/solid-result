@@ -42,6 +42,7 @@ module BCDD::Result
 
       tap { yield(value, type) if expected_type?(types) }
     end
+    alias on_type on
 
     private
 
