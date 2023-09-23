@@ -48,6 +48,10 @@ module BCDD::Result
       tap { yield(value, type) if success? && allowed_to_handle?(types) }
     end
 
+    def on_failure(*types)
+      tap { yield(value, type) if failure? && allowed_to_handle?(types) }
+    end
+
     private
 
     def expected_type?(types)

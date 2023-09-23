@@ -41,6 +41,8 @@ module BCDD::Result
     alias on_type on
 
     def on_success: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
+    def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
+
 
     private
 
