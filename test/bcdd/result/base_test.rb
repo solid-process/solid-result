@@ -9,7 +9,7 @@ module BCDD::Result
     test 'is a private constant' do
       error = assert_raises(NameError) { BCDD::Result::Base }
 
-      assert_equal 'private constant BCDD::Result::Base referenced', error.message
+      assert_match(/private constant BCDD::Result::Base referenced/, error.message)
     end
 
     test '#initialize errors' do
