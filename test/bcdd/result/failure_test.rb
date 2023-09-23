@@ -16,7 +16,7 @@ module BCDD::Result
       refute result.success?(:err)
     end
 
-    test '#failure? without receiving a type' do
+    test '#failure? without receiving a type/argument' do
       result = Failure.new(type: :bad, value: nil)
 
       assert_predicate result, :failure?

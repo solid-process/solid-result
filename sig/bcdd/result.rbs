@@ -6,7 +6,10 @@ end
 
 module BCDD::Result
   class Error < ::StandardError
-    class NotImplemented < Error
+    class NotImplemented < BCDD::Result::Error
+    end
+
+    class MissingTypeArgument < BCDD::Result::Error
     end
   end
 end
@@ -18,8 +21,8 @@ module BCDD::Result
 
     def initialize: (type: Symbol, value: untyped) -> void
 
-    def success?: (Symbol ?type) -> bool
-    def failure?: (Symbol ?type) -> bool
+    def success?: (?Symbol type) -> bool
+    def failure?: (?Symbol type) -> bool
 
     def value_or: { () -> untyped } -> untyped
 
@@ -32,6 +35,12 @@ module BCDD::Result
 
     alias data value
     alias data_or value_or
+
+    def on: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
+
+    private
+
+    def expected_type?: (Array[Symbol]) -> bool
   end
 end
 

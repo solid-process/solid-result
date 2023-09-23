@@ -36,5 +36,17 @@ module BCDD::Result
 
     alias data value
     alias data_or value_or
+
+    def on(*types)
+      raise Error::MissingTypeArgument if types.empty?
+
+      tap { yield(value, type) if expected_type?(types) }
+    end
+
+    private
+
+    def expected_type?(types)
+      types.any?(type)
+    end
   end
 end

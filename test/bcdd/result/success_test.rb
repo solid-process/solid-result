@@ -8,7 +8,7 @@ module BCDD::Result
       assert Success < Base
     end
 
-    test '#success? without receiving a type' do
+    test '#success? without receiving a type/argument' do
       result = Success.new(type: :good, value: nil)
 
       assert_predicate result, :success?

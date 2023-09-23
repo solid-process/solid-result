@@ -2,6 +2,13 @@
 
 module BCDD::Result
   class Error < ::StandardError
-    NotImplemented = ::Class.new(self)
+    class NotImplemented < self
+    end
+
+    class MissingTypeArgument < self
+      def initialize(_message = nil)
+        super('a type must be defined')
+      end
+    end
   end
 end
