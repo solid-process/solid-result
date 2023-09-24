@@ -38,5 +38,20 @@ class BCDD::Result
           .and_then { raise 'boom' }
       end
     end
+
+    test '#and_then raises an exception if the block does not return a result' do
+      error = assert_raises(BCDD::Result::Error::UnexpectedBlockOutcome) do
+        Success
+          .new(type: :one, value: 1)
+          .and_then { Success.new(type: :two, value: 2) }
+          .and_then { 3 }
+      end
+
+      assert_equal(
+        'Unexpected outcome: 3. The block must return this object wrapped by ' \
+        'BCDD::Result::Success or BCDD::Result::Failure',
+        error.message
+      )
+    end
   end
 end

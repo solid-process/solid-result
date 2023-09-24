@@ -60,7 +60,7 @@ class BCDD::Result
     class MissingTypeArgument < BCDD::Result::Error
     end
 
-    class UnexpectedBlockResult < BCDD::Result::Error
+    class UnexpectedBlockOutcome < BCDD::Result::Error
     end
   end
 end

@@ -6,14 +6,18 @@ class BCDD::Result
     end
 
     class MissingTypeArgument < self
-      def initialize(_message = nil)
+      def initialize(_arg = nil)
         super('a type must be defined')
       end
     end
 
-    class UnexpectedBlockResult < self
-      def initialize(_message = nil)
-        super('block must return a BCDD::Result::Success or BCDD::Result::Failure')
+    class UnexpectedBlockOutcome < self
+      def initialize(arg = nil)
+        message =
+          "Unexpected outcome: #{arg.inspect}. The block must return this object wrapped by " \
+          'BCDD::Result::Success or BCDD::Result::Failure'
+
+        super(message)
       end
     end
   end

@@ -59,7 +59,7 @@ class BCDD::Result
 
     return result if result.is_a?(::BCDD::Result)
 
-    raise Error::UnexpectedBlockResult
+    raise Error::UnexpectedBlockOutcome, result
   end
 
   alias data value
