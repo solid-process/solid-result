@@ -11,6 +11,9 @@ module BCDD::Result
 
     class MissingTypeArgument < BCDD::Result::Error
     end
+
+    class UnexpectedBlockResult < BCDD::Result::Error
+    end
   end
 end
 
@@ -43,6 +46,7 @@ module BCDD::Result
     def on_success: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
     def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
 
+    def and_then: { (untyped) -> untyped } -> BCDD::Result::Base
 
     private
 

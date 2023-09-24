@@ -16,4 +16,13 @@ class BCDD::Result::ErrorTest < Minitest::Test
 
     assert_equal 'a type must be defined', BCDD::Result::Error::MissingTypeArgument.new.message
   end
+
+  test '::Error::UnexpectedBlockResult' do
+    assert BCDD::Result::Error::UnexpectedBlockResult < BCDD::Result::Error
+
+    assert_equal(
+      'block must return a BCDD::Result::Success or BCDD::Result::Failure',
+      BCDD::Result::Error::UnexpectedBlockResult.new.message
+    )
+  end
 end

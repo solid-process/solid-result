@@ -10,5 +10,11 @@ module BCDD::Result
         super('a type must be defined')
       end
     end
+
+    class UnexpectedBlockResult < self
+      def initialize(_message = nil)
+        super('block must return a BCDD::Result::Success or BCDD::Result::Failure')
+      end
+    end
   end
 end

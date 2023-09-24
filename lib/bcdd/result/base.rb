@@ -52,6 +52,16 @@ module BCDD::Result
       tap { yield(value, type) if failure? && allowed_to_handle?(types) }
     end
 
+    def and_then
+      return self if failure?
+
+      result = yield(value)
+
+      return result if result.is_a?(Base)
+
+      raise Error::UnexpectedBlockResult
+    end
+
     private
 
     def expected_type?(types)
