@@ -2,10 +2,10 @@
 
 require 'test_helper'
 
-module BCDD::Result
+class BCDD::Result
   class FailureTest < Minitest::Test
-    test 'is a BCDD::Result::Base' do
-      assert Failure < Base
+    test 'is a BCDD::Result' do
+      assert Failure < BCDD::Result
     end
 
     test '#success? should return false' do

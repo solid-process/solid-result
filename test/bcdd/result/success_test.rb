@@ -2,10 +2,10 @@
 
 require 'test_helper'
 
-module BCDD::Result
+class BCDD::Result
   class SuccessTest < Minitest::Test
-    test 'is a BCDD::Result::Base' do
-      assert Success < Base
+    test 'is a BCDD::Result' do
+      assert Success < BCDD::Result
     end
 
     test '#success? without receiving a type/argument' do

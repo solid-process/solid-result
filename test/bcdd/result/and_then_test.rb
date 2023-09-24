@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-module BCDD::Result
+class BCDD::Result
   class AndThenTest < Minitest::Test
     test '#and_then does not execute the block if the result is a failure' do
       result =

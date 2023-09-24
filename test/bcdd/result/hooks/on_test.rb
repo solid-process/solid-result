@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-module BCDD::Result
+class BCDD::Result
   class OnHookTest < Minitest::Test
     test '#on returns the result itself' do
       result = Success.new(type: :okay, value: 1)

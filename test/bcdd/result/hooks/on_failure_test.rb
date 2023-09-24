@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-module BCDD::Result
+class BCDD::Result
   class OnFailureHookTest < Minitest::Test
     test '#on_failure returns the result itself' do
       result = Failure.new(type: :error, value: 1)

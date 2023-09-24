@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-module BCDD::Result
+class BCDD::Result
   class OnTypeHookTest < Minitest::Test
     test '#on_type is an alias for #on' do
       success = Success.new(type: :okay, value: 1)

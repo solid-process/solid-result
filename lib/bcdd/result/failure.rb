@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module BCDD::Result
-  class Failure < Base
+class BCDD::Result
+  class Failure < self
     def success?(_type = nil)
       false
     end

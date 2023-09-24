@@ -2,48 +2,99 @@
 
 require 'test_helper'
 
-class BCDD::ResultTest < Minitest::Test
-  test '.Success() wihout a value' do
-    result = BCDD::Result.Success(:ok)
+module BCDD
+  class ResultTest < Minitest::Test
+    test '#initialize errors' do
+      error1 = assert_raises(ArgumentError) { Result.new(type: :ok) }
+      error2 = assert_raises(ArgumentError) { Result.new(value: 1) }
+      error3 = assert_raises(ArgumentError) { Result.new }
 
-    assert result.success?(:ok)
+      assert_equal 'missing keyword: :value', error1.message
 
-    assert_equal :ok, result.type
+      assert_equal 'missing keyword: :type', error2.message
 
-    assert_nil result.value
-  end
+      assert_equal 'missing keywords: :type, :value', error3.message
+    end
 
-  test '.Success() with a value' do
-    value = [rand, 1, '1', [], {}].sample
+    test '#value' do
+      assert_equal 1, Result.new(type: :ok, value: 1).value
 
-    result = BCDD::Result.Success(:ok, value)
+      assert_nil Result.new(type: :ok, value: nil).value
+    end
 
-    assert result.success?(:ok)
+    test '#type' do
+      assert_equal :ok, Result.new(type: :ok, value: 1).type
+      assert_equal :yes, Result.new(type: :yes, value: nil).type
 
-    assert_equal :ok, result.type
+      assert_equal :err, Result.new(type: :err, value: 0).type
+      assert_equal :no, Result.new(type: :no, value: nil).type
+    end
 
-    assert_equal value, result.value
-  end
+    test '#success?' do
+      result = Result.new(type: :ok, value: 1)
 
-  test '.Failure() wihout a value' do
-    result = BCDD::Result.Failure(:err)
+      assert_raises(BCDD::Result::Error::NotImplemented) { result.success? }
 
-    assert result.failure?(:err)
+      assert_raises(BCDD::Result::Error::NotImplemented) { result.success?(:ok) }
+    end
 
-    assert_equal :err, result.type
+    test '#failure?' do
+      result = Result.new(type: :err, value: 0)
 
-    assert_nil result.value
-  end
+      assert_raises(BCDD::Result::Error::NotImplemented) { result.failure? }
 
-  test '.Failure() with a value' do
-    value = [rand, 2, '2', [], {}].sample
+      assert_raises(BCDD::Result::Error::NotImplemented) { result.failure?(:err) }
+    end
 
-    result = BCDD::Result.Failure(:err, value)
+    test '#value_or' do
+      result = Result.new(type: :ok, value: 1)
 
-    assert result.failure?(:err)
+      assert_raises(BCDD::Result::Error::NotImplemented) { result.value_or { 0 } }
+    end
 
-    assert_equal :err, result.type
+    test '#==' do
+      result = Result.new(type: :ok, value: 2)
 
-    assert_equal value, result.value
+      assert_equal result, Result.new(type: :ok, value: 2)
+
+      refute_equal result, Result.new(type: :ok, value: 3)
+      refute_equal result, Result.new(type: :yes, value: 2)
+    end
+
+    test '#eql?' do
+      result = Result.new(type: :ok, value: 2)
+
+      assert result.eql?(Result.new(type: :ok, value: 2))
+
+      refute result.eql?(Result.new(type: :ok, value: 3))
+      refute result.eql?(Result.new(type: :yes, value: 2))
+    end
+
+    test '#hash' do
+      result = Result.new(type: :ok, value: 2)
+
+      assert_equal result.hash, Result.new(type: :ok, value: 2).hash
+
+      refute_equal result.hash, Result.new(type: :ok, value: 3).hash
+      refute_equal result.hash, Result.new(type: :yes, value: 2).hash
+    end
+
+    test '#inspect' do
+      result = Result.new(type: :ok, value: 2)
+
+      assert_equal '#<BCDD::Result type=:ok value=2>', result.inspect
+    end
+
+    test '#data' do
+      result = Result.new(type: :ok, value: 2)
+
+      assert_equal result.method(:value), result.method(:data)
+    end
+
+    test '#data_or' do
+      result = Result.new(type: :ok, value: 2)
+
+      assert_equal result.method(:value_or), result.method(:data_or)
+    end
   end
 end

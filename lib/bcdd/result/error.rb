@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module BCDD::Result
+class BCDD::Result
   class Error < ::StandardError
     class NotImplemented < self
     end

@@ -1,60 +1,58 @@
 module BCDD
-  module Result
+  class Result
     VERSION: String
   end
 end
 
-module BCDD::Result
-  class Base
-    attr_reader type: Symbol
-    attr_reader value: untyped
+class BCDD::Result
+  attr_reader type: Symbol
+  attr_reader value: untyped
 
-    def initialize: (type: Symbol, value: untyped) -> void
+  def initialize: (type: Symbol, value: untyped) -> void
 
-    def success?: (?Symbol type) -> bool
-    def failure?: (?Symbol type) -> bool
+  def success?: (?Symbol type) -> bool
+  def failure?: (?Symbol type) -> bool
 
-    def value_or: { () -> untyped } -> untyped
+  def value_or: { () -> untyped } -> untyped
 
-    def ==: (untyped) -> bool
-    alias eql? ==
+  def ==: (untyped) -> bool
+  alias eql? ==
 
-    def hash: -> Integer
+  def hash: -> Integer
 
-    def inspect: -> String
+  def inspect: -> String
 
-    def on: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
-    def on_success: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
-    def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
+  def on: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
+  def on_success: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
+  def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
 
-    def and_then: { (untyped) -> untyped } -> BCDD::Result::Base
+  def and_then: { (untyped) -> untyped } -> BCDD::Result
 
-    alias data value
-    alias data_or value_or
-    alias on_type on
+  alias data value
+  alias data_or value_or
+  alias on_type on
 
-    private
+  private
 
-    def expected_type?: (Array[Symbol]) -> bool
-    def allowed_to_handle?: (Array[Symbol]) -> bool
-  end
+  def expected_type?: (Array[Symbol]) -> bool
+  def allowed_to_handle?: (Array[Symbol]) -> bool
 end
 
-module BCDD::Result
-  class Failure < BCDD::Result::Base
+class BCDD::Result
+  class Failure < BCDD::Result
   end
 
   def self.Success: (Symbol type, untyped value) -> BCDD::Result::Success
 end
 
-module BCDD::Result
-  class Success < BCDD::Result::Base
+class BCDD::Result
+  class Success < BCDD::Result
   end
 
   def self.Failure: (Symbol type, untyped value) -> BCDD::Result::Failure
 end
 
-module BCDD::Result
+class BCDD::Result
   class Error < ::StandardError
     class NotImplemented < BCDD::Result::Error
     end
