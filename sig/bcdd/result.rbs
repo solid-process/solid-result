@@ -5,19 +5,6 @@ module BCDD
 end
 
 module BCDD::Result
-  class Error < ::StandardError
-    class NotImplemented < BCDD::Result::Error
-    end
-
-    class MissingTypeArgument < BCDD::Result::Error
-    end
-
-    class UnexpectedBlockResult < BCDD::Result::Error
-    end
-  end
-end
-
-module BCDD::Result
   class Base
     attr_reader type: Symbol
     attr_reader value: untyped
@@ -36,17 +23,15 @@ module BCDD::Result
 
     def inspect: -> String
 
-    alias data value
-    alias data_or value_or
-
     def on: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
-
-    alias on_type on
-
     def on_success: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
     def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result::Base
 
     def and_then: { (untyped) -> untyped } -> BCDD::Result::Base
+
+    alias data value
+    alias data_or value_or
+    alias on_type on
 
     private
 
@@ -67,4 +52,17 @@ module BCDD::Result
   end
 
   def self.Failure: (Symbol type, untyped value) -> BCDD::Result::Failure
+end
+
+module BCDD::Result
+  class Error < ::StandardError
+    class NotImplemented < BCDD::Result::Error
+    end
+
+    class MissingTypeArgument < BCDD::Result::Error
+    end
+
+    class UnexpectedBlockResult < BCDD::Result::Error
+    end
+  end
 end

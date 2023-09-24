@@ -34,15 +34,11 @@ module BCDD::Result
       format('#<%<class_name>s type=%<type>p value=%<value>p>', class_name: self.class.name, type: type, value: value)
     end
 
-    alias data value
-    alias data_or value_or
-
     def on(*types)
       raise Error::MissingTypeArgument if types.empty?
 
       tap { yield(value, type) if expected_type?(types) }
     end
-    alias on_type on
 
     def on_success(*types)
       tap { yield(value, type) if success? && allowed_to_handle?(types) }
@@ -61,6 +57,10 @@ module BCDD::Result
 
       raise Error::UnexpectedBlockResult
     end
+
+    alias data value
+    alias data_or value_or
+    alias on_type on
 
     private
 
