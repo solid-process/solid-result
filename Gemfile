@@ -15,3 +15,5 @@ gem 'rubocop-performance', '~> 1.19', '>= 1.19.1'
 gem 'rubocop-rake', '~> 0.6.0'
 
 gem 'simplecov', '~> 0.22.0', require: false
+
+gem 'steep', '~> 1.5', '>= 1.5.3', require: false
