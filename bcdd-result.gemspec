@@ -8,8 +8,10 @@ Gem::Specification.new do |spec|
   spec.authors = ['Rodrigo Serradura']
   spec.email = ['rodrigo.serradura@gmail.com']
 
-  spec.summary = 'A result abstraction (monad based) for Ruby'
-  spec.description = 'A result abstraction (monad based) for Ruby'
+  spec.summary = 'A result abstraction (monad based) for Ruby.'
+  spec.description =
+    'A general-purpose result monad that allows you to create objects that represent ' \
+    'a success (BCDD::Result::Success) or failure (BCDD::Result::Failure).'
   spec.homepage = 'https://github.com/b-cdd/result'
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 2.7.0'
