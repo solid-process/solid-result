@@ -14,7 +14,10 @@ class BCDD::Result::ErrorTest < Minitest::Test
   test '::Error::MissingTypeArgument' do
     assert BCDD::Result::Error::MissingTypeArgument < BCDD::Result::Error
 
-    assert_equal 'a type must be defined', BCDD::Result::Error::MissingTypeArgument.new.message
+    assert_equal(
+      'A type (argument) is required to invoke the #on/#on_type method',
+      BCDD::Result::Error::MissingTypeArgument.new.message
+    )
   end
 
   test '::Error::UnexpectedBlockOutcome' do

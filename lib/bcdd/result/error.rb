@@ -7,7 +7,7 @@ class BCDD::Result
 
     class MissingTypeArgument < self
       def initialize(_arg = nil)
-        super('a type must be defined')
+        super('A type (argument) is required to invoke the #on/#on_type method')
       end
     end
 

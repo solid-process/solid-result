@@ -39,7 +39,10 @@ class BCDD::Result
         result.on { |value| number += value }
       end
 
-      assert_equal 'a type must be defined', error.message
+      assert_equal(
+        'A type (argument) is required to invoke the #on/#on_type method',
+        error.message
+      )
     end
 
     test '#on with a single type' do
