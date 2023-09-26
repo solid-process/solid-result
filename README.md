@@ -1,4 +1,8 @@
-# BCDD::Result <!-- omit in toc -->
+<p align="center">
+  <h1 align="center" id="-bcddresult">🔀 BCDD::Result</h1>
+  <p align="center"><i>Empower Ruby apps with a pragmatic use of Railway Oriented Programming.</i></p>
+  <br>
+</p>
 
 A general-purpose result monad that allows you to create objects that represent a success (`BCDD::Result::Success`) or failure (`BCDD::Result::Failure`).
 
@@ -6,7 +10,9 @@ A general-purpose result monad that allows you to create objects that represent 
 
 It allows you to consistently represent the concept of success and failure throughout your codebase.
 
-Furthermore, this abstraction exposes several methods that will be useful to make the code flow react clearly and cleanly to the result represented by these objects.
+Furthermore, this abstraction exposes several features that will be useful to make the application flow react cleanly and securely to the result represented by these objects.
+
+Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofit.com/rop/) pattern (superpower) in your code.
 
 - [Installation](#installation)
 - [Usage](#usage)
@@ -18,17 +24,20 @@ Furthermore, this abstraction exposes several methods that will be useful to mak
     - [`result.on_type`](#resulton_type)
     - [`result.on_success`](#resulton_success)
     - [`result.on_failure`](#resulton_failure)
-  - [Result value](#result-value)
+  - [Result Value](#result-value)
     - [`result.value_or`](#resultvalue_or)
     - [`result.data_or`](#resultdata_or)
   - [Railway Oriented Programming](#railway-oriented-programming)
     - [`result.and_then`](#resultand_then)
+    - [`BCDD::Resultable`](#bcddresultable)
+      - [Class example (instance methods)](#class-example-instance-methods)
+      - [Module example (singleton methods)](#module-example-singleton-methods)
+      - [Restrictions](#restrictions)
 - [About](#about)
 - [Development](#development)
 - [Contributing](#contributing)
 - [License](#license)
 - [Code of Conduct](#code-of-conduct)
-
 
 ## Installation
 
@@ -39,6 +48,10 @@ Install the gem and add to the application's Gemfile by executing:
 If bundler is not being used to manage dependencies, install the gem by executing:
 
     $ gem install bcdd-result
+
+> **NOTE:** This gem is compatible with Ruby >= 2.7.0
+
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 ## Usage
 
@@ -58,7 +71,7 @@ BCDD::Result::Success(:ok)  #
 BCDD::Result::Failure(:err) #
 ```
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 ## Reference
 
@@ -114,7 +127,7 @@ result.type     # :no
 result.value    # nil
 ```
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 #### Receiving types in `result.success?` or `result.failure?`
 
@@ -140,7 +153,7 @@ result.failure?(:err)   # true
 result.failure?(:error) # false
 ```
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 ### Result Hooks
 
@@ -158,6 +171,8 @@ def divide(arg1, arg2)
   BCDD::Result::Success(:division_completed, arg1 / arg2)
 end
 ```
+
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 #### `result.on`
 
@@ -193,7 +208,9 @@ output =
 result.object_id == output.object_id # true
 ```
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+*PS: The `divide()` implementation is [here](#result-hooks).*
+
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 #### `result.on_type`
 
@@ -220,7 +237,9 @@ divide(4, 4).on_success(:ok) { |value| puts value }
 divide(4, 4).on_failure { |error| puts error }
 ```
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+*PS: The `divide()` implementation is [here](#result-hooks).*
+
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 #### `result.on_failure`
 
@@ -240,9 +259,11 @@ divide(4, 0).on_success { |number| puts number }
 divide(4, 0).on_failure(:invalid_arg) { |error| puts error }
 ```
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+*PS: The `divide()` implementation is [here](#result-hooks).*
 
-### Result value
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+
+### Result Value
 
 The most simple way to get the result value is by calling `BCDD::Result#value` or `BCDD::Result#data`.
 
@@ -271,16 +292,15 @@ divide(4, '2').value_or { 0 } # 0
 divide(100, 0).value_or { 0 } # 0
 ```
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+*PS: The `divide()` implementation is [here](#result-hooks).*
+
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 #### `result.data_or`
 
 `BCDD::Result#data_or` is an alias of `BCDD::Result#value_or`.
 
-
 ### Railway Oriented Programming
-
-#### `result.and_then`
 
 This feature/pattern is also known as ["Railway Oriented Programming"](https://fsharpforfunandprofit.com/rop/).
 
@@ -289,7 +309,9 @@ The idea is to chain blocks and creates a pipeline of operations that can be int
 In other words, the block will be executed only if the result is a success.
 So, if some block returns a failure, the following blocks will be skipped.
 
-Due to this characteristic, you can use this feature to express some logic as a sequence of operations. And have the guarantee that the process will stop by the first failure detection, and if everything is ok, the final result will be a success. e.g.,
+Due to this characteristic, you can use this feature to express some logic as a sequence of operations. And have the guarantee that the process will stop by the first failure detection, and if everything is ok, the final result will be a success.
+
+#### `result.and_then`
 
 ```ruby
 module Divide
@@ -313,7 +335,7 @@ module Divide
   def validate_non_zero(numbers)
     return BCDD::Result::Success(:ok, numbers) unless numbers.last.zero?
 
-    BCDD::Result::Failure(:division_by_zero, "arg2 must not be zero")
+    BCDD::Result::Failure(:division_by_zero, 'arg2 must not be zero')
   end
 
   def divide((number1, number2))
@@ -338,13 +360,119 @@ Divide.call(2, 2)
 #<BCDD::Result::Success type=:division_completed data=1>
 ```
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+
+#### `BCDD::Resultable`
+
+It is a module that can be included/extended by any object. It adds two methods to the target object: `Success()` and `Failure()`.
+
+The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the first ones will use the target object as the result's subject.
+
+And because of this, you can use the `#and_then` method to call methods from the target object (result's subject).
+
+##### Class example (instance methods)
+
+```ruby
+class Divide
+  include BCDD::Resultable
+
+  attr_reader :arg1, :arg2
+
+  def initialize(arg1, arg2)
+    @arg1 = arg1
+    @arg2 = arg2
+  end
+
+  def call
+    validate_numbers
+      .and_then(:validate_non_zero)
+      .and_then(:divide)
+  end
+
+  private
+
+  def validate_numbers
+    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    # As arg1 and arg2 are instance methods, they will be available in the instance scope.
+    # So, in this case, I'm passing them as an array to show how the next method can receive the value as its argument.
+    Success(:ok, [arg1, arg2])
+  end
+
+  def validate_non_zero(numbers)
+    return Success(:ok, numbers) unless numbers.last.zero?
+
+    Failure(:division_by_zero, 'arg2 must not be zero')
+  end
+
+  def divide((number1, number2))
+    Success(:division_completed, number1 / number2)
+  end
+end
+
+Divide.new(4, 2).call #<BCDD::Result::Success type=:division_completed value=2>
+
+Divide.new(4, 0).call   #<BCDD::Result::Failure type=:division_by_zero value="arg2 must not be zero">
+Divide.new('4', 2).call #<BCDD::Result::Failure type=:invalid_arg value="arg1 must be numeric">
+Divide.new(4, '2').call #<BCDD::Result::Failure type=:invalid_arg value="arg2 must be numeric">
+```
+
+##### Module example (singleton methods)
+
+```ruby
+module Divide
+  extend BCDD::Resultable
+  extend self
+
+  def call(arg1, arg2)
+    validate_numbers(arg1, arg2)
+      .and_then(:validate_non_zero)
+      .and_then(:divide)
+  end
+
+  private
+
+  def validate_numbers(arg1, arg2)
+    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    Success(:ok, [arg1, arg2])
+  end
+
+  def validate_non_zero(numbers)
+    return Success(:ok, numbers) unless numbers.last.zero?
+
+    Failure(:division_by_zero, 'arg2 must not be zero')
+  end
+
+  def divide((number1, number2))
+    Success(:division_completed, number1 / number2)
+  end
+end
+
+Divide.call(4, 2) #<BCDD::Result::Success type=:division_completed value=2>
+
+Divide.call(4, 0)   #<BCDD::Result::Failure type=:division_by_zero value="arg2 must not be zero">
+Divide.call('4', 2) #<BCDD::Result::Failure type=:invalid_arg value="arg1 must be numeric">
+Divide.call(4, '2') #<BCDD::Result::Failure type=:invalid_arg value="arg2 must be numeric">
+```
+
+##### Restrictions
+
+The unique condition for using the `#and_then` to call methods is that they must use the `Success()` and `Failure()` to produce their results.
+
+If you use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or call another `BCDD::Resultable` object, the `#and_then` will raise an error because the subjects will be different.
+
+> **Note**: You still can use the block syntax, but all the results must be produced by the subject's `Success()` and `Failure()` methods.
+
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 ## About
 
 [Rodrigo Serradura](https://github.com/serradura) created this project. He is the B/CDD process/method creator and has already made similar gems like the [u-case](https://github.com/serradura/u-case) and [kind](https://github.com/serradura/kind/blob/main/lib/kind/result.rb). This gem is a general-purpose abstraction/monad, but it also contains key features that serve as facilitators for adopting B/CDD in the code.
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 ## Development
 
@@ -352,19 +480,19 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/B-CDD/bcdd-result. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/B-CDD/bcdd-result/blob/master/CODE_OF_CONDUCT.md).
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-<p align="right">(<a href="#bcddresult-">⬆️ &nbsp;back to top</a>)</p>
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
 ## Code of Conduct
 
