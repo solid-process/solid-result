@@ -1,5 +1,97 @@
 ## [Unreleased]
 
+### Added
+
+- Add `BCDD::Resultable`. This module can add `Success()` and `Failure()` in any object. The target object will be the subject of the result object produced by these methods.
+
+**Classes (instance methods)**
+
+```ruby
+class Divide
+  include BCDD::Resultable
+
+  attr_reader :arg1, :arg2
+
+  def initialize(arg1, arg2)
+    @arg1 = arg1
+    @arg2 = arg2
+  end
+
+  def call
+    validate_numbers
+      .and_then(:validate_non_zero)
+      .and_then(:divide)
+  end
+
+  private
+
+  def validate_numbers
+    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    Success(:ok, [arg1, arg2])
+  end
+
+  def validate_non_zero(numbers)
+    return Success(:ok, numbers) unless numbers.last.zero?
+
+    Failure(:division_by_zero, 'arg2 must not be zero')
+  end
+
+  def divide((number1, number2))
+    Success(:division_completed, number1 / number2)
+  end
+end
+```
+
+**Module (singleton methods)**
+
+```ruby
+module Divide
+  extend BCDD::Resultable
+  extend self
+
+  def call(arg1, arg2)
+    validate_numbers(arg1, arg2)
+      .and_then(:validate_non_zero)
+      .and_then(:divide)
+  end
+
+  private
+
+  def validate_numbers(arg1, arg2)
+    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    Success(:ok, [arg1, arg2])
+  end
+
+  def validate_non_zero(numbers)
+    return Success(:ok, numbers) unless numbers.last.zero?
+
+    Failure(:division_by_zero, 'arg2 must not be zero')
+  end
+
+  def divide((number1, number2))
+    Success(:division_completed, number1 / number2)
+  end
+end
+```
+
+- Make the `BCDD::Result#initialize` enabled to receive a subject.
+
+- Make the `BCDD::Result#and_then` method receive a method name (symbol) and perform it on the result subject (added by `BCDD::Resultable`). The called method must return a result; otherwise, an error (`BCDD::Result::Error::UnexpectedOutcome`) will be raised.
+
+- Add `BCDD::Result::Error::UnexpectedOutcome` to represent an unexpected outcome.
+
+- Add `BCDD::Result::Error::WrongResultSubject` to represent a wrong result subject. When using `BCDD::Resultable`, the result subject must be the same as the target object.
+
+- Add `BCDD::Result::Error::WrongSubjectMethodArity` to represent a wrong subject method arity. Valid arities are 0 and 1.
+
+### Removed
+
+- **(BREAKING)** Remove `BCDD::Result::Error::UnexpectedBlockOutcome`. It was replaced by `BCDD::Result::Error::UnexpectedOutcome`.
+
 ## [0.1.0] - 2023-09-25
 
 ### Added

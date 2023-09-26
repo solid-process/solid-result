@@ -40,7 +40,7 @@ class BCDD::Result
     end
 
     test '#and_then raises an exception if the block does not return a result' do
-      error = assert_raises(BCDD::Result::Error::UnexpectedBlockOutcome) do
+      error = assert_raises(BCDD::Result::Error::UnexpectedOutcome) do
         Success
           .new(type: :one, value: 1)
           .and_then { Success.new(type: :two, value: 2) }
