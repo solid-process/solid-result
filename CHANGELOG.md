@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.2.0] - 2023-09-26
+
 ### Added
 
 - Add `BCDD::Resultable`. This module can add `Success()` and `Failure()` in any object. The target object will be the subject of the result object produced by these methods.
