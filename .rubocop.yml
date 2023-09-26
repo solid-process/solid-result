@@ -18,5 +18,9 @@ Layout/ExtraSpacing:
 Style/ClassAndModuleChildren:
   Enabled: false
 
+Naming/MethodName:
+  Exclude:
+    - lib/bcdd/resultable.rb
+
 Minitest/MultipleAssertions:
   Enabled: false

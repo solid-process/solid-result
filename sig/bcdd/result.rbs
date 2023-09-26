@@ -7,8 +7,9 @@ end
 class BCDD::Result
   attr_reader type: Symbol
   attr_reader value: untyped
+  attr_reader subject: untyped
 
-  def initialize: (type: Symbol, value: untyped) -> void
+  def initialize: (type: Symbol, value: untyped, ?subject: untyped) -> void
 
   def success?: (?Symbol type) -> bool
   def failure?: (?Symbol type) -> bool
@@ -26,7 +27,7 @@ class BCDD::Result
   def on_success: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
   def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
 
-  def and_then: { (untyped) -> untyped } -> BCDD::Result
+  def and_then: (?Symbol method_name) { (untyped) -> untyped } -> BCDD::Result
 
   alias data value
   alias data_or value_or
@@ -36,31 +37,55 @@ class BCDD::Result
 
   def expected_type?: (Array[Symbol]) -> bool
   def allowed_to_handle?: (Array[Symbol]) -> bool
+  def call_subject_method: (Symbol) -> BCDD::Result
+  def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result
 end
 
 class BCDD::Result
   class Failure < BCDD::Result
   end
 
-  def self.Success: (Symbol type, untyped value) -> BCDD::Result::Success
+  def self.Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
 end
 
 class BCDD::Result
   class Success < BCDD::Result
   end
 
-  def self.Failure: (Symbol type, untyped value) -> BCDD::Result::Failure
+  def self.Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
+end
+
+module BCDD
+  module Resultable
+    def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
+
+    def Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
+  end
 end
 
 class BCDD::Result
   class Error < ::StandardError
+    def self.build: (**untyped) -> BCDD::Result::Error
+
     class NotImplemented < BCDD::Result::Error
     end
 
     class MissingTypeArgument < BCDD::Result::Error
     end
 
-    class UnexpectedBlockOutcome < BCDD::Result::Error
+    class UnexpectedOutcome < BCDD::Result::Error
+      def self.build: (outcome: untyped, origin: Symbol)
+          -> BCDD::Result::Error::UnexpectedOutcome
+    end
+
+    class WrongResultSubject < BCDD::Result::Error
+      def self.build: (given_result: BCDD::Result, expected_subject: untyped)
+          -> BCDD::Result::Error::WrongResultSubject
+    end
+
+    class WrongSubjectMethodArity < BCDD::Result::Error
+      def self.build: (subject: untyped, method: ::Method)
+        -> BCDD::Result::Error::WrongSubjectMethodArity
     end
   end
 end

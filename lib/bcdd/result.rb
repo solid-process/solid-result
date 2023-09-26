@@ -5,12 +5,17 @@ require_relative 'result/error'
 require_relative 'result/failure'
 require_relative 'result/success'
 
-class BCDD::Result
-  attr_reader :type, :value
+require_relative 'resultable'
 
-  def initialize(type:, value:)
+class BCDD::Result
+  attr_reader :type, :value, :subject
+
+  protected :subject
+
+  def initialize(type:, value:, subject: nil)
     @type = type.to_sym
     @value = value
+    @subject = subject
   end
 
   def success?(_type = nil)
@@ -52,14 +57,14 @@ class BCDD::Result
     tap { yield(value, type) if failure? && allowed_to_handle?(types) }
   end
 
-  def and_then
+  def and_then(method_name = nil)
     return self if failure?
+
+    return call_subject_method(method_name) if method_name
 
     result = yield(value)
 
-    return result if result.is_a?(::BCDD::Result)
-
-    raise Error::UnexpectedBlockOutcome, result
+    ensure_result_object(result, origin: :block)
   end
 
   alias data value
@@ -74,5 +79,26 @@ class BCDD::Result
 
   def allowed_to_handle?(types)
     types.empty? || expected_type?(types)
+  end
+
+  def call_subject_method(method_name)
+    method = subject.method(method_name)
+
+    result =
+      case method.arity
+      when 0 then subject.send(method_name)
+      when 1 then subject.send(method_name, value)
+      else raise Error::WrongSubjectMethodArity.build(subject: subject, method: method)
+      end
+
+    ensure_result_object(result, origin: :method)
+  end
+
+  def ensure_result_object(result, origin:)
+    raise Error::UnexpectedOutcome.build(outcome: result, origin: origin) unless result.is_a?(::BCDD::Result)
+
+    return result if result.subject.equal?(subject)
+
+    raise Error::WrongResultSubject.build(given_result: result, expected_subject: subject)
   end
 end

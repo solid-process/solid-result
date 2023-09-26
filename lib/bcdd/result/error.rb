@@ -2,6 +2,10 @@
 
 class BCDD::Result
   class Error < ::StandardError
+    def self.build(**_kargs)
+      new
+    end
+
     class NotImplemented < self
     end
 
@@ -11,13 +15,31 @@ class BCDD::Result
       end
     end
 
-    class UnexpectedBlockOutcome < self
-      def initialize(arg = nil)
+    class UnexpectedOutcome < self
+      def self.build(outcome:, origin:)
         message =
-          "Unexpected outcome: #{arg.inspect}. The block must return this object wrapped by " \
+          "Unexpected outcome: #{outcome.inspect}. The #{origin} must return this object wrapped by " \
           'BCDD::Result::Success or BCDD::Result::Failure'
 
-        super(message)
+        new(message)
+      end
+    end
+
+    class WrongResultSubject < self
+      def self.build(given_result:, expected_subject:)
+        message =
+          "You cannot call #and_then and return a result that does not belong to the subject!\n" \
+          "Expected subject: #{expected_subject.inspect}\n" \
+          "Given subject: #{given_result.send(:subject).inspect}\n" \
+          "Given result: #{given_result.inspect}"
+
+        new(message)
+      end
+    end
+
+    class WrongSubjectMethodArity < self
+      def self.build(subject:, method:)
+        new("#{subject.class}##{method.name} has unsupported arity (#{method.arity}). Expected 0 or 1.")
       end
     end
   end
