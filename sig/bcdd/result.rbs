@@ -55,6 +55,31 @@ class BCDD::Result
   def self.Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
 end
 
+class BCDD::Result
+  class Handler
+    UNDEFINED: Object
+
+    def initialize: (BCDD::Result) -> void
+
+    def []: (*Symbol) { (untyped, Symbol) -> void } -> untyped
+    def failure: (*Symbol) { (untyped, Symbol) -> void } -> untyped
+    def success: (*Symbol) { (untyped, Symbol) -> void } -> untyped
+
+    alias type []
+
+    private
+
+    attr_reader _type: BCDD::Result::Type
+    attr_reader result: BCDD::Result
+
+    def outcome?: -> bool
+
+    def outcome: -> untyped
+
+    def outcome=: (Proc) -> void
+  end
+end
+
 module BCDD
   module Resultable
     def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success

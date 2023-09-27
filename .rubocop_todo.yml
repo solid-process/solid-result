@@ -15,6 +15,7 @@ Style/Documentation:
     - 'lib/bcdd/result.rb'
     - 'lib/bcdd/result/error.rb'
     - 'lib/bcdd/result/failure.rb'
+    - 'lib/bcdd/result/handler.rb'
     - 'lib/bcdd/result/success.rb'
     - 'lib/bcdd/result/type.rb'
     - 'lib/bcdd/resultable.rb'

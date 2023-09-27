@@ -2,9 +2,10 @@
 
 require_relative 'result/version'
 require_relative 'result/error'
+require_relative 'result/type'
+require_relative 'result/handler'
 require_relative 'result/failure'
 require_relative 'result/success'
-require_relative 'result/type'
 
 require_relative 'resultable'
 
