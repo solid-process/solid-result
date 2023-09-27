@@ -5,6 +5,8 @@ module BCDD
 end
 
 class BCDD::Result
+  private attr_accessor unknown: bool
+
   attr_reader _type: BCDD::Result::Type
   attr_reader value: untyped
   attr_reader subject: untyped
@@ -21,6 +23,7 @@ class BCDD::Result
   def on: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
   def on_success: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
   def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
+  def on_unknown: () { (untyped, Symbol) -> void } -> BCDD::Result
 
   def and_then: (?Symbol method_name) { (untyped) -> untyped } -> BCDD::Result
 
@@ -39,6 +42,7 @@ class BCDD::Result
 
   private
 
+  def known: (Proc) -> untyped
   def call_subject_method: (Symbol) -> BCDD::Result
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result
 end

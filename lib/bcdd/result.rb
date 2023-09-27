@@ -10,14 +10,20 @@ require_relative 'result/success'
 require_relative 'resultable'
 
 class BCDD::Result
+  attr_accessor :unknown
+
   attr_reader :_type, :value, :subject
 
   protected :subject
+
+  private :unknown, :unknown=
 
   def initialize(type:, value:, subject: nil)
     @_type = Type.new(type)
     @value = value
     @subject = subject
+
+    self.unknown = true
   end
 
   def type
@@ -36,18 +42,22 @@ class BCDD::Result
     raise Error::NotImplemented
   end
 
-  def on(*types)
+  def on(*types, &block)
     raise Error::MissingTypeArgument if types.empty?
 
-    tap { yield(value, type) if _type.in?(types, allow_empty: false) }
+    tap { known(block) if _type.in?(types, allow_empty: false) }
   end
 
-  def on_success(*types)
-    tap { yield(value, type) if success? && _type.in?(types, allow_empty: true) }
+  def on_success(*types, &block)
+    tap { known(block) if success? && _type.in?(types, allow_empty: true) }
   end
 
-  def on_failure(*types)
-    tap { yield(value, type) if failure? && _type.in?(types, allow_empty: true) }
+  def on_failure(*types, &block)
+    tap { known(block) if failure? && _type.in?(types, allow_empty: true) }
+  end
+
+  def on_unknown
+    tap { yield(value, type) if unknown }
   end
 
   def and_then(method_name = nil)
@@ -86,6 +96,12 @@ class BCDD::Result
   alias on_type on
 
   private
+
+  def known(block)
+    self.unknown = false
+
+    block.call(value, type)
+  end
 
   def call_subject_method(method_name)
     method = subject.method(method_name)
