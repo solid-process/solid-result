@@ -310,10 +310,10 @@ end
 # The [] syntax 👆 is an alias of #type.
 ```
 
-Notes:
+**Notes:**
 * You can define multiple types to be handled by the same hook/block
-* If the type is missing it will perform the block for any success or failure.
-* The `#type` and `#[]` handlers, will require at least one type/argument.
+* If the type is missing, it will perform the block for any success or failure handler.
+* The `#type` and `#[]` handlers will require at least one type/argument.
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
