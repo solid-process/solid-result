@@ -70,6 +70,7 @@ class BCDD::Result
     def []: (*Symbol) { (untyped, Symbol) -> void } -> untyped
     def failure: (*Symbol) { (untyped, Symbol) -> void } -> untyped
     def success: (*Symbol) { (untyped, Symbol) -> void } -> untyped
+    def unknown: () { (untyped, Symbol) -> void } -> untyped
 
     alias type []
 
