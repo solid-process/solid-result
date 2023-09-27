@@ -5,11 +5,13 @@ module BCDD
 end
 
 class BCDD::Result
-  attr_reader type: Symbol
+  attr_reader _type: BCDD::Result::Type
   attr_reader value: untyped
   attr_reader subject: untyped
 
   def initialize: (type: Symbol, value: untyped, ?subject: untyped) -> void
+
+  def type: -> Symbol
 
   def success?: (?Symbol type) -> bool
   def failure?: (?Symbol type) -> bool
@@ -35,8 +37,6 @@ class BCDD::Result
 
   private
 
-  def expected_type?: (Array[Symbol]) -> bool
-  def allowed_to_handle?: (Array[Symbol]) -> bool
   def call_subject_method: (Symbol) -> BCDD::Result
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result
 end

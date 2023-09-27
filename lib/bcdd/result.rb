@@ -9,14 +9,18 @@ require_relative 'result/type'
 require_relative 'resultable'
 
 class BCDD::Result
-  attr_reader :type, :value, :subject
+  attr_reader :_type, :value, :subject
 
   protected :subject
 
   def initialize(type:, value:, subject: nil)
-    @type = type.to_sym
+    @_type = Type.new(type)
     @value = value
     @subject = subject
+  end
+
+  def type
+    _type.to_sym
   end
 
   def success?(_type = nil)
@@ -47,15 +51,15 @@ class BCDD::Result
   def on(*types)
     raise Error::MissingTypeArgument if types.empty?
 
-    tap { yield(value, type) if expected_type?(types) }
+    tap { yield(value, type) if _type.in?(types, allow_empty: false) }
   end
 
   def on_success(*types)
-    tap { yield(value, type) if success? && allowed_to_handle?(types) }
+    tap { yield(value, type) if success? && _type.in?(types, allow_empty: true) }
   end
 
   def on_failure(*types)
-    tap { yield(value, type) if failure? && allowed_to_handle?(types) }
+    tap { yield(value, type) if failure? && _type.in?(types, allow_empty: true) }
   end
 
   def and_then(method_name = nil)
@@ -73,14 +77,6 @@ class BCDD::Result
   alias on_type on
 
   private
-
-  def expected_type?(types)
-    types.any?(type)
-  end
-
-  def allowed_to_handle?(types)
-    types.empty? || expected_type?(types)
-  end
 
   def call_subject_method(method_name)
     method = subject.method(method_name)
