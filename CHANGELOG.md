@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.3.0] - 2023-09-26
+
 ### Added
 
 - Add `BCDD::Result#handle`. This method allows defining blocks for each hook (type, failure, success), but instead of returning the result itself, it will return the output of the first match/block execution.
