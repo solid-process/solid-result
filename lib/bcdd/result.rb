@@ -73,6 +73,14 @@ class BCDD::Result
     ensure_result_object(result, origin: :block)
   end
 
+  def handle
+    handler = Handler.new(self)
+
+    yield handler
+
+    handler.send(:outcome)
+  end
+
   alias data value
   alias data_or value_or
   alias on_type on

@@ -31,6 +31,8 @@ class BCDD::Result
 
   def and_then: (?Symbol method_name) { (untyped) -> untyped } -> BCDD::Result
 
+  def handle: { (BCDD::Result::Handler) -> void } -> untyped
+
   alias data value
   alias data_or value_or
   alias on_type on
