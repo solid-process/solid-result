@@ -14,6 +14,7 @@ Furthermore, this abstraction exposes several features that will be useful to ma
 
 Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofit.com/rop/) pattern (superpower) in your code.
 
+- [Ruby Version](#ruby-version)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Reference](#reference)
@@ -24,6 +25,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`result.on_type`](#resulton_type)
     - [`result.on_success`](#resulton_success)
     - [`result.on_failure`](#resulton_failure)
+    - [`result.handle`](#resulthandle)
   - [Result Value](#result-value)
     - [`result.value_or`](#resultvalue_or)
     - [`result.data_or`](#resultdata_or)
@@ -39,17 +41,25 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
 - [License](#license)
 - [Code of Conduct](#code-of-conduct)
 
+## Ruby Version
+
+`>= 2.7.0`
+
 ## Installation
 
-Install the gem and add to the application's Gemfile by executing:
+Add this line to your application's Gemfile:
 
-    $ bundle add bcdd-result
+```ruby
+gem 'bcdd-result', require: 'bcdd/result'
+```
+
+And then execute:
+
+    $ bundle install
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
     $ gem install bcdd-result
-
-> **NOTE:** This gem is compatible with Ruby >= 2.7.0
 
 <p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
@@ -258,6 +268,52 @@ divide(4, 0).on_success { |number| puts number }
 
 divide(4, 0).on_failure(:invalid_arg) { |error| puts error }
 ```
+
+*PS: The `divide()` implementation is [here](#result-hooks).*
+
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+
+#### `result.handle`
+
+This method will allow you to define blocks for each hook (type, failure, success), but instead of returning itself, it will return the output of the first match/block execution.
+
+```ruby
+divide(4, 2).handle do |result|
+  result.success { |number| number }
+  result.failure(:invalid_arg) { |err| puts err }
+  result.type(:division_by_zero) { raise ZeroDivisionError }
+end
+
+#or
+
+divide(4, 2).handle do |on|
+  on.success { |number| number }
+  on.failure { |err| puts err }
+end
+
+#or
+
+divide(4, 2).handle do |on|
+  on.type(:invalid_arg) { |err| puts err }
+  on.type(:division_by_zero) { raise ZeroDivisionError }
+  on.type(:division_completed) { |number| number }
+end
+
+# or
+
+divide(4, 2).handle do |on|
+  on[:invalid_arg] { |err| puts err }
+  on[:division_by_zero] { raise ZeroDivisionError }
+  on[:division_completed] { |number| number }
+end
+
+# The [] syntax 👆 is an alias of #type.
+```
+
+Notes:
+* You can define multiple types to be handled by the same hook/block
+* If the type is missing it will perform the block for any success or failure.
+* The `#type` and `#[]` handlers, will require at least one type/argument.
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
