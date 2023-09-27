@@ -36,19 +36,6 @@ class BCDD::Result
     raise Error::NotImplemented
   end
 
-  def ==(other)
-    self.class == other.class && type == other.type && value == other.value
-  end
-  alias eql? ==
-
-  def hash
-    [self.class, type, value].hash
-  end
-
-  def inspect
-    format('#<%<class_name>s type=%<type>p value=%<value>p>', class_name: self.class.name, type: type, value: value)
-  end
-
   def on(*types)
     raise Error::MissingTypeArgument if types.empty?
 
@@ -81,6 +68,19 @@ class BCDD::Result
     handler.send(:outcome)
   end
 
+  def ==(other)
+    self.class == other.class && type == other.type && value == other.value
+  end
+
+  def hash
+    [self.class, type, value].hash
+  end
+
+  def inspect
+    format('#<%<class_name>s type=%<type>p value=%<value>p>', class_name: self.class.name, type: type, value: value)
+  end
+
+  alias eql? ==
   alias data value
   alias data_or value_or
   alias on_type on

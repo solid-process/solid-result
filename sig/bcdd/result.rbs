@@ -18,13 +18,6 @@ class BCDD::Result
 
   def value_or: { () -> untyped } -> untyped
 
-  def ==: (untyped) -> bool
-  alias eql? ==
-
-  def hash: -> Integer
-
-  def inspect: -> String
-
   def on: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
   def on_success: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
   def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
@@ -33,6 +26,13 @@ class BCDD::Result
 
   def handle: { (BCDD::Result::Handler) -> void } -> untyped
 
+  def ==: (untyped) -> bool
+
+  def hash: -> Integer
+
+  def inspect: -> String
+
+  alias eql? ==
   alias data value
   alias data_or value_or
   alias on_type on
@@ -75,10 +75,8 @@ class BCDD::Result
     attr_reader result: BCDD::Result
 
     def outcome?: -> bool
-
-    def outcome: -> untyped
-
     def outcome=: (Proc) -> void
+    def outcome: -> untyped
   end
 end
 

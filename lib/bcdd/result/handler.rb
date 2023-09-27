@@ -35,12 +35,12 @@ class BCDD::Result
       @outcome != UNDEFINED
     end
 
-    def outcome
-      @outcome if outcome?
-    end
-
     def outcome=(block)
       @outcome = block.call(result.value, result.type) unless outcome?
+    end
+
+    def outcome
+      @outcome if outcome?
     end
   end
 
