@@ -64,6 +64,16 @@ module BCDD
 end
 
 class BCDD::Result
+  class Type
+    attr_reader to_sym: Symbol
+
+    def initialize: (Symbol) -> void
+
+    def in?: (Array[Symbol], allow_empty: bool) -> bool
+  end
+end
+
+class BCDD::Result
   class Error < ::StandardError
     def self.build: (**untyped) -> BCDD::Result::Error
 
