@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class BCDD::Result
-  class SuccessHandlingTest < Minitest::Test
+  class HandleSuccessTest < Minitest::Test
     test '#handle returns nil when there is no handler for the result' do
       result = Success.new(type: :foo, value: :bar)
 
