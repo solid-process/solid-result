@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+### Added
+
+- Add `BCDD::Result#on_unknown` to execute a block if no other hook (`#on`, `#on_type`, `#on_failure`, `#on_success`) has been executed. Attention: always use it as the last hook.
+
+- Add `BCDD::Result::Handler#unknown` to execute a block if no other handler (`#[]`, `#type`, `#failure`, `#success`) has been executed. Attention: always use it as the last handler.
+
 ## [0.3.0] - 2023-09-26
 
 ### Added
