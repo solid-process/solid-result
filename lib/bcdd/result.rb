@@ -90,6 +90,11 @@ class BCDD::Result
     format('#<%<class_name>s type=%<type>p value=%<value>p>', class_name: self.class.name, type: type, value: value)
   end
 
+  def deconstruct
+    [type, value]
+  end
+
+
   alias eql? ==
   alias data value
   alias data_or value_or

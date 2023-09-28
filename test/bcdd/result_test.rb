@@ -52,6 +52,12 @@ module BCDD
       assert_raises(BCDD::Result::Error::NotImplemented) { result.value_or { 0 } }
     end
 
+    test '#deconstruct' do
+      result = Result.new(type: :ok, value: 1)
+
+      assert_equal([:ok, 1], result.deconstruct)
+    end
+
     test '#==' do
       result = Result.new(type: :ok, value: 2)
 

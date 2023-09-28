@@ -30,10 +30,10 @@ class BCDD::Result
   def handle: { (BCDD::Result::Handler) -> void } -> untyped
 
   def ==: (untyped) -> bool
-
   def hash: -> Integer
-
   def inspect: -> String
+
+  def deconstruct: -> [Symbol, [Symbol, untyped]]
 
   alias eql? ==
   alias data value
