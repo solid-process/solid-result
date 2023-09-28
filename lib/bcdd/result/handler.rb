@@ -25,6 +25,10 @@ class BCDD::Result
       self.outcome = block if result.success? && _type.in?(types, allow_empty: true)
     end
 
+    def unknown(&block)
+      self.outcome = block unless outcome?
+    end
+
     alias type []
 
     private
@@ -35,12 +39,12 @@ class BCDD::Result
       @outcome != UNDEFINED
     end
 
-    def outcome
-      @outcome if outcome?
-    end
-
     def outcome=(block)
       @outcome = block.call(result.value, result.type) unless outcome?
+    end
+
+    def outcome
+      @outcome if outcome?
     end
   end
 

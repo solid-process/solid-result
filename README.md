@@ -4,7 +4,7 @@
   <br>
 </p>
 
-A general-purpose result monad that allows you to create objects that represent a success (`BCDD::Result::Success`) or failure (`BCDD::Result::Failure`).
+It's a general-purpose result monad that allows you to create objects representing a success (`BCDD::Result::Success`) or failure (`BCDD::Result::Failure`).
 
 **What problem does it solve?**
 
@@ -25,6 +25,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`result.on_type`](#resulton_type)
     - [`result.on_success`](#resulton_success)
     - [`result.on_failure`](#resulton_failure)
+    - [`result.on_unknown`](#resulton_unknown)
     - [`result.handle`](#resulthandle)
   - [Result Value](#result-value)
     - [`result.value_or`](#resultvalue_or)
@@ -273,6 +274,27 @@ divide(4, 0).on_failure(:invalid_arg) { |error| puts error }
 
 <p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
 
+#### `result.on_unknown`
+
+`BCDD::Result#on_unknown` will perform the block when no other hook (`#on`, `#on_type`, `#on_failure`, `#on_success`) has been executed.
+
+Regardless of the block being executed, the return of the method will always be the result itself.
+
+The result value will be exposed as the first argument of the block.
+
+```ruby
+divide(4, 2)
+  .on(:invalid_arg) { |msg| puts msg }
+  .on(:division_by_zero) { |msg| puts msg }
+  .on_unknown { |value, type| puts [type, value].inspect }
+
+# The code above will print '[:division_completed, 2]' and return the result itself.
+```
+
+*PS: The `divide()` implementation is [here](#result-hooks).*
+
+<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+
 #### `result.handle`
 
 This method will allow you to define blocks for each hook (type, failure, success), but instead of returning itself, it will return the output of the first match/block execution.
@@ -282,6 +304,7 @@ divide(4, 2).handle do |result|
   result.success { |number| number }
   result.failure(:invalid_arg) { |err| puts err }
   result.type(:division_by_zero) { raise ZeroDivisionError }
+  result.unknown { raise NotImplementedError }
 end
 
 #or
@@ -289,6 +312,7 @@ end
 divide(4, 2).handle do |on|
   on.success { |number| number }
   on.failure { |err| puts err }
+  on.unknown { raise NotImplementedError }
 end
 
 #or
@@ -297,6 +321,7 @@ divide(4, 2).handle do |on|
   on.type(:invalid_arg) { |err| puts err }
   on.type(:division_by_zero) { raise ZeroDivisionError }
   on.type(:division_completed) { |number| number }
+  on.unknown { raise NotImplementedError }
 end
 
 # or
@@ -305,6 +330,7 @@ divide(4, 2).handle do |on|
   on[:invalid_arg] { |err| puts err }
   on[:division_by_zero] { raise ZeroDivisionError }
   on[:division_completed] { |number| number }
+  on.unknown { raise NotImplementedError }
 end
 
 # The [] syntax 👆 is an alias of #type.

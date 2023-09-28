@@ -5,6 +5,8 @@ module BCDD
 end
 
 class BCDD::Result
+  private attr_accessor unknown: bool
+
   attr_reader _type: BCDD::Result::Type
   attr_reader value: untyped
   attr_reader subject: untyped
@@ -18,27 +20,29 @@ class BCDD::Result
 
   def value_or: { () -> untyped } -> untyped
 
-  def ==: (untyped) -> bool
-  alias eql? ==
-
-  def hash: -> Integer
-
-  def inspect: -> String
-
   def on: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
   def on_success: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
   def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
+  def on_unknown: () { (untyped, Symbol) -> void } -> BCDD::Result
 
   def and_then: (?Symbol method_name) { (untyped) -> untyped } -> BCDD::Result
 
   def handle: { (BCDD::Result::Handler) -> void } -> untyped
 
+  def ==: (untyped) -> bool
+
+  def hash: -> Integer
+
+  def inspect: -> String
+
+  alias eql? ==
   alias data value
   alias data_or value_or
   alias on_type on
 
   private
 
+  def known: (Proc) -> untyped
   def call_subject_method: (Symbol) -> BCDD::Result
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result
 end
@@ -66,6 +70,7 @@ class BCDD::Result
     def []: (*Symbol) { (untyped, Symbol) -> void } -> untyped
     def failure: (*Symbol) { (untyped, Symbol) -> void } -> untyped
     def success: (*Symbol) { (untyped, Symbol) -> void } -> untyped
+    def unknown: () { (untyped, Symbol) -> void } -> untyped
 
     alias type []
 
@@ -75,10 +80,8 @@ class BCDD::Result
     attr_reader result: BCDD::Result
 
     def outcome?: -> bool
-
-    def outcome: -> untyped
-
     def outcome=: (Proc) -> void
+    def outcome: -> untyped
   end
 end
 
