@@ -2,6 +2,8 @@
 
 ### Added
 
+- Add support to pattern matching (Ruby 2.7+).
+
 - Add `BCDD::Result#on_unknown` to execute a block if no other hook (`#on`, `#on_type`, `#on_failure`, `#on_success`) has been executed. Attention: always use it as the last hook.
 
 - Add `BCDD::Result::Handler#unknown` to execute a block if no other handler (`#[]`, `#type`, `#failure`, `#success`) has been executed. Attention: always use it as the last handler.

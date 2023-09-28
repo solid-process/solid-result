@@ -30,10 +30,11 @@ class BCDD::Result
   def handle: { (BCDD::Result::Handler) -> void } -> untyped
 
   def ==: (untyped) -> bool
-
   def hash: -> Integer
-
   def inspect: -> String
+
+  def deconstruct: -> [Symbol, [Symbol, untyped]]
+  def deconstruct_keys: (Array[Symbol]) -> Hash[Symbol, Hash[Symbol, untyped]]
 
   alias eql? ==
   alias data value
@@ -42,6 +43,7 @@ class BCDD::Result
 
   private
 
+  def name: -> Symbol
   def known: (Proc) -> untyped
   def call_subject_method: (Symbol) -> BCDD::Result
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result

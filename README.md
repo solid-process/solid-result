@@ -36,6 +36,9 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
       - [Class example (instance methods)](#class-example-instance-methods)
       - [Module example (singleton methods)](#module-example-singleton-methods)
       - [Restrictions](#restrictions)
+  - [Pattern Matching](#pattern-matching)
+    - [`Array`/`Find` patterns](#arrayfind-patterns)
+    - [`Hash` patterns](#hash-patterns)
 - [About](#about)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -62,7 +65,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install bcdd-result
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ## Usage
 
@@ -82,7 +85,7 @@ BCDD::Result::Success(:ok)  #
 BCDD::Result::Failure(:err) #
 ```
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ## Reference
 
@@ -138,7 +141,7 @@ result.type     # :no
 result.value    # nil
 ```
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 #### Receiving types in `result.success?` or `result.failure?`
 
@@ -164,7 +167,7 @@ result.failure?(:err)   # true
 result.failure?(:error) # false
 ```
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ### Result Hooks
 
@@ -183,7 +186,7 @@ def divide(arg1, arg2)
 end
 ```
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.on`
 
@@ -221,7 +224,7 @@ result.object_id == output.object_id # true
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.on_type`
 
@@ -250,7 +253,7 @@ divide(4, 4).on_failure { |error| puts error }
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.on_failure`
 
@@ -272,7 +275,7 @@ divide(4, 0).on_failure(:invalid_arg) { |error| puts error }
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.on_unknown`
 
@@ -293,7 +296,7 @@ divide(4, 2)
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.handle`
 
@@ -343,7 +346,7 @@ end
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ### Result Value
 
@@ -376,7 +379,7 @@ divide(100, 0).value_or { 0 } # 0
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.data_or`
 
@@ -442,7 +445,7 @@ Divide.call(2, 2)
 #<BCDD::Result::Success type=:division_completed data=1>
 ```
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 #### `BCDD::Resultable`
 
@@ -548,13 +551,74 @@ If you use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or call another 
 
 > **Note**: You still can use the block syntax, but all the results must be produced by the subject's `Success()` and `Failure()` methods.
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+### Pattern Matching
+
+The `BCDD::Result` also provides support to pattern matching.
+
+In the further examples, I will use the `Divide` lambda to exemplify its usage.
+
+```ruby
+Divide = lambda do |arg1, arg2|
+  arg1.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg1 must be numeric')
+  arg2.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg2 must be numeric')
+
+  return BCDD::Result::Failure(:division_by_zero, 'arg2 must not be zero') if arg2.zero?
+
+  BCDD::Result::Success(:division_completed, arg1 / arg2)
+end
+```
+
+#### `Array`/`Find` patterns
+
+```ruby
+case Divide.call(4, 2)
+in BCDD::Result::Failure[:invalid_arg, msg] then puts msg
+in BCDD::Result::Failure[:division_by_zero, msg] then puts msg
+in BCDD::Result::Success[:division_completed, value] then puts value
+end
+
+# The code above will print: 2
+
+case Divide.call(4, 0)
+in BCDD::Result::Failure[:invalid_arg, msg] then puts msg
+in BCDD::Result::Failure[:division_by_zero, msg] then puts msg
+in BCDD::Result::Success[:division_completed, value] then puts value
+end
+
+# The code above will print: arg2 must not be zero
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### `Hash` patterns
+
+```ruby
+case Divide.call(10, 2)
+in { failure: { invalid_arg: msg } } then puts msg
+in { failure: { division_by_zero: msg } } then puts msg
+in { success: { division_completed: value } } then puts value
+end
+
+# The code above will print: 5
+
+case Divide.call('10', 2)
+in { failure: { invalid_arg: msg } } then puts msg
+in { failure: { division_by_zero: msg } } then puts msg
+in { success: { division_completed: value } } then puts value
+end
+
+# The code above will print: arg1 must be numeric
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ## About
 
 [Rodrigo Serradura](https://github.com/serradura) created this project. He is the B/CDD process/method creator and has already made similar gems like the [u-case](https://github.com/serradura/u-case) and [kind](https://github.com/serradura/kind/blob/main/lib/kind/result.rb). This gem is a general-purpose abstraction/monad, but it also contains key features that serve as facilitators for adopting B/CDD in the code.
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ## Development
 
@@ -562,19 +626,19 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/B-CDD/bcdd-result. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/B-CDD/bcdd-result/blob/master/CODE_OF_CONDUCT.md).
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-<p align="right">(<a href="#-bcddresult">⬆️ &nbsp;back to top</a>)</p>
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ## Code of Conduct
 
