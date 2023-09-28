@@ -15,6 +15,12 @@ class BCDD::Result
     end
 
     alias data_or value_or
+
+    private
+
+    def name
+      :success
+    end
   end
 
   def self.Success(type, value = nil)

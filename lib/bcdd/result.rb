@@ -94,6 +94,9 @@ class BCDD::Result
     [type, value]
   end
 
+  def deconstruct_keys(_keys)
+    { name => { type => value } }
+  end
 
   alias eql? ==
   alias data value
@@ -101,6 +104,10 @@ class BCDD::Result
   alias on_type on
 
   private
+
+  def name
+    raise Error::NotImplemented
+  end
 
   def known(block)
     self.unknown = false
