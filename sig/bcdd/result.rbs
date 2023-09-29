@@ -104,6 +104,21 @@ class BCDD::Result
 end
 
 class BCDD::Result
+  class Data
+    attr_reader name: Symbol
+    attr_reader type: Symbol
+    attr_reader value: untyped
+    attr_reader to_h: Hash[Symbol, untyped]
+    attr_reader to_a: [Symbol, Symbol, untyped]
+
+    def initialize: (BCDD::Result) -> void
+
+    alias to_ary to_a
+    alias to_hash to_h
+  end
+end
+
+class BCDD::Result
   class Error < ::StandardError
     def self.build: (**untyped) -> BCDD::Result::Error
 
