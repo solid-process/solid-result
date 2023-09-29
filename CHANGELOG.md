@@ -8,6 +8,14 @@
 
 - Add `BCDD::Result::Handler#unknown` to execute a block if no other handler (`#[]`, `#type`, `#failure`, `#success`) has been executed. Attention: always use it as the last handler.
 
+### Changed
+
+- **(BREAKING)** Change `BCDD::Result#data` to return a `BCDD::Result::Data` instead of the result value. This object exposes the result attributes (name, type, value) directly and as a hash (`to_h`/`to_hash`) and array (`to_a`/`to_ary`).
+
+### Removed
+
+- **(BREAKING)** Remove `BCDD::Result#data_or`.
+
 ## [0.3.0] - 2023-09-26
 
 ### Added

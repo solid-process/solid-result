@@ -14,8 +14,6 @@ class BCDD::Result
       value
     end
 
-    alias data_or value_or
-
     private
 
     def name

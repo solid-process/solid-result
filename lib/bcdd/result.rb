@@ -3,6 +3,7 @@
 require_relative 'result/version'
 require_relative 'result/error'
 require_relative 'result/type'
+require_relative 'result/data'
 require_relative 'result/handler'
 require_relative 'result/failure'
 require_relative 'result/success'
@@ -78,6 +79,10 @@ class BCDD::Result
     handler.send(:outcome)
   end
 
+  def data
+    Data.new(self)
+  end
+
   def ==(other)
     self.class == other.class && type == other.type && value == other.value
   end
@@ -99,8 +104,6 @@ class BCDD::Result
   end
 
   alias eql? ==
-  alias data value
-  alias data_or value_or
   alias on_type on
 
   private
