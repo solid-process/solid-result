@@ -64,6 +64,14 @@ class BCDD::Result
 end
 
 class BCDD::Result
+  module Mixin
+    def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
+
+    def Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
+  end
+end
+
+class BCDD::Result
   class Handler
     UNDEFINED: Object
 
@@ -84,14 +92,6 @@ class BCDD::Result
     def outcome?: -> bool
     def outcome=: (Proc) -> void
     def outcome: -> untyped
-  end
-end
-
-module BCDD
-  module Resultable
-    def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
-
-    def Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
   end
 end
 

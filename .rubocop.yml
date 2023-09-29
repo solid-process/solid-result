@@ -20,7 +20,7 @@ Style/ClassAndModuleChildren:
 
 Naming/MethodName:
   Exclude:
-    - lib/bcdd/resultable.rb
+    - lib/bcdd/result/mixin.rb
 
 Minitest/MultipleAssertions:
   Enabled: false
