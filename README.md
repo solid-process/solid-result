@@ -33,7 +33,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`result.data`](#resultdata)
   - [Railway Oriented Programming](#railway-oriented-programming)
     - [`result.and_then`](#resultand_then)
-    - [`BCDD::Resultable`](#bcddresultable)
+    - [`BCDD::Result::Mixin`](#bcddresultmixin)
       - [Class example (instance methods)](#class-example-instance-methods)
       - [Module example (singleton methods)](#module-example-singleton-methods)
       - [Restrictions](#restrictions)
@@ -487,7 +487,7 @@ Divide.call(2, 2)
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-#### `BCDD::Resultable`
+#### `BCDD::Result::Mixin`
 
 It is a module that can be included/extended by any object. It adds two methods to the target object: `Success()` and `Failure()`.
 
@@ -499,7 +499,7 @@ And because of this, you can use the `#and_then` method to call methods from the
 
 ```ruby
 class Divide
-  include BCDD::Resultable
+  include BCDD::Result::Mixin
 
   attr_reader :arg1, :arg2
 
@@ -547,7 +547,7 @@ Divide.new(4, '2').call #<BCDD::Result::Failure type=:invalid_arg value="arg2 mu
 
 ```ruby
 module Divide
-  extend BCDD::Resultable
+  extend BCDD::Result::Mixin
   extend self
 
   def call(arg1, arg2)
@@ -587,7 +587,7 @@ Divide.call(4, '2') #<BCDD::Result::Failure type=:invalid_arg value="arg2 must b
 
 The unique condition for using the `#and_then` to call methods is that they must use the `Success()` and `Failure()` to produce their results.
 
-If you use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or call another `BCDD::Resultable` object, the `#and_then` will raise an error because the subjects will be different.
+If you use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or use result from another `BCDD::Result::Mixin` instance, the `#and_then` will raise an error because the subjects will be different.
 
 > **Note**: You still can use the block syntax, but all the results must be produced by the subject's `Success()` and `Failure()` methods.
 

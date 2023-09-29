@@ -2,20 +2,26 @@
 
 require 'test_helper'
 
-class BCDD::Resultable::RailwayOrientedProgrammingResultableSingletonTest < Minitest::Test
-  module Divide
-    extend BCDD::Resultable
-    extend self
+class BCDD::RailwayOrientedProgrammingResultMixinInstanceTest < Minitest::Test
+  class Divide
+    include BCDD::Result::Mixin
 
-    def call(arg1, arg2)
-      validate_numbers(arg1, arg2)
+    attr_reader :arg1, :arg2
+
+    def initialize(arg1, arg2)
+      @arg1 = arg1
+      @arg2 = arg2
+    end
+
+    def call
+      validate_numbers
         .and_then(:validate_non_zero)
         .and_then(:divide)
     end
 
     private
 
-    def validate_numbers(arg1, arg2)
+    def validate_numbers
       arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
       arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
 
@@ -33,12 +39,12 @@ class BCDD::Resultable::RailwayOrientedProgrammingResultableSingletonTest < Mini
     end
   end
 
-  test 'result halting/chaining with a module (singleton methods)' do
-    success = Divide.call(10, 2)
+  test 'result halting/chaining with an instance (instance methods)' do
+    success = Divide.new(10, 2).call
 
-    failure1 = Divide.call('10', 0)
-    failure2 = Divide.call(10, '2')
-    failure3 = Divide.call(10, 0)
+    failure1 = Divide.new('10', 0).call
+    failure2 = Divide.new(10, '2').call
+    failure3 = Divide.new(10, 0).call
 
     assert_predicate success, :success?
     assert_equal :division_completed, success.type

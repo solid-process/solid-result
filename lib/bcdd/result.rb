@@ -7,8 +7,7 @@ require_relative 'result/data'
 require_relative 'result/handler'
 require_relative 'result/failure'
 require_relative 'result/success'
-
-require_relative 'resultable'
+require_relative 'result/mixin'
 
 class BCDD::Result
   attr_accessor :unknown

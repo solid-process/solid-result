@@ -5,7 +5,7 @@ require 'test_helper'
 class BCDD::Result
   class AndThenSubjectTest < Minitest::Test
     class Base
-      include BCDD::Resultable
+      include BCDD::Result::Mixin
 
       attr_reader :arg1, :arg2
 
