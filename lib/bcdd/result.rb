@@ -99,8 +99,6 @@ class BCDD::Result
   end
 
   alias eql? ==
-  alias data value
-  alias data_or value_or
   alias on_type on
 
   private

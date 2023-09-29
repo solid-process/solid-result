@@ -29,7 +29,6 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`result.handle`](#resulthandle)
   - [Result Value](#result-value)
     - [`result.value_or`](#resultvalue_or)
-    - [`result.data_or`](#resultdata_or)
   - [Railway Oriented Programming](#railway-oriented-programming)
     - [`result.and_then`](#resultand_then)
     - [`BCDD::Resultable`](#bcddresultable)
@@ -380,10 +379,6 @@ divide(100, 0).value_or { 0 } # 0
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
-
-#### `result.data_or`
-
-`BCDD::Result#data_or` is an alias of `BCDD::Result#value_or`.
 
 ### Railway Oriented Programming
 

@@ -41,19 +41,5 @@ class BCDD::Result
 
       assert_equal '#<BCDD::Result::Success type=:ok value=2>', result.inspect
     end
-
-    test '#data' do
-      result = Success.new(type: :okay, value: 1)
-
-      assert_equal 1, result.data
-
-      assert_equal result.method(:value), result.method(:data)
-    end
-
-    test '#data_or' do
-      result = Success.new(type: :okay, value: 1)
-
-      assert_equal(1, result.data_or { 0 })
-    end
   end
 end

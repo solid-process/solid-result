@@ -96,17 +96,5 @@ module BCDD
 
       assert_equal '#<BCDD::Result type=:ok value=2>', result.inspect
     end
-
-    test '#data' do
-      result = Result.new(type: :ok, value: 2)
-
-      assert_equal result.method(:value), result.method(:data)
-    end
-
-    test '#data_or' do
-      result = Result.new(type: :ok, value: 2)
-
-      assert_equal result.method(:value_or), result.method(:data_or)
-    end
   end
 end
