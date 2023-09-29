@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.4.0] - 2023-09-28
+
 ### Added
 
 - Add `require 'result'` to define `Result` as an alias for `BCDD::Result`.
