@@ -29,6 +29,8 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`result.handle`](#resulthandle)
   - [Result Value](#result-value)
     - [`result.value_or`](#resultvalue_or)
+  - [Result Data](#result-data)
+    - [`result.data`](#resultdata)
   - [Railway Oriented Programming](#railway-oriented-programming)
     - [`result.and_then`](#resultand_then)
     - [`BCDD::Resultable`](#bcddresultable)
@@ -377,6 +379,49 @@ divide(100, 0).value_or { 0 } # 0
 ```
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+### Result Data
+
+#### `result.data`
+
+The `BCDD::Result#data` exposes the result attributes (name, type, value) directly and as a hash (`to_h`/`to_hash`) and array (`to_a`/`to_ary`).
+
+This is helpful if you need to access the result attributes generically or want to use Ruby features like splat (`*`) and double splat (`**`) operators.
+
+See the examples below to understand how to use it.
+
+```ruby
+result = BCDD::Result::Success(:ok, 1)
+
+success_data = result.data # #<BCDD::Result::Data name=:success type=:ok value=1>
+
+success_data.name  # :success
+success_data.type  # :ok
+success_data.value # 1
+
+success_data.to_h  # {:name=>:success, :type=>:ok, :value=>1}
+success_data.to_a  # [:success, :ok, 1]
+
+name, type, value = success_data
+
+[name, type, value] # [:success, :ok, 1]
+
+def print_to_ary(name, type, value)
+  puts [name, type, value].inspect
+end
+
+def print_to_hash(name:, type:, value:)
+  puts [name, type, value].inspect
+end
+
+print_to_ary(*success_data)   # [:success, :ok, 1]
+
+print_to_hash(**success_data) # [:success, :ok, 1]
+```
+
+> **NOTE:** The example above uses a success result, but the same is valid for a failure result.
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
