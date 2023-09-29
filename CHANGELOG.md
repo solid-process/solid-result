@@ -10,6 +10,8 @@
 
 ### Changed
 
+- **(BREAKING)** Rename `BCDD::Resultable` to `BCDD::Result::Mixin`.
+
 - **(BREAKING)** Change `BCDD::Result#data` to return a `BCDD::Result::Data` instead of the result value. This object exposes the result attributes (name, type, value) directly and as a hash (`to_h`/`to_hash`) and array (`to_a`/`to_ary`).
 
 ### Removed
