@@ -17,6 +17,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
 - [Ruby Version](#ruby-version)
 - [Installation](#installation)
 - [Usage](#usage)
+    - [`BCDD::Result` *versus* `Result`](#bcddresult-versus-result)
 - [Reference](#reference)
   - [Result Attributes](#result-attributes)
     - [Receiving types in `result.success?` or `result.failure?`](#receiving-types-in-resultsuccess-or-resultfailure)
@@ -85,6 +86,22 @@ BCDD::Result::Success(:ok)  #
                             # The type is mandatory and the value is optional
 BCDD::Result::Failure(:err) #
 ```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### `BCDD::Result` *versus* `Result`
+
+The `BCDD::Result` is the main module of this gem. It contains all the features, constants, and methods you will use to create and manipulate results.
+
+The `Result` is an alias of `BCDD::Result`. It was created to facilitate the use of this gem in the code. So, instead of requiring `BCDD::Result` everywhere, you can require `Result` and use it as an alias.
+
+```ruby
+require 'result'
+
+Result::Success(:ok) # <BCDD::Result::Success type=:ok value=nil>
+```
+
+All the examples in this README that use `BCDD::Result` can also be used with `Result`.
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
