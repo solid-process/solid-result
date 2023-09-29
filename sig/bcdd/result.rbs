@@ -29,6 +29,8 @@ class BCDD::Result
 
   def handle: { (BCDD::Result::Handler) -> void } -> untyped
 
+  def data: -> BCDD::Result::Data
+
   def ==: (untyped) -> bool
   def hash: -> Integer
   def inspect: -> String
@@ -112,6 +114,8 @@ class BCDD::Result
     attr_reader to_a: [Symbol, Symbol, untyped]
 
     def initialize: (BCDD::Result) -> void
+
+    def inspect: -> String
 
     alias to_ary to_a
     alias to_hash to_h

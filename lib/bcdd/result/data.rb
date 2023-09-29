@@ -12,6 +12,13 @@ class BCDD::Result::Data
     @to_a = [name, type, value]
   end
 
+  def inspect
+    format(
+      '#<%<class_name>s name=%<name>p type=%<type>p value=%<value>p>',
+      class_name: self.class.name, name: name, type: type, value: value
+    )
+  end
+
   alias to_ary to_a
   alias to_hash to_h
 end
