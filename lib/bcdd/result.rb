@@ -108,7 +108,7 @@ class BCDD::Result
   private
 
   def name
-    raise Error::NotImplemented
+    :unknown
   end
 
   def known(block)
