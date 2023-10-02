@@ -41,4 +41,12 @@ class BCDD::Result::Error < StandardError
       new("#{subject.class}##{method.name} has unsupported arity (#{method.arity}). Expected 0 or 1.")
     end
   end
+
+  class UnhandledTypes < self
+    def self.build(types:)
+      subject = types.size == 1 ? 'This was' : 'These were'
+
+      new("You must handle all cases. #{subject} not handled: #{types.map(&:inspect).join(', ')}")
+    end
+  end
 end

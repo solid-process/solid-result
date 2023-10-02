@@ -95,6 +95,28 @@ class BCDD::Result
   end
 end
 
+class BCDD::Result::Handler
+  class TypesAllowed
+    attr_reader unchecked: Set[Symbol]
+    attr_reader type_checker: BCDD::Result::Expectations::TypeChecker
+
+    def initialize: (
+      BCDD::Result::Expectations::TypeChecker,
+      ensure_all: bool
+    ) -> void
+
+    def allow?: (Array[Symbol]) -> bool
+    def allow_success?: (Array[Symbol]) -> bool
+    def allow_failure?: (Array[Symbol]) -> bool
+
+    def all_checked?: -> bool
+
+    private
+
+    def check!: (Array[Symbol], bool) -> bool
+  end
+end
+
 module BCDD::Result::Expectations
   class TypeChecker
     attr_reader result_type: Symbol
@@ -151,6 +173,14 @@ class BCDD::Result
     class WrongSubjectMethodArity < BCDD::Result::Error
       def self.build: (subject: untyped, method: ::Method)
         -> BCDD::Result::Error::WrongSubjectMethodArity
+    end
+
+    class UnhandledTypes < BCDD::Result::Error
+      def self.build: (types: Set[Symbol])
+        -> BCDD::Result::Error::UnhandledTypes
+    end
+  end
+end
 
 module BCDD::Result::Expectations
   MIXIN_METHODS: String

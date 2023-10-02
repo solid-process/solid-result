@@ -2,6 +2,8 @@
 
 class BCDD::Result
   class Handler
+    require_relative 'handler/types_allowed'
+
     UNDEFINED = ::Object.new
 
     def initialize(result, type_checker:)
