@@ -6,7 +6,7 @@ class BCDD::Result
 
     def initialize(name, type, value)
       @name = name
-      @type = type
+      @type = type.to_sym
       @value = value
     end
 
