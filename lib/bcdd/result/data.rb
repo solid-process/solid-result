@@ -2,15 +2,20 @@
 
 class BCDD::Result
   class Data
-    attr_reader :name, :type, :value, :to_h, :to_a
+    attr_reader :name, :type, :value
 
     def initialize(name, type, value)
       @name = name
       @type = type
       @value = value
+    end
 
-      @to_h = { name: name, type: type, value: value }
-      @to_a = [name, type, value]
+    def to_h
+      { name: name, type: type, value: value }
+    end
+
+    def to_a
+      [name, type, value]
     end
 
     def inspect
