@@ -151,7 +151,20 @@ class BCDD::Result
     class WrongSubjectMethodArity < BCDD::Result::Error
       def self.build: (subject: untyped, method: ::Method)
         -> BCDD::Result::Error::WrongSubjectMethodArity
-    end
+
+module BCDD::Result::Expectations
+  MIXIN_METHODS: String
+
+  def self.mixin: (
+    success: Hash[Symbol, untyped] | Array[Symbol],
+    failure: Hash[Symbol, untyped] | Array[Symbol]
+  ) -> Module
+
+  def self.evaluate: (
+    BCDD::Result::Data,
+    BCDD::Result::Expectations::Contract::Evaluator
+  ) -> BCDD::Result::Expectations::TypeChecker
+end
 
 module BCDD::Result::Expectations::Contract
   NONE: BCDD::Result::Expectations::Contract::Evaluator
