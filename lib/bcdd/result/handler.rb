@@ -4,25 +4,25 @@ class BCDD::Result
   class Handler
     UNDEFINED = ::Object.new
 
-    def initialize(result)
+    def initialize(result, type_checker:)
       @outcome = UNDEFINED
 
-      @_type = result._type
       @result = result
+      @type_checker = type_checker
     end
 
     def [](*types, &block)
       raise Error::MissingTypeArgument if types.empty?
 
-      self.outcome = block if _type.in?(types, allow_empty: false)
+      self.outcome = block if type_checker.allow?(types)
     end
 
     def failure(*types, &block)
-      self.outcome = block if result.failure? && _type.in?(types, allow_empty: true)
+      self.outcome = block if result.failure? && type_checker.allow_failure?(types)
     end
 
     def success(*types, &block)
-      self.outcome = block if result.success? && _type.in?(types, allow_empty: true)
+      self.outcome = block if result.success? && type_checker.allow_success?(types)
     end
 
     def unknown(&block)
@@ -33,7 +33,7 @@ class BCDD::Result
 
     private
 
-    attr_reader :_type, :result
+    attr_reader :result, :type_checker
 
     def outcome?
       @outcome != UNDEFINED

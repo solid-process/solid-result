@@ -2,26 +2,28 @@
 
 require_relative 'result/version'
 require_relative 'result/error'
-require_relative 'result/type'
 require_relative 'result/data'
 require_relative 'result/handler'
 require_relative 'result/failure'
 require_relative 'result/success'
 require_relative 'result/mixin'
+require_relative 'result/expectations/type_checker'
 
 class BCDD::Result
   attr_accessor :unknown
 
-  attr_reader :_type, :subject, :data
+  attr_reader :subject, :data, :type_checker
 
   protected :subject
 
-  private :unknown, :unknown=
+  private :unknown, :unknown=, :type_checker
 
   def initialize(type:, value:, subject: nil)
-    @data = Data.new(name, type, value)
-    @_type = Type.new(data.type)
+    data = Data.new(name, type, value)
+
+    @type_checker = Expectations::TypeChecker.new(data.type)
     @subject = subject
+    @data = data
 
     self.unknown = true
   end
@@ -49,15 +51,15 @@ class BCDD::Result
   def on(*types, &block)
     raise Error::MissingTypeArgument if types.empty?
 
-    tap { known(block) if _type.in?(types, allow_empty: false) }
+    tap { known(block) if type_checker.allow?(types) }
   end
 
   def on_success(*types, &block)
-    tap { known(block) if success? && _type.in?(types, allow_empty: true) }
+    tap { known(block) if success? && type_checker.allow_success?(types) }
   end
 
   def on_failure(*types, &block)
-    tap { known(block) if failure? && _type.in?(types, allow_empty: true) }
+    tap { known(block) if failure? && type_checker.allow_failure?(types) }
   end
 
   def on_unknown
@@ -75,7 +77,7 @@ class BCDD::Result
   end
 
   def handle
-    handler = Handler.new(self)
+    handler = Handler.new(self, type_checker: type_checker)
 
     yield handler
 
