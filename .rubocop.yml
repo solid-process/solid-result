@@ -18,6 +18,14 @@ Layout/ExtraSpacing:
 Style/ClassAndModuleChildren:
   Enabled: false
 
+Style/MapToSet:
+  Exclude:
+    - lib/bcdd/result/expectations/contract/for_types.rb
+
+Style/CaseEquality:
+  Exclude:
+    - lib/bcdd/result/expectations/contract/for_types_and_values.rb
+
 Naming/MethodName:
   Exclude:
     - lib/bcdd/result/mixin.rb

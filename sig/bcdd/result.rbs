@@ -152,5 +152,84 @@ class BCDD::Result
       def self.build: (subject: untyped, method: ::Method)
         -> BCDD::Result::Error::WrongSubjectMethodArity
     end
+
+module BCDD::Result::Expectations::Contract
+  NONE: BCDD::Result::Expectations::Contract::Evaluator
+
+  ToEnsure: ^(Hash[Symbol, untyped] | Array[Symbol])
+    -> BCDD::Result::Expectations::Contract::Evaluator
+
+  def self.new: (
+    success: Hash[Symbol, untyped] | Array[Symbol],
+    failure: Hash[Symbol, untyped] | Array[Symbol]
+  ) -> BCDD::Result::Expectations::Contract::Evaluator
+end
+
+module BCDD::Result::Expectations::Contract
+  module Error
+    class UnexpectedType < BCDD::Result::Error
+      def self.build: (type: Symbol, allowed_types: Set[Symbol])
+          -> BCDD::Result::Expectations::Contract::Error::UnexpectedType
+    end
+
+    class UnexpectedValue < ::BCDD::Result::Error
+      def self.build: (type: Symbol, value: untyped, allowed_value: untyped)
+        -> BCDD::Result::Expectations::Contract::Error::UnexpectedValue
+    end
+  end
+end
+
+module BCDD::Result::Expectations::Contract
+  module Interface
+    def allowed_types: -> Set[Symbol]
+
+    def type?: (Symbol) -> bool
+
+    def type!: (Symbol) -> Symbol
+
+    def type_and_value!: (BCDD::Result::Data) -> void
+  end
+end
+
+module BCDD::Result::Expectations::Contract
+  module Disabled
+    EMPTY_SET: Set[Symbol]
+
+    extend Interface
+  end
+end
+
+module BCDD::Result::Expectations::Contract
+  class ForTypes
+    include Interface
+
+    def initialize: (Array[Symbol]) -> void
+  end
+end
+
+module BCDD::Result::Expectations::Contract
+  class ForTypesAndValues
+    include Interface
+
+    def initialize: (Hash[Symbol, untyped]) -> void
+  end
+end
+
+module BCDD::Result::Expectations::Contract
+  class Evaluator
+    include Interface
+
+    attr_reader allowed_types: Set[Symbol]
+    attr_reader success: BCDD::Result::Expectations::Contract::Interface
+    attr_reader failure: BCDD::Result::Expectations::Contract::Interface
+
+    def initialize: (
+      BCDD::Result::Expectations::Contract::Interface,
+      BCDD::Result::Expectations::Contract::Interface
+    ) -> void
+
+    private
+
+    def for: (BCDD::Result::Data) -> BCDD::Result::Expectations::Contract::Interface
   end
 end
