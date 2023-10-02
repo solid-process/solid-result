@@ -79,7 +79,7 @@ class BCDD::Result
   end
 
   def data
-    Data.new(self)
+    Data.new(name, type, value)
   end
 
   def ==(other)

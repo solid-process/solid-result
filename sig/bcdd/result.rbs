@@ -113,7 +113,7 @@ class BCDD::Result
     attr_reader to_h: Hash[Symbol, untyped]
     attr_reader to_a: [Symbol, Symbol, untyped]
 
-    def initialize: (BCDD::Result) -> void
+    def initialize: (Symbol, Symbol, untyped) -> void
 
     def inspect: -> String
 

@@ -4,10 +4,10 @@ class BCDD::Result
   class Data
     attr_reader :name, :type, :value, :to_h, :to_a
 
-    def initialize(result)
-      @name = result.send(:name)
-      @type = result.type
-      @value = result.value
+    def initialize(name, type, value)
+      @name = name
+      @type = type
+      @value = value
 
       @to_h = { name: name, type: type, value: value }
       @to_a = [name, type, value]
