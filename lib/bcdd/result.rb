@@ -12,13 +12,14 @@ require_relative 'result/mixin'
 class BCDD::Result
   attr_accessor :unknown
 
-  attr_reader :_type, :value, :subject
+  attr_reader :_type, :value, :subject, :data
 
   protected :subject
 
   private :unknown, :unknown=
 
   def initialize(type:, value:, subject: nil)
+    @data = Data.new(name, type, value)
     @_type = Type.new(type)
     @value = value
     @subject = subject
@@ -76,10 +77,6 @@ class BCDD::Result
     yield handler
 
     handler.send(:outcome)
-  end
-
-  def data
-    Data.new(name, type, value)
   end
 
   def ==(other)

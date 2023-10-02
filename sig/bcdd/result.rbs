@@ -7,6 +7,7 @@ end
 class BCDD::Result
   private attr_accessor unknown: bool
 
+  attr_reader data: BCDD::Result::Data
   attr_reader _type: BCDD::Result::Type
   attr_reader value: untyped
   attr_reader subject: untyped
@@ -28,8 +29,6 @@ class BCDD::Result
   def and_then: (?Symbol method_name) { (untyped) -> untyped } -> BCDD::Result
 
   def handle: { (BCDD::Result::Handler) -> void } -> untyped
-
-  def data: -> BCDD::Result::Data
 
   def ==: (untyped) -> bool
   def hash: -> Integer
