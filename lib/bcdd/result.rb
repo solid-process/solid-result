@@ -12,7 +12,7 @@ require_relative 'result/mixin'
 class BCDD::Result
   attr_accessor :unknown
 
-  attr_reader :_type, :value, :subject, :data
+  attr_reader :_type, :subject, :data
 
   protected :subject
 
@@ -20,15 +20,18 @@ class BCDD::Result
 
   def initialize(type:, value:, subject: nil)
     @data = Data.new(name, type, value)
-    @_type = Type.new(type)
-    @value = value
+    @_type = Type.new(data.type)
     @subject = subject
 
     self.unknown = true
   end
 
   def type
-    _type.to_sym
+    data.type
+  end
+
+  def value
+    data.value
   end
 
   def success?(_type = nil)
