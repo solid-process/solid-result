@@ -32,6 +32,7 @@ Style/Lambda:
 Naming/MethodName:
   Exclude:
     - lib/bcdd/result/mixin.rb
+    - lib/bcdd/result/expectations.rb
 
 Minitest/MultipleAssertions:
   Enabled: false

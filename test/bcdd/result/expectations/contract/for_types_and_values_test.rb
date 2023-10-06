@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-module BCDD::Result::Expectations
+class BCDD::Result::Expectations
   class ContractForTypesAndValuesTest < Minitest::Test
     test '#type?' do
       contract = Contract::ForTypesAndValues.new(

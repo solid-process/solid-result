@@ -172,7 +172,7 @@ class BCDD::Result::Handler
   end
 end
 
-module BCDD::Result::Expectations
+class BCDD::Result::Expectations
   MIXIN_METHODS: String
 
   def self.mixin: (
@@ -184,6 +184,21 @@ module BCDD::Result::Expectations
     BCDD::Result::Data,
     BCDD::Result::Expectations::Contract::Evaluator
   ) -> BCDD::Result::Expectations::TypeChecker
+
+  def initialize: (
+    ?subject: untyped,
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol],
+    ?contract: BCDD::Result::Expectations::Contract::Evaluator
+  ) -> void
+
+  def Success: (Symbol, ?untyped) -> BCDD::Result::Success
+  def Failure: (Symbol, ?untyped) -> BCDD::Result::Failure
+
+  private
+
+  attr_reader subject: untyped
+  attr_reader contract: BCDD::Result::Expectations::Contract::Evaluator
 end
 
 module BCDD::Result::Expectations::Contract
@@ -198,7 +213,7 @@ module BCDD::Result::Expectations::Contract
   ) -> BCDD::Result::Expectations::Contract::Evaluator
 end
 
-module BCDD::Result::Expectations
+class BCDD::Result::Expectations
   class TypeChecker
     attr_reader result_type: Symbol
     attr_reader expectations: BCDD::Result::Expectations::Contract::Evaluator
@@ -246,7 +261,6 @@ module BCDD::Result::Expectations::Contract
 
     def type_and_value!: (BCDD::Result::Data) -> void
 
-    def ==: (untyped) -> bool
     def !=: (untyped) -> bool
   end
 end

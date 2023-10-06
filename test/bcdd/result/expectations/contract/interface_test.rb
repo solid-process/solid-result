@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-module BCDD::Result::Expectations
+class BCDD::Result::Expectations
   class ContractInterfaceTest < Minitest::Test
     test '#allowed_types' do
       object = Object.new.extend(Contract::Interface)
