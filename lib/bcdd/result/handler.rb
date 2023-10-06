@@ -2,12 +2,12 @@
 
 class BCDD::Result
   class Handler
-    require_relative 'handler/types_allowed'
+    require_relative 'handler/allowed_types'
 
     UNDEFINED = ::Object.new
 
     def initialize(result, type_checker:)
-      @types_allowed = TypesAllowed.new(type_checker)
+      @allowed_types = AllowedTypes.new(type_checker)
 
       @outcome = UNDEFINED
 
@@ -17,15 +17,15 @@ class BCDD::Result
     def [](*types, &block)
       raise Error::MissingTypeArgument if types.empty?
 
-      self.outcome = block if types_allowed.allow?(types)
+      self.outcome = block if allowed_types.allow?(types)
     end
 
     def success(*types, &block)
-      self.outcome = block if types_allowed.allow_success?(types) && result.success?
+      self.outcome = block if allowed_types.allow_success?(types) && result.success?
     end
 
     def failure(*types, &block)
-      self.outcome = block if types_allowed.allow_failure?(types) && result.failure?
+      self.outcome = block if allowed_types.allow_failure?(types) && result.failure?
     end
 
     def unknown(&block)
@@ -36,7 +36,7 @@ class BCDD::Result
 
     private
 
-    attr_reader :result, :types_allowed
+    attr_reader :result, :allowed_types
 
     def outcome?
       @outcome != UNDEFINED
@@ -47,7 +47,7 @@ class BCDD::Result
     end
 
     def outcome
-      types_allowed.all_checked? or raise Error::UnhandledTypes.build(types: types_allowed.unchecked)
+      allowed_types.all_checked? or raise Error::UnhandledTypes.build(types: allowed_types.unchecked)
 
       @outcome if outcome?
     end

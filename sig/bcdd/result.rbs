@@ -143,7 +143,7 @@ class BCDD::Result
     private
 
     attr_reader result: BCDD::Result
-    attr_reader types_allowed: BCDD::Result::Handler::TypesAllowed
+    attr_reader allowed_types: BCDD::Result::Handler::AllowedTypes
 
     def outcome?: -> bool
     def outcome=: (Proc) -> void
@@ -152,7 +152,7 @@ class BCDD::Result
 end
 
 class BCDD::Result::Handler
-  class TypesAllowed
+  class AllowedTypes
     attr_reader unchecked: Set[Symbol]
     attr_reader type_checker: BCDD::Result::Expectations::TypeChecker
 

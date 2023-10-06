@@ -2,7 +2,7 @@
 
 class BCDD::Result
   class Handler
-    class TypesAllowed
+    class AllowedTypes
       attr_reader :unchecked, :type_checker
 
       def initialize(type_checker)
