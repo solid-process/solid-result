@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class BCDD::PatternMatchingDeconstructTest < Minitest::Test
-  Divide = lambda do |arg1, arg2|
+  Divide = ->(arg1, arg2) do
     arg1.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg1 must be numeric')
     arg2.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg2 must be numeric')
 

@@ -7,7 +7,7 @@ require_relative 'result/handler'
 require_relative 'result/failure'
 require_relative 'result/success'
 require_relative 'result/mixin'
-require_relative 'result/expectations/type_checker'
+require_relative 'result/expectations'
 
 class BCDD::Result
   attr_accessor :unknown
@@ -18,10 +18,10 @@ class BCDD::Result
 
   private :unknown, :unknown=, :type_checker
 
-  def initialize(type:, value:, subject: nil)
+  def initialize(type:, value:, subject: nil, expectations: nil)
     data = Data.new(name, type, value)
 
-    @type_checker = Expectations::TypeChecker.new(data.type)
+    @type_checker = Expectations.evaluate(data, expectations)
     @subject = subject
     @data = data
 

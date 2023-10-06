@@ -14,7 +14,10 @@ module BCDD::Result::Expectations::Contract
     end
 
     def type?(type)
-      success.type?(type) || failure.type?(type)
+      return success.type?(type) if success != Disabled
+      return failure.type?(type) if failure != Disabled
+
+      Disabled.type?(type)
     end
 
     def type!(type)

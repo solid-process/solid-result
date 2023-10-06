@@ -26,9 +26,21 @@ Style/CaseEquality:
   Exclude:
     - lib/bcdd/result/expectations/contract/for_types_and_values.rb
 
+Style/Lambda:
+  EnforcedStyle: literal
+
 Naming/MethodName:
   Exclude:
     - lib/bcdd/result/mixin.rb
 
 Minitest/MultipleAssertions:
   Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - bcdd-result.gemspec
+    - test/**/*.rb
+
+Metrics/ClassLength:
+  Exclude:
+    - test/**/*.rb

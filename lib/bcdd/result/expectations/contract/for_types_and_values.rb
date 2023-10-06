@@ -25,12 +25,13 @@ module BCDD::Result::Expectations::Contract
     def type_and_value!(data)
       type = data.type
       value = data.value
-
       allowed_value = @types_and_values[type!(type)]
 
       return value if allowed_value === value
 
-      raise Error::UnexpectedValue.build(type: type, value: value, allowed_value: allowed_value)
+      raise Error::UnexpectedValue.build(type: type, value: value)
+    rescue NoMatchingPatternError
+      raise Error::UnexpectedValue.build(type: data.type, value: data.value)
     end
   end
 end

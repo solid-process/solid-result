@@ -10,7 +10,11 @@ module BCDD::Result::Expectations::Contract
 
   NONE = Evaluator.new(Disabled, Disabled).freeze
 
-  ToEnsure = ->(spec) { (spec.is_a?.call(Hash) ? ForTypesAndValues : ForTypes).new(spec) }.freeze
+  ToEnsure = ->(spec) do
+    return Disabled if spec.nil?
+
+    spec.is_a?(Hash) ? ForTypesAndValues.new(spec) : ForTypes.new(Array(spec))
+  end
 
   def self.new(success:, failure:)
     Evaluator.new(ToEnsure[success], ToEnsure[failure])

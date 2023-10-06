@@ -19,5 +19,7 @@ module BCDD::Result::Expectations::Contract
     end
 
     def self.type_and_value!(_data); end
+
+    private_constant :EMPTY_SET
   end
 end

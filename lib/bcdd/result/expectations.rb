@@ -6,15 +6,15 @@ module BCDD::Result::Expectations
 
   MIXIN_METHODS = <<~RUBY
     def Success(type, value = nil)
-      ::BCDD::Result::Success.new(type: type, value: value, subject: subject, expectations: EXPECTATIONS)
+      ::BCDD::Result::Success.new(type: type, value: value, subject: self, expectations: EXPECTATIONS)
     end
 
     def Failure(type, value = nil)
-      ::BCDD::Result::Failure.new(type: type, value: value, subject: subject, expectations: EXPECTATIONS)
+      ::BCDD::Result::Failure.new(type: type, value: value, subject: self, expectations: EXPECTATIONS)
     end
   RUBY
 
-  def self.mixin(success:, failure:)
+  def self.mixin(success: nil, failure: nil)
     contract = Contract.new(success: success, failure: failure).freeze
 
     mod = Module.new

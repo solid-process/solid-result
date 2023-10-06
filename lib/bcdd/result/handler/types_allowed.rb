@@ -5,10 +5,12 @@ class BCDD::Result
     class TypesAllowed
       attr_reader :unchecked, :type_checker
 
-      def initialize(type_checker, ensure_all:)
+      def initialize(type_checker)
         @type_checker = type_checker
 
-        @unchecked = type_checker.expectations.allowed_types.dup if ensure_all
+        @expectations = type_checker.expectations
+
+        @unchecked = @expectations.allowed_types.dup
       end
 
       def allow?(types)
@@ -16,21 +18,25 @@ class BCDD::Result
       end
 
       def allow_success?(types)
+        unchecked.subtract(@expectations.success.allowed_types) if types.empty?
+
         check!(types, type_checker.allow_success?(types))
       end
 
       def allow_failure?(types)
+        unchecked.subtract(@expectations.failure.allowed_types) if types.empty?
+
         check!(types, type_checker.allow_failure?(types))
       end
 
       def all_checked?
-        unchecked.nil? || unchecked.empty?
+        unchecked.empty?
       end
 
       private
 
       def check!(types, checked)
-        unchecked.subtract(types) if checked && !all_checked?
+        unchecked.subtract(types) unless all_checked?
 
         checked
       end

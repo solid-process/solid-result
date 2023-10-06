@@ -9,8 +9,8 @@ module BCDD::Result::Expectations::Contract
     end
 
     class UnexpectedValue < ::BCDD::Result::Error
-      def self.build(type:, value:, allowed_value:)
-        new("data #{value.inspect} is not allowed for type :#{type}. Allowed data: #{allowed_value.inspect}")
+      def self.build(type:, value:)
+        new("value #{value.inspect} is not allowed for :#{type} type")
       end
     end
   end

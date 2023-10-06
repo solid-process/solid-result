@@ -11,7 +11,12 @@ class BCDD::Result
   attr_reader data: BCDD::Result::Data
   attr_reader subject: untyped
 
-  def initialize: (type: Symbol, value: untyped, ?subject: untyped) -> void
+  def initialize: (
+    type: Symbol,
+    value: untyped,
+    ?subject: untyped,
+    ?expectations: BCDD::Result::Expectations::Contract::Evaluator
+  ) -> void
 
   def type: -> Symbol
   def value: -> untyped
@@ -28,7 +33,7 @@ class BCDD::Result
 
   def and_then: (?Symbol method_name) { (untyped) -> untyped } -> BCDD::Result
 
-  def handle: { (BCDD::Result::Handler) -> void } -> untyped
+  def handle: () { (BCDD::Result::Handler) -> void } -> untyped
 
   def ==: (untyped) -> bool
   def hash: -> Integer
@@ -67,69 +72,6 @@ class BCDD::Result
     def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
 
     def Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
-  end
-end
-
-class BCDD::Result
-  class Handler
-    UNDEFINED: Object
-
-    def initialize: (BCDD::Result, type_checker: Expectations::TypeChecker)
-      -> void
-
-    def []: (*Symbol) { (untyped, Symbol) -> void } -> untyped
-    def failure: (*Symbol) { (untyped, Symbol) -> void } -> untyped
-    def success: (*Symbol) { (untyped, Symbol) -> void } -> untyped
-    def unknown: () { (untyped, Symbol) -> void } -> untyped
-
-    alias type []
-
-    private
-
-    attr_reader result: BCDD::Result
-    attr_reader type_checker: BCDD::Result::Expectations::TypeChecker
-
-    def outcome?: -> bool
-    def outcome=: (Proc) -> void
-    def outcome: -> untyped
-  end
-end
-
-class BCDD::Result::Handler
-  class TypesAllowed
-    attr_reader unchecked: Set[Symbol]
-    attr_reader type_checker: BCDD::Result::Expectations::TypeChecker
-
-    def initialize: (
-      BCDD::Result::Expectations::TypeChecker,
-      ensure_all: bool
-    ) -> void
-
-    def allow?: (Array[Symbol]) -> bool
-    def allow_success?: (Array[Symbol]) -> bool
-    def allow_failure?: (Array[Symbol]) -> bool
-
-    def all_checked?: -> bool
-
-    private
-
-    def check!: (Array[Symbol], bool) -> bool
-  end
-end
-
-module BCDD::Result::Expectations
-  class TypeChecker
-    attr_reader result_type: Symbol
-
-    def initialize: (Symbol) -> void
-
-    def allow?: (Array[Symbol]) -> bool
-    def allow_success?: (Array[Symbol]) -> bool
-    def allow_failure?: (Array[Symbol]) -> bool
-
-    private
-
-    def validate: (Array[Symbol], allow_empty: bool) -> bool
   end
 end
 
@@ -182,12 +124,60 @@ class BCDD::Result
   end
 end
 
+class BCDD::Result
+  class Handler
+    UNDEFINED: Object
+
+    def initialize: (
+      BCDD::Result,
+      type_checker: BCDD::Result::Expectations::TypeChecker
+    ) -> void
+
+    def []: (*Symbol) { (untyped, Symbol) -> void } -> untyped
+    def failure: (*Symbol) { (untyped, Symbol) -> void } -> untyped
+    def success: (*Symbol) { (untyped, Symbol) -> void } -> untyped
+    def unknown: () { (untyped, Symbol) -> void } -> untyped
+
+    alias type []
+
+    private
+
+    attr_reader result: BCDD::Result
+    attr_reader types_allowed: BCDD::Result::Handler::TypesAllowed
+
+    def outcome?: -> bool
+    def outcome=: (Proc) -> void
+    def outcome: -> untyped
+  end
+end
+
+class BCDD::Result::Handler
+  class TypesAllowed
+    attr_reader unchecked: Set[Symbol]
+    attr_reader type_checker: BCDD::Result::Expectations::TypeChecker
+
+    def initialize: (
+      BCDD::Result::Expectations::TypeChecker
+    ) -> void
+
+    def allow?: (Array[Symbol]) -> bool
+    def allow_success?: (Array[Symbol]) -> bool
+    def allow_failure?: (Array[Symbol]) -> bool
+
+    def all_checked?: -> bool
+
+    private
+
+    def check!: (Array[Symbol], bool) -> bool
+  end
+end
+
 module BCDD::Result::Expectations
   MIXIN_METHODS: String
 
   def self.mixin: (
-    success: Hash[Symbol, untyped] | Array[Symbol],
-    failure: Hash[Symbol, untyped] | Array[Symbol]
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol]
   ) -> Module
 
   def self.evaluate: (
@@ -208,6 +198,30 @@ module BCDD::Result::Expectations::Contract
   ) -> BCDD::Result::Expectations::Contract::Evaluator
 end
 
+module BCDD::Result::Expectations
+  class TypeChecker
+    attr_reader result_type: Symbol
+    attr_reader expectations: BCDD::Result::Expectations::Contract::Evaluator
+
+    def initialize: (
+      Symbol,
+      expectations: BCDD::Result::Expectations::Contract::Evaluator
+    ) -> void
+
+    def allow?: (Array[Symbol]) -> bool
+    def allow_success?: (Array[Symbol]) -> bool
+    def allow_failure?: (Array[Symbol]) -> bool
+
+    private
+
+    def validate: (
+      Array[Symbol],
+      expected: BCDD::Result::Expectations::Contract::Interface,
+      allow_empty: bool
+    ) -> bool
+  end
+end
+
 module BCDD::Result::Expectations::Contract
   module Error
     class UnexpectedType < BCDD::Result::Error
@@ -216,7 +230,7 @@ module BCDD::Result::Expectations::Contract
     end
 
     class UnexpectedValue < ::BCDD::Result::Error
-      def self.build: (type: Symbol, value: untyped, allowed_value: untyped)
+      def self.build: (type: Symbol, value: untyped)
         -> BCDD::Result::Expectations::Contract::Error::UnexpectedValue
     end
   end
@@ -231,14 +245,17 @@ module BCDD::Result::Expectations::Contract
     def type!: (Symbol) -> Symbol
 
     def type_and_value!: (BCDD::Result::Data) -> void
+
+    def ==: (untyped) -> bool
+    def !=: (untyped) -> bool
   end
 end
 
 module BCDD::Result::Expectations::Contract
   module Disabled
-    EMPTY_SET: Set[Symbol]
-
     extend Interface
+
+    EMPTY_SET: Set[Symbol]
   end
 end
 
