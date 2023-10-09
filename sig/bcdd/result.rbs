@@ -253,6 +253,8 @@ end
 
 module BCDD::Result::Expectations::Contract
   module Interface
+    def ==: (BCDD::Result::Expectations::Contract::Interface) -> bool
+
     def allowed_types: -> Set[Symbol]
 
     def type?: (Symbol) -> bool

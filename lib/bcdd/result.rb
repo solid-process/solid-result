@@ -55,11 +55,11 @@ class BCDD::Result
   end
 
   def on_success(*types, &block)
-    tap { known(block) if success? && type_checker.allow_success?(types) }
+    tap { known(block) if type_checker.allow_success?(types) && success? }
   end
 
   def on_failure(*types, &block)
-    tap { known(block) if failure? && type_checker.allow_failure?(types) }
+    tap { known(block) if type_checker.allow_failure?(types) && failure? }
   end
 
   def on_unknown
