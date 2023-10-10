@@ -41,17 +41,17 @@ class BCDD::Result::ExpectationsWithoutSubjectSuccessAndFailureTypesWithTypeAndV
   test 'valid execution' do
     result = Divide.new.call(10, 2)
 
+    assert result.success?(:division_completed)
+
     assert_predicate result, :success?
-    assert_equal :division_completed, result.type
-    assert_equal 5, result.value
 
     # --
 
     result = Divide.new.call(10, 0)
 
+    assert result.failure?(:division_by_zero)
+
     assert_predicate result, :failure?
-    assert_equal :division_by_zero, result.type
-    assert_equal 'arg2 must not be zero', result.value
   end
 
   test 'valid hooks' do
@@ -114,6 +114,28 @@ class BCDD::Result::ExpectationsWithoutSubjectSuccessAndFailureTypesWithTypeAndV
     end
 
     assert_equal 0, decrement
+  end
+
+  test 'invalid result type' do
+    err1 = assert_raises(BCDD::Result::Expectations::Contract::Error::UnexpectedType) do
+      Divide.new.call(10, 2).success?(:invalid_arg)
+    end
+
+    assert_equal(
+      'type :invalid_arg is not allowed. Allowed types: :numbers, :division_completed',
+      err1.message
+    )
+
+    # ---
+
+    err2 = assert_raises(BCDD::Result::Expectations::Contract::Error::UnexpectedType) do
+      Divide.new.call(10, '2').failure?(:numbers)
+    end
+
+    assert_equal(
+      'type :numbers is not allowed. Allowed types: :invalid_arg, :division_by_zero',
+      err2.message
+    )
   end
 
   test 'invalid hooks' do

@@ -38,6 +38,8 @@ class BCDD::Result::ExpectationsWithoutSubjectFailureTypesTest < Minitest::Test
     result = Divide.new.call(10, '2')
 
     assert result.failure?(:invalid_arg)
+
+    assert_predicate result, :failure?
   end
 
   test 'valid hooks' do
@@ -70,6 +72,17 @@ class BCDD::Result::ExpectationsWithoutSubjectFailureTypesTest < Minitest::Test
     end
 
     assert_equal 2, increment
+  end
+
+  test 'invalid result type' do
+    err = assert_raises(BCDD::Result::Expectations::Contract::Error::UnexpectedType) do
+      Divide.new.call(10, '2').failure?(:numbers)
+    end
+
+    assert_equal(
+      'type :numbers is not allowed. Allowed types: :invalid_arg, :division_by_zero',
+      err.message
+    )
   end
 
   test 'invalid hooks' do

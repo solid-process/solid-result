@@ -7,7 +7,7 @@ class BCDD::Result
     end
 
     def failure?(type = nil)
-      type.nil? || type == self.type
+      type.nil? || type_checker.allow_failure?([type])
     end
 
     def value_or

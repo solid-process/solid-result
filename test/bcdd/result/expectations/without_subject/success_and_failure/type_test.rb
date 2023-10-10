@@ -38,17 +38,17 @@ class BCDD::Result::ExpectationsWithoutSubjectSuccessAndFailureTypeTest < Minite
   test 'valid execution' do
     result = Divide.new.call(10, 2)
 
+    assert result.success?(:ok)
+
     assert_predicate result, :success?
-    assert_equal :ok, result.type
-    assert_equal 5, result.value
 
     # --
 
     result = Divide.new.call(10, 0)
 
+    assert result.failure?(:err)
+
     assert_predicate result, :failure?
-    assert_equal :err, result.type
-    assert_equal 'arg2 must not be zero', result.value
   end
 
   test 'valid hooks' do
@@ -111,6 +111,28 @@ class BCDD::Result::ExpectationsWithoutSubjectSuccessAndFailureTypeTest < Minite
     end
 
     assert_equal 0, decrement
+  end
+
+  test 'invalid result type' do
+    err1 = assert_raises(BCDD::Result::Expectations::Contract::Error::UnexpectedType) do
+      Divide.new.call(10, 2).success?(:division_completed)
+    end
+
+    assert_equal(
+      'type :division_completed is not allowed. Allowed types: :ok',
+      err1.message
+    )
+
+    # ---
+
+    err2 = assert_raises(BCDD::Result::Expectations::Contract::Error::UnexpectedType) do
+      Divide.new.call(10, '2').failure?(:division_by_zero)
+    end
+
+    assert_equal(
+      'type :division_by_zero is not allowed. Allowed types: :err',
+      err2.message
+    )
   end
 
   test 'invalid hooks' do
