@@ -61,7 +61,7 @@ module BCDD
     test '#deconstruct_keys' do
       result = Result.new(type: :ok, value: 1)
 
-      assert_raises(BCDD::Result::Error::NotImplemented) { result.deconstruct_keys([]) }
+      assert_equal({ unknown: { ok: 1 } }, result.deconstruct_keys([]))
     end
 
     test '#==' do

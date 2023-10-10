@@ -38,12 +38,26 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
   - [Railway Oriented Programming](#railway-oriented-programming)
     - [`result.and_then`](#resultand_then)
     - [`BCDD::Result::Mixin`](#bcddresultmixin)
-      - [Class example (instance methods)](#class-example-instance-methods)
-      - [Module example (singleton methods)](#module-example-singleton-methods)
+      - [Class example (Instance Methods)](#class-example-instance-methods)
+      - [Module example (Singleton Methods)](#module-example-singleton-methods)
       - [Restrictions](#restrictions)
   - [Pattern Matching](#pattern-matching)
     - [`Array`/`Find` patterns](#arrayfind-patterns)
     - [`Hash` patterns](#hash-patterns)
+    - [BCDD::Result::Expectations](#bcddresultexpectations)
+  - [`BCDD::Result::Expectations`](#bcddresultexpectations-1)
+    - [Standalone *versus* Mixin mode](#standalone-versus-mixin-mode)
+    - [Type checking - Result Hooks](#type-checking---result-hooks)
+      - [`#success?` and `#failure?`](#success-and-failure)
+      - [`#on` and `#on_type`](#on-and-on_type)
+      - [`#on_success` and `#on_failure`](#on_success-and-on_failure)
+      - [`#handle`](#handle)
+    - [Type checking - Result Creation](#type-checking---result-creation)
+      - [Mixin mode](#mixin-mode)
+      - [Standalone mode](#standalone-mode)
+    - [Value checking - Result Creation](#value-checking---result-creation)
+      - [Success()](#success)
+      - [Failure()](#failure)
 - [About](#about)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -371,9 +385,9 @@ end
 
 ### Result Value
 
-The most simple way to get the result value is by calling `BCDD::Result#value` or `BCDD::Result#data`.
+The most simple way to get the result value is by calling `BCDD::Result#value`.
 
-But sometimes you need to get the value of a successful result or a default value if it is a failure. In this case, you can use `BCDD::Result#value_or` or `BCDD::Result#data_or`.
+But sometimes you need to get the value of a successful result or a default value if it is a failure. In this case, you can use `BCDD::Result#value_or`.
 
 #### `result.value_or`
 
@@ -509,13 +523,11 @@ Divide.call(2, 2)
 
 #### `BCDD::Result::Mixin`
 
-It is a module that can be included/extended by any object. It adds two methods to the target object: `Success()` and `Failure()`.
+It is a module that can be included/extended by any object. It adds two methods to the target object: `Success()` and `Failure()`. The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the first ones will use the target object (who received the include/extend) as the result's subject.
 
-The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the first ones will use the target object as the result's subject.
+And because of this, you can use the `#and_then` method to call methods from the result's subject.
 
-And because of this, you can use the `#and_then` method to call methods from the target object (result's subject).
-
-##### Class example (instance methods)
+##### Class example (Instance Methods)
 
 ```ruby
 class Divide
@@ -563,7 +575,7 @@ Divide.new('4', 2).call #<BCDD::Result::Failure type=:invalid_arg value="arg1 mu
 Divide.new(4, '2').call #<BCDD::Result::Failure type=:invalid_arg value="arg2 must be numeric">
 ```
 
-##### Module example (singleton methods)
+##### Module example (Singleton Methods)
 
 ```ruby
 module Divide
@@ -670,6 +682,391 @@ in { success: { division_completed: value } } then puts value
 end
 
 # The code above will print: arg1 must be numeric
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### BCDD::Result::Expectations
+
+I'd like you to please read the following section to understand how to use this feature.
+
+But if you are using Ruby >= 3.0, you can use the `in` operator to use the pattern matching to validate the result's value.
+
+```ruby
+module Divide
+  extend BCDD::Result::Expectations.mixin(
+    success: {
+      numbers:            ->(value) { value in [Numeric, Numeric] },
+      division_completed: ->(value) { value in (Integer | Float) }
+    },
+    failure: { invalid_arg: String, division_by_zero: String }
+  )
+
+  def self.call(arg1, arg2)
+    arg1.is_a?(Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    arg2.zero? and return Failure(:division_by_zero, 'arg2 must not be zero')
+
+    Success(:division_completed, arg1 / arg2)
+  end
+end
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+### `BCDD::Result::Expectations`
+
+This feature lets you define contracts for your results' types and values. There are two ways to use it: the standalone (`BCDD::Result::Expectations.new`) and the mixin (`BCDD::Result::Expectations.mixin`) mode.
+
+It was designed to ensure all the aspects of the result's type and value. So, an error will be raised if you try to create or handle a result with an unexpected type or value.
+
+#### Standalone *versus* Mixin mode
+
+The _**standalone mode**_ creates an object that knows how to produce and validate results based on the defined expectations. Look at the example below:
+
+```ruby
+module Divide
+  Expected = BCDD::Result::Expectations.new(
+    success: %i[numbers division_completed],
+    failure: %i[invalid_arg division_by_zero]
+  )
+
+  def self.call(arg1, arg2)
+    arg1.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg2 must be numeric')
+
+    arg2.zero? and return Expected::Failure(:division_by_zero, 'arg2 must not be zero')
+
+    Expected::Success(:division_completed, arg1 / arg2)
+  end
+end
+```
+
+In the code above, we define a constant `Divide::Expected`. And because of this (it is a constant), we can use it inside and outside the module.
+
+Look what happens if you try to create a result without one of the expected types.
+
+```ruby
+Divide::Expected::Success(:ok)
+# type :ok is not allowed. Allowed types: :numbers, :division_completed
+# (BCDD::Result::Expectations::Error::UnexpectedType)
+
+Divide::Expected::Failure(:err)
+# type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero
+# (BCDD::Result::Expectations::Error::UnexpectedType)
+```
+
+The _**mixin mode**_ is similar to `BCDD::Result::Mixin`, but it also defines the expectations for the result's types and values.
+
+```ruby
+class Divide
+  include BCDD::Result::Expectations.mixin(
+    success: %i[numbers division_completed],
+    failure: %i[invalid_arg division_by_zero]
+  )
+
+  def call(arg1, arg2)
+    validate_numbers(arg1, arg2)
+      .and_then(:validate_non_zero)
+      .and_then(:divide)
+  end
+
+  private
+
+  def validate_numbers(arg1, arg2)
+    arg1.is_a?(Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    Success(:numbers, [arg1, arg2])
+  end
+
+  def validate_non_zero(numbers)
+    return Success(:numbers, numbers) unless numbers.last.zero?
+
+    Failure(:division_by_zero, 'arg2 must not be zero')
+  end
+
+  def divide((number1, number2))
+    Success(:division_completed, number1 / number2)
+  end
+end
+```
+
+This mode also defines an `Expected` constant to be used inside and outside the module.
+
+> **PROTIP:**
+> You can use the `Expected` constant to mock the result's type and value in your tests. As they will have the exact expectations, your tests will check if the result clients are handling the result correctly.
+
+Now that you know the two modes, let's understand how expectations can be beneficial and powerful for defining contracts.
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### Type checking - Result Hooks
+
+The `BCDD::Result::Expectations` will check if the result's type is valid. This checking will be performed in all the methods that rely on the result's type, like `#success?`, `#failure?`, `#on`, `#on_type`, `#on_success`, `#on_failure`, `#handle`.
+
+##### `#success?` and `#failure?`
+
+When you check whether a result is a success or failure, `BCDD::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
+
+**Success example:**
+
+```ruby
+result = Divide.new.call(10, 2)
+
+result.success?                      # true
+result.success?(:numbers)            # false
+result.success?(:division_completed) # true
+
+result.success?(:ok)
+# type :ok is not allowed. Allowed types: :numbers, :division_completed
+# (BCDD::Result::Expectations::Error::UnexpectedType)
+```
+
+**Failure example:**
+
+```ruby
+result = Divide.new.call(10, '2')
+
+result.failure?                    # true
+result.failure?(:invalid_arg)      # true
+result.failure?(:division_by_zero) # false
+
+result.failure?(:err)
+# type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero
+# (BCDD::Result::Expectations::Error::UnexpectedType)
+```
+
+*PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+##### `#on` and `#on_type`
+
+If you use `#on` or `#on_type` to perform a block, `BCDD::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
+
+```ruby
+result = Divide.new.call(10, 2)
+
+result
+  .on(:invalid_arg, :division_by_zero) { |msg| puts msg }
+  .on(:division_completed) { |number| puts "The result is #{number}" }
+
+# The code above will print 'The result is 5'
+
+result.on(:number) { |_| :this_type_does_not_exist }
+# type :number is not allowed. Allowed types: :numbers, :division_completed, :invalid_arg, :division_by_zero
+# (BCDD::Result::Expectations::Error::UnexpectedType)
+```
+
+*PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+##### `#on_success` and `#on_failure`
+
+If you use `#on_success` or `#on_failure` to perform a block, `BCDD::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
+
+```ruby
+result = Divide.new.call(10, '2')
+
+result
+  .on_failure(:invalid_arg, :division_by_zero) { |msg| puts msg }
+  .on_success(:division_completed) { |number| puts "The result is #{number}" }
+
+result
+  .on_success { |number| puts "The result is #{number}" }
+  .on_failure { |msg| puts msg }
+
+# Both codes above will print 'arg2 must be numeric'
+
+result.on_success(:ok) { |_| :this_type_does_not_exist }
+# type :ok is not allowed. Allowed types: :numbers, :division_completed
+# (BCDD::Result::Expectations::Error::UnexpectedType)
+
+result.on_failure(:err) { |_| :this_type_does_not_exist }
+# type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero
+# (BCDD::Result::Expectations::Error::UnexpectedType)
+```
+
+*PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+##### `#handle`
+
+The `BCDD::Result::Expectations` will also be applied on all the handlers defined by the `#handle` method/block.
+
+```ruby
+result = Divide.call(10, 2)
+
+result.handle do |on|
+  on.type(:ok) { |_| :this_type_does_not_exist }
+end
+# type :ok is not allowed. Allowed types: :numbers, :division_completed, :invalid_arg, :division_by_zero (BCDD::Result::Expectations::Error::UnexpectedType)
+
+result.handle do |on|
+  on.success(:ok) { |_| :this_type_does_not_exist }
+end
+# type :ok is not allowed. Allowed types: :numbers, :division_completed (BCDD::Result::Expectations::Error::UnexpectedType)
+
+result.handle do |on|
+  on.failure(:err) { |_| :this_type_does_not_exist }
+end
+# type :err is not allowed. Allowed types: :numbers, :division_completed (BCDD::Result::Expectations::Error::UnexpectedType)
+```
+
+*PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### Type checking - Result Creation
+
+The `BCDD::Result::Expectations` will be used on the result creation `Success()` and `Failure()` methods. So, when the result type is valid/expected, the result will be created. Otherwise, an error will be raised.
+
+This works for both modes (standalone and mixin).
+
+##### Mixin mode
+
+```ruby
+module Divide
+  extend BCDD::Result::Expectations.mixin(success: :ok, failure: :err)
+
+  def self.call(arg1, arg2)
+    arg1.is_a?(Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    arg2.zero? and return Failure(:division_by_zero, 'arg2 must not be zero')
+
+    Success(:division_completed, arg1 / arg2)
+  end
+end
+
+Divide.call('4', 2)
+# type :invalid_arg is not allowed. Allowed types: :err
+# (BCDD::Result::Expectations::Error::UnexpectedType)
+
+Divide.call(4, 2)
+# type :division_completed is not allowed. Allowed types: :ok
+# (BCDD::Result::Expectations::Error::UnexpectedType)
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+##### Standalone mode
+
+```ruby
+module Divide
+  Expected = BCDD::Result::Expectations.new(success: :ok, failure: :err)
+
+  def self.call(arg1, arg2)
+    arg1.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg2 must be numeric')
+
+    arg2.zero? and return Expected::Failure(:division_by_zero, 'arg2 must not be zero')
+
+    Expected::Success(:division_completed, arg1 / arg2)
+  end
+end
+
+Divide.call('4', 2)
+# type :invalid_arg is not allowed. Allowed types: :err
+# (BCDD::Result::Expectations::Error::UnexpectedType)
+
+Divide.call(4, 2)
+# type :division_completed is not allowed. Allowed types: :ok
+# (BCDD::Result::Expectations::Error::UnexpectedType)
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### Value checking - Result Creation
+
+The `Result::Expectations` supports types of validations. The first is the type checking only, and the second is the type and value checking.
+
+To define expectations for your result's values, you must declare a Hash with the type as the key and the value as the value. A value validator is any object that responds to `#===` (case equality operator).
+
+**Mixin mode:**
+
+```ruby
+module Divide
+  extend BCDD::Result::Expectations.mixin(
+    success: {
+      numbers: ->(value) { value.is_a?(Array) && value.size == 2 && value.all?(Numeric) },
+      division_completed: Numeric
+    },
+    failure: {
+      invalid_arg: String,
+      division_by_zero: String
+    }
+  )
+
+  def self.call(arg1, arg2)
+    arg1.is_a?(Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    arg2.zero? and return Failure(:division_by_zero, 'arg2 must not be zero')
+
+    Success(:division_completed, arg1 / arg2)
+  end
+end
+```
+
+**Standalone mode:**
+
+```ruby
+module Divide
+  Expected = BCDD::Result::Expectations.new(
+    success: {
+      numbers: ->(value) { value.is_a?(Array) && value.size == 2 && value.all?(Numeric) },
+      division_completed: Numeric
+    },
+    failure: {
+      invalid_arg: String,
+      division_by_zero: String
+    }
+  )
+
+  def self.call(arg1, arg2)
+    arg1.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg2 must be numeric')
+
+    arg2.zero? and return Expected::Failure(:division_by_zero, 'arg2 must not be zero')
+
+    Expected::Success(:division_completed, arg1 / arg2)
+  end
+end
+```
+
+The value validation will only be performed through the methods `Success()` and `Failure()`.
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+##### Success()
+
+```ruby
+Divide::Expected::Success(:ok)
+# type :ok is not allowed. Allowed types: :numbers, :division_completed (BCDD::Result::Expectations::Error::UnexpectedType)
+
+Divide::Expected::Success(:numbers, [1])
+# value [1] is not allowed for :numbers type (BCDD::Result::Expectations::Error::UnexpectedValue)
+
+Divide::Expected::Success(:division_completed, '2')
+# value "2" is not allowed for :division_completed type (BCDD::Result::Expectations::Error::UnexpectedValue)
+```
+
+##### Failure()
+
+```ruby
+Divide::Expected::Failure(:err)
+# type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero (BCDD::Result::Expectations::Error::UnexpectedType)
+
+Divide::Expected::Failure(:invalid_arg, :arg1_must_be_numeric)
+# value :arg1_must_be_numeric is not allowed for :invalid_arg type (BCDD::Result::Expectations::Error::UnexpectedValue)
+
+Divide::Expected::Failure(:division_by_zero, msg: 'arg2 must not be zero')
+# value {:msg=>"arg2 must not be zero"} is not allowed for :division_by_zero type (BCDD::Result::Expectations::Error::UnexpectedValue)
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>

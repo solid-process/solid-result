@@ -1,5 +1,77 @@
 ## [Unreleased]
 
+- Add `BCDD::Result::Expectations` to define contracts for your results. There are two ways to use it: the standalone (`BCDD::Result::Expectations.new`) and the mixin (`BCDD::Result::Expectations.mixin`) mode.
+
+The main difference is that the mixin mode will use the target object (who receives the include/extend) as the result's subject (like the `BCDD::Result::Mixin` does), while the standalone mode won't.
+
+**Standalone mode:**
+
+```ruby
+module Divide
+  Expected = BCDD::Result::Expectations.new(
+    success: {
+      numbers: ->(value) { value.is_a?(Array) && value.size == 2 && value.all?(Numeric) },
+      division_completed: Numeric
+    },
+    failure: {
+      invalid_arg: String,
+      division_by_zero: String
+    }
+  )
+
+  def self.call(arg1, arg2)
+    arg1.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg2 must be numeric')
+
+    arg2.zero? and return Expected::Failure(:division_by_zero, 'arg2 must not be zero')
+
+    Expected::Success(:division_completed, arg1 / arg2)
+  end
+end
+```
+
+**Mixin mode:**
+
+```ruby
+class Divide
+  include BCDD::Result::Expectations.mixin(
+    success: {
+      numbers: ->(value) { value.is_a?(Array) && value.size == 2 && value.all?(Numeric) },
+      division_completed: Numeric
+    },
+    failure: {
+      invalid_arg: String,
+      division_by_zero: String
+    }
+  )
+
+  def call(arg1, arg2)
+    validate_numbers(arg1, arg2)
+      .and_then(:validate_non_zero)
+      .and_then(:divide)
+  end
+
+  private
+
+  def validate_numbers(arg1, arg2)
+    arg1.is_a?(Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    Success(:numbers, [arg1, arg2])
+  end
+
+  def validate_non_zero(numbers)
+    return Success(:numbers, numbers) unless numbers.last.zero?
+
+    Failure(:division_by_zero, 'arg2 must not be zero')
+  end
+
+  def divide((number1, number2))
+    Success(:division_completed, number1 / number2)
+  end
+end
+```
+
 ## [0.4.0] - 2023-09-28
 
 ### Added
