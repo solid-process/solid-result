@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.5.0] - 2023-10-09
+
 - Add `BCDD::Result::Expectations` to define contracts for your results. There are two ways to use it: the standalone (`BCDD::Result::Expectations.new`) and the mixin (`BCDD::Result::Expectations.mixin`) mode.
 
 The main difference is that the mixin mode will use the target object (who receives the include/extend) as the result's subject (like the `BCDD::Result::Mixin` does), while the standalone mode won't.
