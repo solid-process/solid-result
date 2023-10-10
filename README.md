@@ -3,7 +3,7 @@
   <p align="center"><i>Empower Ruby apps with a pragmatic use of Railway Oriented Programming.</i></p>
   <p align="center">
     <img src="https://img.shields.io/badge/ruby->%3D%202.7.0-ruby.svg?colorA=99004d&colorB=cc0066" alt="Ruby">
-    <img src="https://badge.fury.io/rb/bcdd-result.svg" alt="bcdd-result gem version" height="18">
+    <a href="https://rubygems.org/gems/bcdd-result"><img src="https://badge.fury.io/rb/bcdd-result.svg" alt="bcdd-result gem version" height="18"></a>
   </p>
 </p>
 
