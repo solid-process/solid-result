@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module BCDD::Result::Expectations::Contract
-  class ForTypes
-    include Interface
+class BCDD::Result::Expectations
+  class Contract::ForTypes
+    include Contract::Interface
 
     attr_reader :allowed_types
 

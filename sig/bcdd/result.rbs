@@ -237,17 +237,15 @@ class BCDD::Result::Expectations
   end
 end
 
-module BCDD::Result::Expectations::Contract
-  module Error
-    class UnexpectedType < BCDD::Result::Error
-      def self.build: (type: Symbol, allowed_types: Set[Symbol])
-          -> BCDD::Result::Expectations::Contract::Error::UnexpectedType
-    end
+class BCDD::Result::Expectations::Error < BCDD::Result::Error
+  class UnexpectedType < BCDD::Result::Expectations::Error
+    def self.build: (type: Symbol, allowed_types: Set[Symbol])
+        -> BCDD::Result::Expectations::Error::UnexpectedType
+  end
 
-    class UnexpectedValue < ::BCDD::Result::Error
-      def self.build: (type: Symbol, value: untyped)
-        -> BCDD::Result::Expectations::Contract::Error::UnexpectedValue
-    end
+  class UnexpectedValue < BCDD::Result::Expectations::Error
+    def self.build: (type: Symbol, value: untyped)
+      -> BCDD::Result::Expectations::Error::UnexpectedValue
   end
 end
 

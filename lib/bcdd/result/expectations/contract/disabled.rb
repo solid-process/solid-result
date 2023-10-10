@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module BCDD::Result::Expectations::Contract
-  module Disabled
-    extend Interface
+class BCDD::Result::Expectations
+  module Contract::Disabled
+    extend Contract::Interface
 
     EMPTY_SET = Set.new.freeze
 

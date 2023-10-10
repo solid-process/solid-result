@@ -25,7 +25,7 @@ class BCDD::Result::ExpectationsWithoutSubjectSuccessTypeAndValuePatterMatchingE
   end
 
   test 'unexpected value error' do
-    err = assert_raises(BCDD::Result::Expectations::Contract::Error::UnexpectedValue) do
+    err = assert_raises(BCDD::Result::Expectations::Error::UnexpectedValue) do
       Divide.new.call(10, 2)
     end
 

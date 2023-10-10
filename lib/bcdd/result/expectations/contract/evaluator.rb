@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module BCDD::Result::Expectations::Contract
-  class Evaluator
-    include Interface
+class BCDD::Result::Expectations
+  class Contract::Evaluator
+    include Contract::Interface
 
     attr_reader :allowed_types, :success, :failure
 
@@ -14,9 +14,12 @@ module BCDD::Result::Expectations::Contract
     end
 
     def type?(type)
-      return Disabled.type?(type) if success == Disabled && failure == Disabled
+      success_disabled = success == Contract::Disabled
+      failure_disabled = failure == Contract::Disabled
 
-      (success != Disabled && success.type?(type)) || (failure != Disabled && failure.type?(type))
+      return Contract::Disabled.type?(type) if success_disabled && failure_disabled
+
+      (!success_disabled && success.type?(type)) || (!failure_disabled && failure.type?(type))
     end
 
     def type!(type)
@@ -33,7 +36,7 @@ module BCDD::Result::Expectations::Contract
 
     def for(data)
       case data.name
-      when :unknown then Disabled
+      when :unknown then Contract::Disabled
       when :success then success
       else failure
       end

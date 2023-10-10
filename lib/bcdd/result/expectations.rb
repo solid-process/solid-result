@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class BCDD::Result::Expectations
+  require_relative 'expectations/error'
   require_relative 'expectations/contract'
   require_relative 'expectations/type_checker'
 

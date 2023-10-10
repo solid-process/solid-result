@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-module BCDD::Result::Expectations::Contract
-  class ForTypesAndValues
-    include Interface
+class BCDD::Result::Expectations
+  class Contract::ForTypesAndValues
+    include Contract::Interface
 
     def initialize(types_and_values)
       @types_and_values = types_and_values.transform_keys(&:to_sym)
 
-      @types_contract = ForTypes.new(@types_and_values.keys)
+      @types_contract = Contract::ForTypes.new(@types_and_values.keys)
     end
 
     def allowed_types
