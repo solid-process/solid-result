@@ -75,6 +75,18 @@ class BCDD::Result
       def Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
     end
 
+    module Addons
+      module Continuable
+        include BCDD::Result::Mixin::Methods
+
+        def Continue: (untyped) -> BCDD::Result::Success
+      end
+
+      OPTIONS: Hash[Symbol, Module]
+
+      def self.options: (Array[Symbol]) -> Array[Module]
+    end
+  end
 
   def self.mixin: (?with: Array[Symbol]) -> Module
 end
