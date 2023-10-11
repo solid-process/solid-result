@@ -37,11 +37,12 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`result.data`](#resultdata)
   - [Railway Oriented Programming](#railway-oriented-programming)
     - [`result.and_then`](#resultand_then)
-    - [`BCDD::Result::Mixin`](#bcddresultmixin)
+    - [`BCDD::Result.mixin`](#bcddresultmixin)
       - [Class example (Instance Methods)](#class-example-instance-methods)
       - [Module example (Singleton Methods)](#module-example-singleton-methods)
-      - [Dependency Injection](#dependency-injection)
       - [Important Requirement](#important-requirement)
+      - [Dependency Injection](#dependency-injection)
+      - [Addons](#addons)
   - [Pattern Matching](#pattern-matching)
     - [`Array`/`Find` patterns](#arrayfind-patterns)
     - [`Hash` patterns](#hash-patterns)
@@ -59,6 +60,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [Value checking - Result Creation](#value-checking---result-creation)
       - [Success()](#success)
       - [Failure()](#failure)
+    - [`BCDD::Result::Expectations.mixin` Addons](#bcddresultexpectationsmixin-addons)
 - [About](#about)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -522,9 +524,9 @@ Divide.call(2, 2)
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-#### `BCDD::Result::Mixin`
+#### `BCDD::Result.mixin`
 
-It is a module that can be included/extended by any object. It adds two methods to the target object: `Success()` and `Failure()`. The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the first ones will use the target object (who received the include/extend) as the result's subject.
+This method produces a module that can be included/extended by any object. It adds two methods to the target object: `Success()` and `Failure()`. The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the first ones will use the target object (who received the include/extend) as the result's subject.
 
 And because of this, you can use the `#and_then` method to call methods from the result's subject.
 
@@ -617,6 +619,16 @@ Divide.call(4, '2') #<BCDD::Result::Failure type=:invalid_arg value="arg2 must b
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
+##### Important Requirement
+
+The unique condition for using the `#and_then` to call methods is that they must use the `Success()` and `Failure()` to produce their results.
+
+If you use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or use result from another `BCDD::Result::Mixin` instance, the `#and_then` will raise an error because the subjects will be different.
+
+> **Note**: You still can use the block syntax, but all the results must be produced by the subject's `Success()` and `Failure()` methods.
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
 ##### Dependency Injection
 
 The `BCDD::Result#and_then` accepts a second argument that will be used to share a value with the subject's method. To receive this argument, the subject's method must have an arity of two, where the first argument will be the result value and the second will be the shared value.
@@ -674,13 +686,44 @@ Divide.call(4, 2, logger: Logger.new(IO::NULL))
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-##### Important Requirement
+##### Addons
 
-The unique condition for using the `#and_then` to call methods is that they must use the `Success()` and `Failure()` to produce their results.
+The `BCDD::Result.mixin` also accepts the `with:` argument. It is a hash that will be used to define the methods that will be added to the target object.
 
-If you use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or use result from another `BCDD::Result::Mixin` instance, the `#and_then` will raise an error because the subjects will be different.
+**Continue**
 
-> **Note**: You still can use the block syntax, but all the results must be produced by the subject's `Success()` and `Failure()` methods.
+This addon will create the `Continue(value)` method, which will know how to produce a `Success(:continued, value)`. It is useful when you want to perform a sequence of operations but want to avoid returning a specific result for each step.
+
+```ruby
+module Divide
+  extend self, BCDD::Result.mixin(with: :Continue)
+
+  def call(arg1, arg2)
+    validate_numbers(arg1, arg2)
+      .and_then(:validate_non_zero)
+      .and_then(:divide)
+  end
+
+  private
+
+  def validate_numbers(arg1, arg2)
+    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    Continue([arg1, arg2])
+  end
+
+  def validate_non_zero(numbers)
+    return Continue(numbers) unless numbers.last.zero?
+
+    Failure(:division_by_zero, 'arg2 must not be zero')
+  end
+
+  def divide((number1, number2))
+    Success(:division_completed, number1 / number2)
+  end
+end
+```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
@@ -1126,6 +1169,61 @@ Divide::Expected::Failure(:invalid_arg, :arg1_must_be_numeric)
 
 Divide::Expected::Failure(:division_by_zero, msg: 'arg2 must not be zero')
 # value {:msg=>"arg2 must not be zero"} is not allowed for :division_by_zero type (BCDD::Result::Expectations::Error::UnexpectedValue)
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### `BCDD::Result::Expectations.mixin` Addons
+
+The `BCDD::Result::Expectations.mixin` also accepts the `with:` argument. It is a hash that will be used to define the methods that will be added to the target object.
+
+**Continue**
+
+It is similar to `BCDD::Result.mixin(with: :Continue)`, the key difference is that the `Continue(value)` will be ignored by the expectations. This is extremely useful when you want to use `Continue(value)` to chain operations, but you don't want to declare N success types in the expectations.
+
+```ruby
+class Divide
+  include BCDD::Result::Expectations.mixin(
+    with: :Continue,
+    success: :division_completed,
+    failure: %i[invalid_arg division_by_zero]
+  )
+
+  def call(arg1, arg2)
+    validate_numbers(arg1, arg2)
+      .and_then(:validate_non_zero)
+      .and_then(:divide)
+  end
+
+  private
+
+  def validate_numbers(arg1, arg2)
+    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    Continue([arg1, arg2])
+  end
+
+  def validate_non_zero(numbers)
+    return Continue(numbers) unless numbers.last.zero?
+
+    Failure(:division_by_zero, 'arg2 must not be zero')
+  end
+
+  def divide((number1, number2))
+    Success(:division_completed, number1 / number2)
+  end
+end
+
+result = Divide.new.call(4,2)
+# => #<BCDD::Result::Success type=:division_completed value=2>
+
+# The example below shows an error because the :ok type is not allowed.
+# But look at the allowed types have only one type (:division_completed).
+# This is because the :continued type is ignored by the expectations.
+#
+result.success?(:ok)
+# type :ok is not allowed. Allowed types: :division_completed (BCDD::Result::Expectations::Error::UnexpectedType)
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
