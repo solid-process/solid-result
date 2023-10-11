@@ -4,7 +4,7 @@ require 'test_helper'
 
 class BCDD::RailwayOrientedProgrammingResultMixinInstanceTest < Minitest::Test
   class Divide
-    include BCDD::Result::Mixin
+    include BCDD::Result.mixin
 
     attr_reader :arg1, :arg2
 

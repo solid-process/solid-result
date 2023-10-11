@@ -5,7 +5,7 @@ require 'test_helper'
 class BCDD::Result
   class AndThenArgumentErrorTest < Minitest::Test
     module SomeModule
-      extend BCDD::Result::Mixin
+      extend BCDD::Result.mixin
 
       def self.call(arg1, arg2)
         Success(:ok, arg1 + arg2)

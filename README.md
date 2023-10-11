@@ -532,7 +532,7 @@ And because of this, you can use the `#and_then` method to call methods from the
 
 ```ruby
 class Divide
-  include BCDD::Result::Mixin
+  include BCDD::Result.mixin
 
   attr_reader :arg1, :arg2
 
@@ -580,7 +580,7 @@ Divide.new(4, '2').call #<BCDD::Result::Failure type=:invalid_arg value="arg2 mu
 
 ```ruby
 module Divide
-  extend self, BCDD::Result::Mixin
+  extend self, BCDD::Result.mixin
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
@@ -625,7 +625,7 @@ The `BCDD::Result#and_then` accepts a second argument that will be used to share
 require 'logger'
 
 module Divide
-  extend self, BCDD::Result::Mixin
+  extend self, BCDD::Result.mixin
 
   def call(arg1, arg2, logger: ::Logger.new(STDOUT))
     validate_numbers(arg1, arg2)

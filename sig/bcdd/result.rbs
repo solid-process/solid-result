@@ -69,10 +69,14 @@ end
 
 class BCDD::Result
   module Mixin
-    def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
+    module Methods
+      def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
 
-    def Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
-  end
+      def Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
+    end
+
+
+  def self.mixin: (?with: Array[Symbol]) -> Module
 end
 
 class BCDD::Result
