@@ -66,10 +66,12 @@ class BCDD::Result
     tap { yield(value, type) if unknown }
   end
 
-  def and_then(method_name = nil)
+  def and_then(method_name = nil, context = nil)
     return self if failure?
 
-    return call_subject_method(method_name) if method_name
+    method_name && block_given? and raise ArgumentError, 'method_name and block are mutually exclusive'
+
+    return call_subject_method(method_name, context) if method_name
 
     result = yield(value)
 
@@ -119,13 +121,14 @@ class BCDD::Result
     block.call(value, type)
   end
 
-  def call_subject_method(method_name)
+  def call_subject_method(method_name, context)
     method = subject.method(method_name)
 
     result =
       case method.arity
       when 0 then subject.send(method_name)
       when 1 then subject.send(method_name, value)
+      when 2 then subject.send(method_name, value, context)
       else raise Error::WrongSubjectMethodArity.build(subject: subject, method: method)
       end
 

@@ -31,7 +31,7 @@ class BCDD::Result
   def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
   def on_unknown: () { (untyped, Symbol) -> void } -> BCDD::Result
 
-  def and_then: (?Symbol method_name) { (untyped) -> untyped } -> BCDD::Result
+  def and_then: (?Symbol method_name, ?untyped context) ?{ (untyped) -> untyped } -> BCDD::Result
 
   def handle: () { (BCDD::Result::Handler) -> void } -> untyped
 
@@ -49,7 +49,7 @@ class BCDD::Result
 
   def name: -> Symbol
   def known: (Proc) -> untyped
-  def call_subject_method: (Symbol) -> BCDD::Result
+  def call_subject_method: (Symbol, untyped) -> BCDD::Result
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result
 end
 

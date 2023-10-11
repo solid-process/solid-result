@@ -3,7 +3,7 @@
 require 'test_helper'
 
 class BCDD::Result
-  class AndThenSubjectTest < Minitest::Test
+  class AndThenWithSubjectTest < Minitest::Test
     class Base
       include BCDD::Result::Mixin
 
@@ -49,12 +49,26 @@ class BCDD::Result
       end
     end
 
+    class SubjectMethodArityWithArityTwo < Base
+      def call
+        context = { number: 3 }
+
+        validate_numbers
+          .and_then { Success(:ok, [arg1, arg2]) }
+          .and_then(:add, context)
+      end
+
+      def add((number1, number2), context)
+        Success(:number, number1 + number2 + context.fetch(:number))
+      end
+    end
+
     class WrongSubjectMethodArity < Base
       def call
         validate_numbers.and_then(:add)
       end
 
-      def add(number1, number2)
+      def add(number1, number2, _number3)
         Success(:number, number1 + number2)
       end
     end
@@ -115,12 +129,20 @@ class BCDD::Result
       assert_equal(3, result.value)
     end
 
-    test '#and_then calling a subject method with wrong arity (> 1)' do
+    test '#and_then calling a subject method (arity 2)' do
+      result = SubjectMethodArityWithArityTwo.new(1, 2).call
+
+      assert_predicate(result, :success?)
+      assert_equal(:number, result.type)
+      assert_equal(6, result.value)
+    end
+
+    test '#and_then calling a subject method with wrong arity (> 2)' do
       wrong_subject_method_arity = WrongSubjectMethodArity.new(1, 2)
 
       error = assert_raises(BCDD::Result::Error::WrongSubjectMethodArity) { wrong_subject_method_arity.call }
 
-      expected_message = "#{WrongSubjectMethodArity}#add has unsupported arity (2). Expected 0 or 1."
+      expected_message = "#{WrongSubjectMethodArity}#add has unsupported arity (3). Expected 0, 1 or 2."
 
       assert_equal(expected_message, error.message)
     end

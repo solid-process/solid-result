@@ -61,14 +61,16 @@ class BCDD::Result::ErrorTest < Minitest::Test
   test '::Error::WrongSubjectMethodArity.build' do
     assert BCDD::Result::Error::WrongSubjectMethodArity < BCDD::Result::Error
 
-    subject = 'string'
+    subject = Object.new
 
-    method = subject.method(:tr)
+    def subject.do_something(_arg1, _arg2, _arg3); end
+
+    method = subject.method(:do_something)
 
     error_input = { subject: subject, method: method }
 
     assert_equal(
-      'String#tr has unsupported arity (2). Expected 0 or 1.',
+      'Object#do_something has unsupported arity (3). Expected 0, 1 or 2.',
       BCDD::Result::Error::WrongSubjectMethodArity.build(**error_input).message
     )
   end
