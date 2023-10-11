@@ -1,30 +1,18 @@
 # frozen_string_literal: true
 
 class BCDD::Result::Expectations
+  require_relative 'expectations/mixin'
   require_relative 'expectations/error'
   require_relative 'expectations/contract'
   require_relative 'expectations/type_checker'
 
-  MIXIN_METHODS = <<~RUBY
-    def Success(...)
-      _expected_result::Success(...)
-    end
+  def self.mixin(success: nil, failure: nil, with: nil)
+    addons = Mixin::Addons.options(with)
 
-    def Failure(...)
-      _expected_result::Failure(...)
-    end
-
-    private
-
-    def _expected_result
-      @_expected_result ||= Expected.with(subject: self)
-    end
-  RUBY
-
-  def self.mixin(success: nil, failure: nil)
     mod = Module.new
     mod.const_set(:Expected, new(success: success, failure: failure).freeze)
-    mod.module_eval(MIXIN_METHODS)
+    mod.module_eval(Mixin::METHODS)
+    mod.send(:include, *addons) unless addons.empty?
     mod
   end
 

@@ -18,10 +18,6 @@ Layout/ExtraSpacing:
 Style/ClassAndModuleChildren:
   Enabled: false
 
-Style/MapToSet:
-  Exclude:
-    - lib/bcdd/result/expectations/contract/for_types.rb
-
 Style/CaseEquality:
   Exclude:
     - lib/bcdd/result/expectations/contract/for_types_and_values.rb
@@ -29,13 +25,21 @@ Style/CaseEquality:
 Style/Lambda:
   EnforcedStyle: literal
 
+Style/MapToSet:
+  Exclude:
+    - lib/bcdd/result/expectations/contract/for_types.rb
+
+Style/MixinGrouping:
+  Enabled: false
+
+Style/AccessModifierDeclarations:
+  Enabled: false
+
 Naming/MethodName:
   Exclude:
     - lib/bcdd/result/mixin.rb
     - lib/bcdd/result/expectations.rb
-
-Minitest/MultipleAssertions:
-  Enabled: false
+    - lib/bcdd/result/expectations/mixin.rb
 
 Metrics/BlockLength:
   Exclude:
@@ -45,3 +49,6 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Exclude:
     - test/**/*.rb
+
+Minitest/MultipleAssertions:
+  Enabled: false

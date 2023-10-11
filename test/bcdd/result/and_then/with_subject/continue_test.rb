@@ -2,9 +2,9 @@
 
 require 'test_helper'
 
-class BCDD::RailwayOrientedProgrammingResultMixinSingletonTest < Minitest::Test
-  module Divide
-    extend self, BCDD::Result.mixin(with: :Continue)
+class BCDD::Result::AndThenWithSubjectContinueTest < Minitest::Test
+  class Divide
+    include BCDD::Result.mixin(with: :Continue)
 
     def call(arg1, arg2)
       validate_numbers(arg1, arg2)
@@ -15,8 +15,8 @@ class BCDD::RailwayOrientedProgrammingResultMixinSingletonTest < Minitest::Test
     private
 
     def validate_numbers(arg1, arg2)
-      arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
-      arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+      arg1.is_a?(Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+      arg2.is_a?(Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
 
       Continue([arg1, arg2])
     end
@@ -32,12 +32,12 @@ class BCDD::RailwayOrientedProgrammingResultMixinSingletonTest < Minitest::Test
     end
   end
 
-  test 'result halting/chaining with a module (singleton methods)' do
-    success = Divide.call(10, 2)
+  test 'method chaining using Continue' do
+    success = Divide.new.call(10, 2)
 
-    failure1 = Divide.call('10', 0)
-    failure2 = Divide.call(10, '2')
-    failure3 = Divide.call(10, 0)
+    failure1 = Divide.new.call('10', 0)
+    failure2 = Divide.new.call(10, '2')
+    failure3 = Divide.new.call(10, 0)
 
     assert_predicate success, :success?
     assert_equal :division_completed, success.type

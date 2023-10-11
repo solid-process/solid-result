@@ -2,9 +2,19 @@
 
 ### Added
 
+- Add `BCDD::Result.mixin` to be included or extended in any object. It will add `Success()` and `Failure()` to the target object (the object who receives the include/extend).
+
+- Add `BCDD::Result.mixin(with: :Continue)`. This addon will add a `Continue(value)` method to the target object to produce a `Success(:continued, value)` result.
+
+- Add `BCDD::Result::Expectations.mixin(with: :Continue)`, it is similar to `BCDD::Result.mixin(with: :Continue)`, the key difference is that the `Continue(value)` will be ignored by the expectations. This is extremely useful when you want to use `Continue(value)` to chain operations, but you don't want to declare N success types in the expectations.
+
 - Increase the arity of `BCDD::Result#and_then`. Now, it can receive a second argument (a value to be injected and shared with the subject's method).
 
 - Increase the arity (maximum of 2) for the methods called through `BCDD::Result#and_then`. The second argument is the value injected by `BCDD::Result#and_then`.
+
+### Changed
+
+- **(BREAKING)** Make `BCDD::Result::Mixin` be a private constant. The `BCDD::Result.mixin` method is the new way to use it.
 
 ## [0.5.0] - 2023-10-09
 
@@ -160,8 +170,7 @@ end
 
 ```ruby
 module Divide
-  extend BCDD::Resultable
-  extend self
+  extend self, BCDD::Resultable
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)

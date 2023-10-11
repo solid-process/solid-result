@@ -69,10 +69,26 @@ end
 
 class BCDD::Result
   module Mixin
-    def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
+    module Methods
+      def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
 
-    def Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
+      def Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
+    end
+
+    module Addons
+      module Continuable
+        include BCDD::Result::Mixin::Methods
+
+        private def Continue: (untyped) -> BCDD::Result::Success
+      end
+
+      OPTIONS: Hash[Symbol, Module]
+
+      def self.options: (Array[Symbol]) -> Array[Module]
+    end
   end
+
+  def self.mixin: (?with: Array[Symbol]) -> Module
 end
 
 class BCDD::Result
@@ -199,6 +215,20 @@ class BCDD::Result::Expectations
 
   attr_reader subject: untyped
   attr_reader contract: BCDD::Result::Expectations::Contract::Evaluator
+end
+
+module BCDD::Result::Expectations::Mixin
+  METHODS: String
+
+  module Addons
+    module Continuable
+      private def Continue: (untyped) -> BCDD::Result::Success
+    end
+
+    OPTIONS: Hash[Symbol, Module]
+
+    def self.options: (Array[Symbol]) -> Array[Module]
+  end
 end
 
 module BCDD::Result::Expectations::Contract
