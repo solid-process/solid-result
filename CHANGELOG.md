@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.6.0] - 2023-10-11
+
 ### Added
 
 - Add `BCDD::Result.mixin` to be included or extended in any object. It will add `Success()` and `Failure()` to the target object (the object who receives the include/extend).
