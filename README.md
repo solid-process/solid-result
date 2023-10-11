@@ -40,7 +40,8 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`BCDD::Result::Mixin`](#bcddresultmixin)
       - [Class example (Instance Methods)](#class-example-instance-methods)
       - [Module example (Singleton Methods)](#module-example-singleton-methods)
-      - [Restrictions](#restrictions)
+      - [Dependency Injection](#dependency-injection)
+      - [Important Requirement](#important-requirement)
   - [Pattern Matching](#pattern-matching)
     - [`Array`/`Find` patterns](#arrayfind-patterns)
     - [`Hash` patterns](#hash-patterns)
@@ -579,8 +580,7 @@ Divide.new(4, '2').call #<BCDD::Result::Failure type=:invalid_arg value="arg2 mu
 
 ```ruby
 module Divide
-  extend BCDD::Result::Mixin
-  extend self
+  extend self, BCDD::Result::Mixin
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
@@ -615,7 +615,66 @@ Divide.call('4', 2) #<BCDD::Result::Failure type=:invalid_arg value="arg1 must b
 Divide.call(4, '2') #<BCDD::Result::Failure type=:invalid_arg value="arg2 must be numeric">
 ```
 
-##### Restrictions
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+##### Dependency Injection
+
+The `BCDD::Result#and_then` accepts a second argument that will be used to share a value with the subject's method. To receive this argument, the subject's method must have an arity of two, where the first argument will be the result value and the second will be the shared value.
+
+```ruby
+require 'logger'
+
+module Divide
+  extend self, BCDD::Result::Mixin
+
+  def call(arg1, arg2, logger: ::Logger.new(STDOUT))
+    validate_numbers(arg1, arg2)
+      .and_then(:validate_non_zero, logger)
+      .and_then(:divide, logger)
+  end
+
+  private
+
+  def validate_numbers(arg1, arg2)
+    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    Success(:ok, [arg1, arg2])
+  end
+
+  def validate_non_zero(numbers, logger)
+    if numbers.last.zero?
+      logger.error('arg2 must not be zero')
+
+      Failure(:division_by_zero, 'arg2 must not be zero')
+    else
+      logger.info('The numbers are valid')
+
+      Success(:ok, numbers)
+    end
+  end
+
+  def divide((number1, number2), logger)
+    division = number1 / number2
+
+    logger.info("The division result is #{division}")
+
+    Success(:division_completed, division)
+  end
+end
+
+Divide.call(4, 2)
+# I, [2023-10-11T00:08:05.546237 #18139]  INFO -- : The numbers are valid
+# I, [2023-10-11T00:08:05.546337 #18139]  INFO -- : The division result is 2
+#=> #<BCDD::Result::Success type=:division_completed value=2>
+
+Divide.call(4, 2, logger: Logger.new(IO::NULL))
+#=> #<BCDD::Result::Success type=:division_completed value=2>
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+##### Important Requirement
 
 The unique condition for using the `#and_then` to call methods is that they must use the `Success()` and `Failure()` to produce their results.
 
