@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+### Added
+
+- Increase the arity of `BCDD::Result#and_then`. Now, it can receive a second argument (a value to be injected and shared with the subject's method).
+
+- Increase the arity (maximum of 2) for the methods called through `BCDD::Result#and_then`. The second argument is the value injected by `BCDD::Result#and_then`.
+
 ## [0.5.0] - 2023-10-09
 
 ### Added

@@ -38,7 +38,7 @@ class BCDD::Result::Error < StandardError
 
   class WrongSubjectMethodArity < self
     def self.build(subject:, method:)
-      new("#{subject.class}##{method.name} has unsupported arity (#{method.arity}). Expected 0 or 1.")
+      new("#{subject.class}##{method.name} has unsupported arity (#{method.arity}). Expected 0, 1 or 2.")
     end
   end
 
