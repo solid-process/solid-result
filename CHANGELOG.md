@@ -160,8 +160,7 @@ end
 
 ```ruby
 module Divide
-  extend BCDD::Resultable
-  extend self
+  extend self, BCDD::Resultable
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)

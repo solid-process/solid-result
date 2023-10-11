@@ -14,7 +14,7 @@ class BCDD::Result
 
     module Addons
       module Continuable
-        def Continue(value)
+        private def Continue(value)
           Success(:continued, value)
         end
       end
