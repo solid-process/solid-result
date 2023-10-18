@@ -209,9 +209,8 @@ result.failure?(:error) # false
 
 ### Result Hooks
 
-Result hooks are methods that allow you to perform a block of code depending on the result type.
-
-To exemplify the them, I will implement a method that knows how to divide two numbers.
+Result hooks are methods that allow you to execute a block of code based on the type of result obtained. 
+To demonstrate their use, I will implement a function that can divide two numbers.
 
 ```ruby
 def divide(arg1, arg2)
@@ -228,14 +227,15 @@ end
 
 #### `result.on`
 
-`BCDD::Result#on` will perform the block when the type matches the result type.
+When you use `BCDD::Result#on`, the block will be executed only when the type matches the result type.
 
-Regardless of the block being executed, the return of the method will always be the result itself.
+However, even if the block is executed, the method will always return the result itself.
 
-The result value will be exposed as the first argument of the block.
+The value of the result will be available as the first argument of the block.
 
 ```ruby
 result = divide(nil, 2)
+#<BCDD::Result::Failure type=:invalid_arg data='arg1 must be numeric'>
 
 output =
   result
@@ -268,21 +268,40 @@ result.object_id == output.object_id # true
 
 `BCDD::Result#on_type` is an alias of `BCDD::Result#on`.
 
+```ruby
+result = divide(nil, 2)
+#<BCDD::Result::Failure type=:invalid_arg data='arg1 must be numeric'>
+
+output =
+  result
+    .on_type(:invalid_arg) { |msg| puts msg }
+    .on_type(:division_by_zero) { |msg| puts msg }
+    .on_type(:division_completed) { |number| puts number }
+
+# The code above will print 'arg1 must be numeric' and return the result itself.
+
+result.object_id == output.object_id # true
+```
+
+*PS: The `divide()` implementation is [here](#result-hooks).*
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
 #### `result.on_success`
 
-`BCDD::Result#on_success` is very similar to the `BCDD::Result#on` hook. The main differences are:
+The `BCDD::Result#on_success` method is quite similar to the `BCDD::Result#on` hook, but with a few key differences:
 
-1. Only perform the block when the result is a success.
-2. If the type is missing it will perform the block for any success.
+1. It will only execute the block of code if the result is a success.
+2. If the type declaration is not included, the method will execute the block for any successful result, regardless of its type.
 
 ```ruby
-# It performs the block and return itself.
+# It executes the block and return itself.
 
 divide(4, 2).on_success { |number| puts number }
 
 divide(4, 2).on_success(:division_completed) { |number| puts number }
 
-# It doesn't perform the block, but return itself.
+# It doesn't execute the block, but return itself.
 
 divide(4, 4).on_success(:ok) { |value| puts value }
 
@@ -295,16 +314,19 @@ divide(4, 4).on_failure { |error| puts error }
 
 #### `result.on_failure`
 
-Is the opposite of `Result#on_success`.
+It is the opposite of `Result#on_success`:
+
+1. It will only execute the block of code if the result is a failure.
+2. If the type declaration is not included, the method will execute the block for any failed result, regardless of its type.
 
 ```ruby
-# It performs the block and return itself.
+# It executes the block and return itself.
 
 divide(nil, 2).on_failure { |error| puts error }
 
 divide(4, 0).on_failure(:invalid_arg, :division_by_zero) { |error| puts error }
 
-# It doesn't perform the block, but return itself.
+# It doesn't execute the block, but return itself.
 
 divide(4, 0).on_success { |number| puts number }
 
@@ -317,11 +339,11 @@ divide(4, 0).on_failure(:invalid_arg) { |error| puts error }
 
 #### `result.on_unknown`
 
-`BCDD::Result#on_unknown` will perform the block when no other hook (`#on`, `#on_type`, `#on_failure`, `#on_success`) has been executed.
+`BCDD::Result#on_unknown` will execute the block when no other hook (`#on`, `#on_type`, `#on_failure`, `#on_success`) has been executed.
 
-Regardless of the block being executed, the return of the method will always be the result itself.
+Regardless of the block being executed, the method will always return the result itself.
 
-The result value will be exposed as the first argument of the block.
+The value of the result will be available as the first argument of the block.
 
 ```ruby
 divide(4, 2)
@@ -338,7 +360,7 @@ divide(4, 2)
 
 #### `result.handle`
 
-This method will allow you to define blocks for each hook (type, failure, success), but instead of returning itself, it will return the output of the first match/block execution.
+This method lets you define blocks for each hook (type, failure, or success), but instead of returning itself, it will return the output of the first match/block execution.
 
 ```ruby
 divide(4, 2).handle do |result|
@@ -379,8 +401,8 @@ end
 
 **Notes:**
 * You can define multiple types to be handled by the same hook/block
-* If the type is missing, it will perform the block for any success or failure handler.
-* The `#type` and `#[]` handlers will require at least one type/argument.
+* If the type is missing, it will execute the block for any success or failure handler.
+* The `#type` and `#[]` handlers require at least one type/argument.
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
@@ -388,13 +410,13 @@ end
 
 ### Result Value
 
-The most simple way to get the result value is by calling `BCDD::Result#value`.
+To access the result value, you can simply call `BCDD::Result#value`.
 
-But sometimes you need to get the value of a successful result or a default value if it is a failure. In this case, you can use `BCDD::Result#value_or`.
+However, there may be instances where you need to retrieve the value of a successful result or a default value if the result is a failure. In such cases, you can make use of `BCDD::Result#value_or`.
 
 #### `result.value_or`
 
-`BCCD::Result#value_or` returns the value when the result is a success, but if is a failure the block will be performed, and its outcome will be the output.
+`BCCD::Result#value_or` returns the value when the result is a success. However, if it is a failure, the given block will be executed, and its outcome will be returned.
 
 ```ruby
 def divide(arg1, arg2)
@@ -464,14 +486,11 @@ print_to_hash(**success_data) # [:success, :ok, 1]
 
 ### Railway Oriented Programming
 
-This feature/pattern is also known as ["Railway Oriented Programming"](https://fsharpforfunandprofit.com/rop/).
+["Railway Oriented Programming (ROP)"](https://fsharpforfunandprofit.com/rop/)  is a programming technique that involves linking blocks together to form a sequence of operations, also known as a pipeline.
+If a failure occurs in any of the blocks, the pipeline is interrupted and subsequent blocks are skipped.
 
-The idea is to chain blocks and creates a pipeline of operations that can be interrupted by a failure.
-
-In other words, the block will be executed only if the result is a success.
-So, if some block returns a failure, the following blocks will be skipped.
-
-Due to this characteristic, you can use this feature to express some logic as a sequence of operations. And have the guarantee that the process will stop by the first failure detection, and if everything is ok, the final result will be a success.
+The ROP technique allows you to structure your code in a way that expresses your logic as a series of operations, with the added benefit of stopping the process at the first detection of failure.
+If all blocks successfully execute, the final result of the pipeline will be a success.
 
 #### `result.and_then`
 
@@ -526,9 +545,9 @@ Divide.call(2, 2)
 
 #### `BCDD::Result.mixin`
 
-This method produces a module that can be included/extended by any object. It adds two methods to the target object: `Success()` and `Failure()`. The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the first ones will use the target object (who received the include/extend) as the result's subject.
+This method generates a module that can be included or extended by any object. It adds two methods to the target object: `Success()` and `Failure()`. The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the former will utilize the target object (which has received the include/extend) as the result's subject. 
 
-And because of this, you can use the `#and_then` method to call methods from the result's subject.
+As a result, you can utilize the `#and_then` method to invoke methods from the result's subject.
 
 ##### Class example (Instance Methods)
 
@@ -621,11 +640,64 @@ Divide.call(4, '2') #<BCDD::Result::Failure type=:invalid_arg value="arg2 must b
 
 ##### Important Requirement
 
-The unique condition for using the `#and_then` to call methods is that they must use the `Success()` and `Failure()` to produce their results.
+To use the `#and_then` method to call methods, they must use `Success()` and `Failure()` to produce the results.
 
-If you use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or use result from another `BCDD::Result::Mixin` instance, the `#and_then` will raise an error because the subjects will be different.
+If you try to use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or results from another `BCDD::Result.mixin` instance with `#and_then`, it will raise an error because the subjects will be different.
 
-> **Note**: You still can use the block syntax, but all the results must be produced by the subject's `Success()` and `Failure()` methods.
+**Note:** You can still use the block syntax, but all the results must be produced by the subject's `Success()` and `Failure()` methods.
+
+```ruby
+module ValidateNonZero
+  extend self, BCDD::Result.mixin
+
+  def call(numbers)
+    return Success(:ok, numbers) unless numbers.last.zero?
+
+    Failure(:division_by_zero, 'arg2 must not be zero')
+  end
+end
+
+class Divide
+  include BCDD::Result.mixin
+
+  attr_reader :arg1, :arg2
+
+  def initialize(arg1, arg2)
+    @arg1 = arg1
+    @arg2 = arg2
+  end
+
+  def call
+    validate_numbers
+      .and_then(:validate_non_zero)
+      .and_then(:divide)
+  end
+
+  private
+
+  def validate_numbers
+    arg1.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg1 must be numeric') # This will raise an error
+    arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    BCDD::Result::Success(:ok, [arg1, arg2]) # This will raise an error
+  end
+
+  def validate_non_zero(numbers)
+    ValidateNonZero.call(numbers) # This will raise an error
+
+    # This would work:
+    # In this case we are handling the other subject result and returning our own
+    # ValidateNonZero.call(numbers).handle do |on|
+    #   on.success { |numbers| Success(:ok, numbers) }
+    #   on.failure { |err| Failure(:division_by_zero, err) }
+    # end
+  end
+
+  def divide((number1, number2))
+    Success(:division_completed, number1 / number2)
+  end
+end
+```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
@@ -906,11 +978,11 @@ Now that you know the two modes, let's understand how expectations can be benefi
 
 #### Type checking - Result Hooks
 
-The `BCDD::Result::Expectations` will check if the result's type is valid. This checking will be performed in all the methods that rely on the result's type, like `#success?`, `#failure?`, `#on`, `#on_type`, `#on_success`, `#on_failure`, `#handle`.
+The `BCDD::Result::Expectations` will check if the type of the result is valid. This checking will be performed in all methods that depend on the result’s type, such as `#success?`, `#failure?`, `#on`, `#on_type`, `#on_success`, `#on_failure`, and `#handle`.
 
 ##### `#success?` and `#failure?`
 
-When you check whether a result is a success or failure, `BCDD::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
+When checking whether a result is a success or failure, `BCDD::Result::Expectations` will also verify if the result type is valid/expected. In case of an invalid type, an error will be raised.
 
 **Success example:**
 
@@ -946,7 +1018,7 @@ result.failure?(:err)
 
 ##### `#on` and `#on_type`
 
-If you use `#on` or `#on_type` to perform a block, `BCDD::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
+If you use `#on` or `#on_type` to execute a block, `BCDD::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
 
 ```ruby
 result = Divide.new.call(10, 2)
@@ -968,7 +1040,7 @@ result.on(:number) { |_| :this_type_does_not_exist }
 
 ##### `#on_success` and `#on_failure`
 
-If you use `#on_success` or `#on_failure` to perform a block, `BCDD::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
+If you use `#on_success` or `#on_failure` to execute a block, `BCDD::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
 
 ```ruby
 result = Divide.new.call(10, '2')
