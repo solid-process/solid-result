@@ -486,7 +486,7 @@ print_to_hash(**success_data) # [:success, :ok, 1]
 
 ### Railway Oriented Programming
 
-["Railway Oriented Programming (ROP)"](https://fsharpforfunandprofit.com/rop/)  is a programming paradigm that involves linking blocks together to form a sequence of operations, also known as a pipeline.
+["Railway Oriented Programming (ROP)"](https://fsharpforfunandprofit.com/rop/)  is a programming technique that involves linking blocks together to form a sequence of operations, also known as a pipeline.
 If a failure occurs in any of the blocks, the pipeline is interrupted and subsequent blocks are skipped.
 
 The ROP technique allows you to structure your code in a way that expresses your logic as a series of operations, with the added benefit of stopping the process at the first detection of failure.
@@ -642,7 +642,7 @@ Divide.call(4, '2') #<BCDD::Result::Failure type=:invalid_arg value="arg2 must b
 
 To use the `#and_then` method to call methods, they must use `Success()` and `Failure()` to produce the results.
 
-If you try to use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or results from another `BCDD::Result::Mixin` instance with `#and_then`, it will raise an error because the subjects will be different.
+If you try to use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or results from another `BCDD::Result.mixin` instance with `#and_then`, it will raise an error because the subjects will be different.
 
 **Note:** You can still use the block syntax, but all the results must be produced by the subject's `Success()` and `Failure()` methods.
 
@@ -978,7 +978,7 @@ Now that you know the two modes, let's understand how expectations can be benefi
 
 #### Type checking - Result Hooks
 
-The `BCDD::Result::Expectations`  will check if the type of the result is valid. This checking will be performed in all methods that depend on the result’s type, such as `#success?`, `#failure?`, `#on`, `#on_type`, `#on_success`, `#on_failure`, and `#handle`.
+The `BCDD::Result::Expectations` will check if the type of the result is valid. This checking will be performed in all methods that depend on the result’s type, such as `#success?`, `#failure?`, `#on`, `#on_type`, `#on_success`, `#on_failure`, and `#handle`.
 
 ##### `#success?` and `#failure?`
 
