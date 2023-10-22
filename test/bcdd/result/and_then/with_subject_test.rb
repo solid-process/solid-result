@@ -142,7 +142,7 @@ class BCDD::Result
 
       error = assert_raises(BCDD::Result::Error::WrongSubjectMethodArity) { wrong_subject_method_arity.call }
 
-      expected_message = "#{WrongSubjectMethodArity}#add has unsupported arity (3). Expected 0, 1 or 2."
+      expected_message = "#{WrongSubjectMethodArity}#add has unsupported arity (3). Expected 0..2"
 
       assert_equal(expected_message, error.message)
     end

@@ -129,7 +129,7 @@ class BCDD::Result
       when 0 then subject.send(method_name)
       when 1 then subject.send(method_name, value)
       when 2 then subject.send(method_name, value, context)
-      else raise Error::WrongSubjectMethodArity.build(subject: subject, method: method)
+      else raise Error::WrongSubjectMethodArity.build(subject: subject, method: method, max_arity: 2)
       end
 
     ensure_result_object(result, origin: :method)

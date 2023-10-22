@@ -67,10 +67,10 @@ class BCDD::Result::ErrorTest < Minitest::Test
 
     method = subject.method(:do_something)
 
-    error_input = { subject: subject, method: method }
+    error_input = { subject: subject, method: method, max_arity: 2 }
 
     assert_equal(
-      'Object#do_something has unsupported arity (3). Expected 0, 1 or 2.',
+      'Object#do_something has unsupported arity (3). Expected 0..2',
       BCDD::Result::Error::WrongSubjectMethodArity.build(**error_input).message
     )
   end
