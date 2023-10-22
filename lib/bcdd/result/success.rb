@@ -2,23 +2,9 @@
 
 class BCDD::Result
   class Success < self
-    def success?(type = nil)
-      type.nil? || type_checker.allow_success?([type])
-    end
+    require_relative 'success/methods'
 
-    def failure?(_type = nil)
-      false
-    end
-
-    def value_or
-      value
-    end
-
-    private
-
-    def name
-      :success
-    end
+    include Methods
   end
 
   def self.Success(type, value = nil)

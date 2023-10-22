@@ -8,6 +8,10 @@ class BCDD::Result
       assert Success < BCDD::Result
     end
 
+    test 'has BCDD::Result::Success::Methods' do
+      assert Success < BCDD::Result::Success::Methods
+    end
+
     test '#success? without receiving a type/argument' do
       result = Success.new(type: :good, value: nil)
 
