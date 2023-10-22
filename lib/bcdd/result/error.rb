@@ -15,10 +15,13 @@ class BCDD::Result::Error < StandardError
   end
 
   class UnexpectedOutcome < self
-    def self.build(outcome:, origin:)
+    def self.build(outcome:, origin:, context: false)
+      success = context ? 'BCDD::Result::Context::Success' : 'BCDD::Result::Success'
+      failure = context ? 'BCDD::Result::Context::Failure' : 'BCDD::Result::Failure'
+
       message =
         "Unexpected outcome: #{outcome.inspect}. The #{origin} must return this object wrapped by " \
-        'BCDD::Result::Success or BCDD::Result::Failure'
+        "#{success} or #{failure}"
 
       new(message)
     end
