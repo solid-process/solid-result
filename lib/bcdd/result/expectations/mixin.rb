@@ -4,17 +4,17 @@ class BCDD::Result::Expectations
   module Mixin
     METHODS = <<~RUBY
       def Success(...)
-        __expected::Success(...)
+        _Result.Success(...)
       end
 
       def Failure(...)
-        __expected::Failure(...)
+        _Result.Failure(...)
       end
 
       private
 
-      def __expected
-        @__expected ||= Expected.with(subject: self)
+      def _Result
+        @_Result ||= Result.with(subject: self)
       end
     RUBY
 
