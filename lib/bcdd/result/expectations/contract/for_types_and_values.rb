@@ -30,7 +30,7 @@ class BCDD::Result::Expectations
       return value if allowed_value === value
 
       raise Error::UnexpectedValue.build(type: type, value: value)
-    rescue NoMatchingPatternError => e
+    rescue ::NoMatchingPatternError => e
       raise Error::UnexpectedValue.build(type: data.type, value: data.value, cause: e)
     end
   end

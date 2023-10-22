@@ -70,7 +70,7 @@ class BCDD::Result
   def and_then(method_name = nil, context = nil)
     return self if failure?
 
-    method_name && block_given? and raise ArgumentError, 'method_name and block are mutually exclusive'
+    method_name && block_given? and raise ::ArgumentError, 'method_name and block are mutually exclusive'
 
     return call_subject_method(method_name, context) if method_name
 

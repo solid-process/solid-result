@@ -5,7 +5,7 @@ class BCDD::Result
     include Success::Methods
 
     def and_expose(type, keys)
-      unless keys.is_a?(Array) && !keys.empty? && keys.all?(Symbol)
+      unless keys.is_a?(::Array) && !keys.empty? && keys.all?(::Symbol)
         raise ::ArgumentError, 'keys must be an Array of Symbols'
       end
 

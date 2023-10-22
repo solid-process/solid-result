@@ -4,7 +4,7 @@ class BCDD::Result::Expectations
   module Contract::Disabled
     extend Contract::Interface
 
-    EMPTY_SET = Set.new.freeze
+    EMPTY_SET = ::Set.new.freeze
 
     def self.allowed_types
       EMPTY_SET

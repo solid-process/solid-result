@@ -13,7 +13,7 @@ class BCDD::Result::Expectations
     ToEnsure = ->(spec) do
       return Contract::Disabled if spec.nil?
 
-      spec.is_a?(Hash) ? Contract::ForTypesAndValues.new(spec) : Contract::ForTypes.new(Array(spec))
+      spec.is_a?(::Hash) ? Contract::ForTypesAndValues.new(spec) : Contract::ForTypes.new(Array(spec))
     end
 
     def self.new(success:, failure:)
