@@ -4,7 +4,7 @@ require 'test_helper'
 
 class BCDD::Result::ExpectationsWithoutSubjectSuccessInvalidTypesTest < Minitest::Test
   class Divide
-    Expected = BCDD::Result::Expectations.new(
+    Result = BCDD::Result::Expectations.new(
       success: %i[ok1 ok2 ok3]
     )
 
@@ -17,20 +17,20 @@ class BCDD::Result::ExpectationsWithoutSubjectSuccessInvalidTypesTest < Minitest
     private
 
     def validate_numbers(arg1, arg2)
-      arg1.is_a?(::Numeric) or return Expected::Failure(:invalid_arg, 'arg1 must be numeric')
-      arg2.is_a?(::Numeric) or return Expected::Failure(:invalid_arg, 'arg2 must be numeric')
+      arg1.is_a?(::Numeric) or return Result::Failure(:invalid_arg, 'arg1 must be numeric')
+      arg2.is_a?(::Numeric) or return Result::Failure(:invalid_arg, 'arg2 must be numeric')
 
-      Expected::Success(:ok1, [arg1, arg2])
+      Result::Success(:ok1, [arg1, arg2])
     end
 
     def validate_non_zero(numbers)
-      return Expected::Success(:ok2, numbers) unless numbers.last.zero?
+      return Result::Success(:ok2, numbers) unless numbers.last.zero?
 
-      Expected::Failure(:division_by_zero, 'arg2 must not be zero')
+      Result::Failure(:division_by_zero, 'arg2 must not be zero')
     end
 
     def divide((number1, number2))
-      Expected::Success(:ok, number1 / number2)
+      Result::Success(:ok, number1 / number2)
     end
   end
 

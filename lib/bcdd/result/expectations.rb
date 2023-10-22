@@ -9,8 +9,8 @@ class BCDD::Result::Expectations
   def self.mixin(success: nil, failure: nil, with: nil)
     addons = Mixin::Addons.options(with)
 
-    mod = Module.new
-    mod.const_set(:Expected, new(success: success, failure: failure).freeze)
+    mod = ::Module.new
+    mod.const_set(:Result, new(success: success, failure: failure).freeze)
     mod.module_eval(Mixin::METHODS)
     mod.send(:include, *addons) unless addons.empty?
     mod

@@ -29,8 +29,11 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeAndValuePatterMatchingErro
       Divide.new.call(10, 2)
     end
 
-    assert_equal(
-      'value "5" is not allowed for :division_completed type',
+    assert_match(
+      Regexp.new(
+        'value "5" is not allowed for :division_completed type ' \
+        '\(cause:.*5.*\)'
+      ),
       err.message
     )
   end

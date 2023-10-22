@@ -8,8 +8,10 @@ class BCDD::Result::Expectations::Error < BCDD::Result::Error
   end
 
   class UnexpectedValue < self
-    def self.build(type:, value:)
-      new("value #{value.inspect} is not allowed for :#{type} type")
+    def self.build(type:, value:, cause: nil)
+      cause_message = cause ? " (cause: #{cause.message})" : ''
+
+      new("value #{value.inspect} is not allowed for :#{type} type#{cause_message}")
     end
   end
 end

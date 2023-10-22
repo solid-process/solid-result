@@ -901,18 +901,18 @@ The _**standalone mode**_ creates an object that knows how to produce and valida
 
 ```ruby
 module Divide
-  Expected = BCDD::Result::Expectations.new(
+  Result = BCDD::Result::Expectations.new(
     success: %i[numbers division_completed],
     failure: %i[invalid_arg division_by_zero]
   )
 
   def self.call(arg1, arg2)
-    arg1.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg1 must be numeric')
-    arg2.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg2 must be numeric')
+    arg1.is_a?(Numeric) or return Result::Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Result::Failure(:invalid_arg, 'arg2 must be numeric')
 
-    arg2.zero? and return Expected::Failure(:division_by_zero, 'arg2 must not be zero')
+    arg2.zero? and return Result::Failure(:division_by_zero, 'arg2 must not be zero')
 
-    Expected::Success(:division_completed, arg1 / arg2)
+    Result::Success(:division_completed, arg1 / arg2)
   end
 end
 ```
@@ -922,11 +922,11 @@ In the code above, we define a constant `Divide::Expected`. And because of this 
 Look what happens if you try to create a result without one of the expected types.
 
 ```ruby
-Divide::Expected::Success(:ok)
+Divide::Result::Success(:ok)
 # type :ok is not allowed. Allowed types: :numbers, :division_completed
 # (BCDD::Result::Expectations::Error::UnexpectedType)
 
-Divide::Expected::Failure(:err)
+Divide::Result::Failure(:err)
 # type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero
 # (BCDD::Result::Expectations::Error::UnexpectedType)
 ```
@@ -1132,15 +1132,15 @@ Divide.call(4, 2)
 
 ```ruby
 module Divide
-  Expected = BCDD::Result::Expectations.new(success: :ok, failure: :err)
+  Result = BCDD::Result::Expectations.new(success: :ok, failure: :err)
 
   def self.call(arg1, arg2)
-    arg1.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg1 must be numeric')
-    arg2.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg2 must be numeric')
+    arg1.is_a?(Numeric) or return Result::Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Result::Failure(:invalid_arg, 'arg2 must be numeric')
 
-    arg2.zero? and return Expected::Failure(:division_by_zero, 'arg2 must not be zero')
+    arg2.zero? and return Result::Failure(:division_by_zero, 'arg2 must not be zero')
 
-    Expected::Success(:division_completed, arg1 / arg2)
+    Result::Success(:division_completed, arg1 / arg2)
   end
 end
 
@@ -1191,7 +1191,7 @@ end
 
 ```ruby
 module Divide
-  Expected = BCDD::Result::Expectations.new(
+  Result = BCDD::Result::Expectations.new(
     success: {
       numbers: ->(value) { value.is_a?(Array) && value.size == 2 && value.all?(Numeric) },
       division_completed: Numeric
@@ -1203,12 +1203,12 @@ module Divide
   )
 
   def self.call(arg1, arg2)
-    arg1.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg1 must be numeric')
-    arg2.is_a?(Numeric) or return Expected::Failure(:invalid_arg, 'arg2 must be numeric')
+    arg1.is_a?(Numeric) or return Result::Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(Numeric) or return Result::Failure(:invalid_arg, 'arg2 must be numeric')
 
-    arg2.zero? and return Expected::Failure(:division_by_zero, 'arg2 must not be zero')
+    arg2.zero? and return Result::Failure(:division_by_zero, 'arg2 must not be zero')
 
-    Expected::Success(:division_completed, arg1 / arg2)
+    Result::Success(:division_completed, arg1 / arg2)
   end
 end
 ```
@@ -1220,26 +1220,26 @@ The value validation will only be performed through the methods `Success()` and 
 ##### Success()
 
 ```ruby
-Divide::Expected::Success(:ok)
+Divide::Result::Success(:ok)
 # type :ok is not allowed. Allowed types: :numbers, :division_completed (BCDD::Result::Expectations::Error::UnexpectedType)
 
-Divide::Expected::Success(:numbers, [1])
+Divide::Result::Success(:numbers, [1])
 # value [1] is not allowed for :numbers type (BCDD::Result::Expectations::Error::UnexpectedValue)
 
-Divide::Expected::Success(:division_completed, '2')
+Divide::Result::Success(:division_completed, '2')
 # value "2" is not allowed for :division_completed type (BCDD::Result::Expectations::Error::UnexpectedValue)
 ```
 
 ##### Failure()
 
 ```ruby
-Divide::Expected::Failure(:err)
+Divide::Result::Failure(:err)
 # type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero (BCDD::Result::Expectations::Error::UnexpectedType)
 
-Divide::Expected::Failure(:invalid_arg, :arg1_must_be_numeric)
+Divide::Result::Failure(:invalid_arg, :arg1_must_be_numeric)
 # value :arg1_must_be_numeric is not allowed for :invalid_arg type (BCDD::Result::Expectations::Error::UnexpectedValue)
 
-Divide::Expected::Failure(:division_by_zero, msg: 'arg2 must not be zero')
+Divide::Result::Failure(:division_by_zero, msg: 'arg2 must not be zero')
 # value {:msg=>"arg2 must not be zero"} is not allowed for :division_by_zero type (BCDD::Result::Expectations::Error::UnexpectedValue)
 ```
 
