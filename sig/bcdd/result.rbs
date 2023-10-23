@@ -270,12 +270,12 @@ end
 class BCDD::Result::Expectations::Error < BCDD::Result::Error
   class UnexpectedType < BCDD::Result::Expectations::Error
     def self.build: (type: Symbol, allowed_types: Set[Symbol])
-        -> BCDD::Result::Expectations::Error::UnexpectedType
+        -> BCDD::Result::Contract::Error::UnexpectedType
   end
 
   class UnexpectedValue < BCDD::Result::Expectations::Error
     def self.build: (type: Symbol, value: untyped)
-      -> BCDD::Result::Expectations::Error::UnexpectedValue
+      -> BCDD::Result::Contract::Error::UnexpectedValue
   end
 end
 

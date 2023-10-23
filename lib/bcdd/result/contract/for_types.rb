@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-class BCDD::Result::Expectations
+class BCDD::Result
   class Contract::ForTypes
     include Contract::Interface
 
     attr_reader :allowed_types
 
     def initialize(types)
-      @allowed_types = Array(types).map(&:to_sym).to_set.freeze
+      @allowed_types = Array(types).to_set(&:to_sym).freeze
     end
 
     def type?(type)
@@ -17,7 +17,7 @@ class BCDD::Result::Expectations
     def type!(type)
       return type if type?(type)
 
-      raise Error::UnexpectedType.build(type: type, allowed_types: allowed_types)
+      raise Contract::Error::UnexpectedType.build(type: type, allowed_types: allowed_types)
     end
 
     def type_and_value!(data)

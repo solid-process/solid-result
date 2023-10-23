@@ -19,7 +19,7 @@ class BCDD::Result::ExpectationsWithoutSubjectSuccessInvalidTypeTest < Minitest:
   end
 
   test 'unexpected type error' do
-    err = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       Divide.new.call(10, 2)
     end
 

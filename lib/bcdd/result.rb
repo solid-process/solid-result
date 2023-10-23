@@ -7,6 +7,7 @@ require_relative 'result/handler'
 require_relative 'result/failure'
 require_relative 'result/success'
 require_relative 'result/mixin'
+require_relative 'result/contract'
 require_relative 'result/expectations'
 require_relative 'result/context'
 
@@ -22,7 +23,7 @@ class BCDD::Result
   def initialize(type:, value:, subject: nil, expectations: nil)
     data = Data.new(name, type, value)
 
-    @type_checker = Expectations.evaluate(data, expectations)
+    @type_checker = Contract.evaluate(data, expectations)
     @subject = subject
     @data = data
 

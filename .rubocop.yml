@@ -22,8 +22,7 @@ Style/AccessModifierDeclarations:
   Enabled: false
 
 Style/CaseEquality:
-  Exclude:
-    - lib/bcdd/result/expectations/contract/for_types_and_values.rb
+  Enabled: false
 
 Style/ClassAndModuleChildren:
   Enabled: false
@@ -33,10 +32,6 @@ Style/Lambda:
 
 Style/SingleLineMethods:
   Enabled: false
-
-Style/MapToSet:
-  Exclude:
-    - lib/bcdd/result/expectations/contract/for_types.rb
 
 Style/MixinGrouping:
   Enabled: false

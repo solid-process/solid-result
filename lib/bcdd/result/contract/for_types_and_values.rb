@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BCDD::Result::Expectations
+class BCDD::Result
   class Contract::ForTypesAndValues
     include Contract::Interface
 
@@ -29,9 +29,9 @@ class BCDD::Result::Expectations
 
       return value if allowed_value === value
 
-      raise Error::UnexpectedValue.build(type: type, value: value)
+      raise Contract::Error::UnexpectedValue.build(type: type, value: value)
     rescue ::NoMatchingPatternError => e
-      raise Error::UnexpectedValue.build(type: data.type, value: data.value, cause: e)
+      raise Contract::Error::UnexpectedValue.build(type: data.type, value: data.value, cause: e)
     end
   end
 end

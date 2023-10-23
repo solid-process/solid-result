@@ -134,12 +134,12 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     failure2 = DivideTypes.new.call('10', 0)
     failure3 = DivideTypeAndValue.call('10', 0)
 
-    assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) { success1.success?(:division_completed) }
-    assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) { success2.success?(:ok) }
-    assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) { success3.success?(:ok) }
+    assert_raises(BCDD::Result::Contract::Error::UnexpectedType) { success1.success?(:division_completed) }
+    assert_raises(BCDD::Result::Contract::Error::UnexpectedType) { success2.success?(:ok) }
+    assert_raises(BCDD::Result::Contract::Error::UnexpectedType) { success3.success?(:ok) }
 
-    assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) { failure1.failure?(:invalid_arg) }
-    assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) { failure2.failure?(:err) }
-    assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) { failure3.failure?(:err) }
+    assert_raises(BCDD::Result::Contract::Error::UnexpectedType) { failure1.failure?(:invalid_arg) }
+    assert_raises(BCDD::Result::Contract::Error::UnexpectedType) { failure2.failure?(:err) }
+    assert_raises(BCDD::Result::Contract::Error::UnexpectedType) { failure3.failure?(:err) }
   end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-class BCDD::Result::Expectations
-  module Mixin
+class BCDD::Result
+  module Expectations::Mixin
     METHODS = <<~RUBY
       def Success(...)
         _Result.Success(...)
@@ -21,7 +21,7 @@ class BCDD::Result::Expectations
     module Addons
       module Continuable
         private def Continue(value)
-          ::BCDD::Result::Success.new(type: :continued, value: value, subject: self)
+          Success.new(type: :continued, value: value, subject: self)
         end
       end
 

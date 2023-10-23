@@ -125,7 +125,7 @@ class BCDD::Result::Context::ExpectationsWithoutSubjectSuccessAndFailureTypeAndV
   end
 
   test 'invalid result type' do
-    err1 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err1 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       Divide.new.call(10, 2).success?(:invalid_arg)
     end
 
@@ -136,7 +136,7 @@ class BCDD::Result::Context::ExpectationsWithoutSubjectSuccessAndFailureTypeAndV
 
     # ---
 
-    err2 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err2 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       Divide.new.call(10, '2').failure?(:numbers)
     end
 
@@ -149,15 +149,15 @@ class BCDD::Result::Context::ExpectationsWithoutSubjectSuccessAndFailureTypeAndV
   test 'invalid hooks' do
     result = Divide.new.call(6, 2)
 
-    err1 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err1 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.on_success(:ok) { :this_type_is_not_defined_in_the_expectations }
     end
 
-    err2 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err2 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.on_failure(:err) { :this_type_is_not_defined_in_the_expectations }
     end
 
-    err3 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err3 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.on(:bar) { :this_type_is_not_defined_in_the_expectations }
     end
 
@@ -180,19 +180,19 @@ class BCDD::Result::Context::ExpectationsWithoutSubjectSuccessAndFailureTypeAndV
   test 'invalid handlers' do
     result = Divide.new.call(6, 2)
 
-    err1 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err1 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.handle do |on|
         on.success(:ok) { :this_type_is_not_defined_in_the_expectations }
       end
     end
 
-    err2 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err2 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.handle do |on|
         on.failure(:err) { :this_type_is_not_defined_in_the_expectations }
       end
     end
 
-    err3 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err3 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.handle do |on|
         on.type(:bar) { :this_type_is_not_defined_in_the_expectations }
       end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BCDD::Result::Expectations::Error < BCDD::Result::Error
+class BCDD::Result::Contract::Error < BCDD::Result::Error
   class UnexpectedType < self
     def self.build(type:, allowed_types:)
       new("type :#{type} is not allowed. Allowed types: #{allowed_types.map(&:inspect).join(', ')}")

@@ -11,7 +11,6 @@ class BCDD::Result::Context
       mod.const_set(:Result, new(success: success, failure: failure).freeze)
       mod.module_eval(Mixin::METHODS)
       mod.send(:include, *addons) unless addons.empty?
-
       mod
     end
 
@@ -19,9 +18,9 @@ class BCDD::Result::Context
       @subject = subject
       @acc     = acc
 
-      @contract = contract if contract.is_a?(::BCDD::Result::Expectations::Contract::Evaluator)
+      @contract = contract if contract.is_a?(::BCDD::Result::Contract::Evaluator)
 
-      @contract ||= ::BCDD::Result::Expectations::Contract.new(success: success, failure: failure).freeze
+      @contract ||= ::BCDD::Result::Contract.new(success: success, failure: failure).freeze
     end
 
     def Success(type, **value)

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BCDD::Result::Expectations
+module BCDD::Result::Contract
   class TypeChecker
     attr_reader :result_type, :expectations
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BCDD::Result::Expectations
+class BCDD::Result
   module Contract::Disabled
     extend Contract::Interface
 

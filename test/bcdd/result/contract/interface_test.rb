@@ -2,12 +2,12 @@
 
 require 'test_helper'
 
-class BCDD::Result::Expectations
-  class ContractInterfaceTest < Minitest::Test
+class BCDD::Result
+  class Contract::InterfaceTest < Minitest::Test
     test '#allowed_types' do
       object = Object.new.extend(Contract::Interface)
 
-      assert_raises(BCDD::Result::Error::NotImplemented) do
+      assert_raises(Error::NotImplemented) do
         object.allowed_types
       end
     end
@@ -15,7 +15,7 @@ class BCDD::Result::Expectations
     test '#type?' do
       object = Object.new.extend(Contract::Interface)
 
-      assert_raises(BCDD::Result::Error::NotImplemented) do
+      assert_raises(Error::NotImplemented) do
         object.type?(:ok)
       end
     end
@@ -23,7 +23,7 @@ class BCDD::Result::Expectations
     test '#type!' do
       object = Object.new.extend(Contract::Interface)
 
-      assert_raises(BCDD::Result::Error::NotImplemented) do
+      assert_raises(Error::NotImplemented) do
         object.type!(:ok)
       end
     end
@@ -33,7 +33,7 @@ class BCDD::Result::Expectations
 
       object = Object.new.extend(Contract::Interface)
 
-      assert_raises(BCDD::Result::Error::NotImplemented) do
+      assert_raises(Error::NotImplemented) do
         object.type_and_value!(data)
       end
     end
