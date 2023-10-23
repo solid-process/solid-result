@@ -57,13 +57,19 @@ class BCDD::Result
     end
 
     def ensure_result_object(result, origin:)
-      raise Error::UnexpectedOutcome.build(outcome: result, origin: origin, context: true) unless result.is_a?(Context)
+      raise_unexpected_outcome_error(result, origin) unless result.is_a?(Context)
 
       return result if result.subject.equal?(subject)
 
       raise Error::InvalidResultSubject.build(given_result: result, expected_subject: subject)
     end
 
-    private_constant :SubjectMethodArity
+    EXPECTED_OUTCOME = 'BCDD::Result::Context::Success or BCDD::Result::Context::Failure'
+
+    def raise_unexpected_outcome_error(result, origin)
+      raise Error::UnexpectedOutcome.build(outcome: result, origin: origin, expected: EXPECTED_OUTCOME)
+    end
+
+    private_constant :SubjectMethodArity, :EXPECTED_OUTCOME
   end
 end
