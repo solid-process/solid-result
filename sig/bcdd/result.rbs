@@ -123,14 +123,14 @@ class BCDD::Result
           -> BCDD::Result::Error::UnexpectedOutcome
     end
 
-    class WrongResultSubject < BCDD::Result::Error
+    class InvalidResultSubject < BCDD::Result::Error
       def self.build: (given_result: BCDD::Result, expected_subject: untyped)
-          -> BCDD::Result::Error::WrongResultSubject
+          -> BCDD::Result::Error::InvalidResultSubject
     end
 
-    class WrongSubjectMethodArity < BCDD::Result::Error
+    class InvalidSubjectMethodArity < BCDD::Result::Error
       def self.build: (subject: untyped, method: ::Method)
-        -> BCDD::Result::Error::WrongSubjectMethodArity
+        -> BCDD::Result::Error::InvalidSubjectMethodArity
     end
 
     class UnhandledTypes < BCDD::Result::Error

@@ -73,7 +73,7 @@ class BCDD::Result
       end
     end
 
-    class WrongSubjectMethodArity < Base
+    class InvalidSubjectMethodArity < Base
       def call
         validate_numbers.and_then(:add)
       end
@@ -83,7 +83,7 @@ class BCDD::Result
       end
     end
 
-    class WrongResultSubjectFromBlock < Base
+    class InvalidResultSubjectFromBlock < Base
       def add_instance
         @add_instance ||= SubjectMethodArityWithArityZero.new(arg1, arg2)
       end
@@ -93,7 +93,7 @@ class BCDD::Result
       end
     end
 
-    class WrongResultSubjectFromMethod < Base
+    class InvalidResultSubjectFromMethod < Base
       def add_instance
         @add_instance ||= SubjectMethodArityWithArityZero.new(arg1, arg2)
       end
@@ -150,23 +150,23 @@ class BCDD::Result
     test '#and_then calling a subject method (arity 1 - positional arg)' do
       invalid_subject_method = SubjectMethodArityWithArityOneArg.new(1, 2)
 
-      error = assert_raises(BCDD::Result::Error::WrongSubjectMethodArity) { invalid_subject_method.call }
+      error = assert_raises(BCDD::Result::Error::InvalidSubjectMethodArity) { invalid_subject_method.call }
 
       assert_match(/#add has unsupported arity \(1\). Expected 0..1\z/, error.message)
     end
 
     test '#and_then calling a subject method with wrong arity (> 1)' do
-      wrong_subject_method_arity = WrongSubjectMethodArity.new(1, 2)
+      wrong_subject_method_arity = InvalidSubjectMethodArity.new(1, 2)
 
-      error = assert_raises(BCDD::Result::Error::WrongSubjectMethodArity) { wrong_subject_method_arity.call }
+      error = assert_raises(BCDD::Result::Error::InvalidSubjectMethodArity) { wrong_subject_method_arity.call }
 
       assert_match(/#add has unsupported arity \(2\). Expected 0..1\z/, error.message)
     end
 
     test '#and_then raises an error when the block returns a result that does not belongs to the subject' do
-      wrong_result_subject = WrongResultSubjectFromBlock.new(1, 2)
+      wrong_result_subject = InvalidResultSubjectFromBlock.new(1, 2)
 
-      error = assert_raises(BCDD::Result::Error::WrongResultSubject) { wrong_result_subject.call }
+      error = assert_raises(BCDD::Result::Error::InvalidResultSubject) { wrong_result_subject.call }
 
       expected_message =
         "You cannot call #and_then and return a result that does not belong to the subject!\n" \
@@ -178,9 +178,9 @@ class BCDD::Result
     end
 
     test '#and_then raises an error when the called method returns a result that does not belongs to the subject' do
-      wrong_result_subject = WrongResultSubjectFromMethod.new(1, 2)
+      wrong_result_subject = InvalidResultSubjectFromMethod.new(1, 2)
 
-      error = assert_raises(BCDD::Result::Error::WrongResultSubject) { wrong_result_subject.call }
+      error = assert_raises(BCDD::Result::Error::InvalidResultSubject) { wrong_result_subject.call }
 
       expected_message =
         "You cannot call #and_then and return a result that does not belong to the subject!\n" \

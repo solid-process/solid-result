@@ -42,8 +42,8 @@ class BCDD::Result::ErrorTest < Minitest::Test
     )
   end
 
-  test '::Error::WrongResultSubject.build' do
-    assert BCDD::Result::Error::WrongResultSubject < BCDD::Result::Error
+  test '::Error::InvalidResultSubject.build' do
+    assert BCDD::Result::Error::InvalidResultSubject < BCDD::Result::Error
 
     given_result = BCDD::Result::Success.new(type: :number, value: 3, subject: 1)
 
@@ -54,12 +54,12 @@ class BCDD::Result::ErrorTest < Minitest::Test
       "Expected subject: 2\n" \
       "Given subject: 1\n" \
       'Given result: #<BCDD::Result::Success type=:number value=3>',
-      BCDD::Result::Error::WrongResultSubject.build(**error_input).message
+      BCDD::Result::Error::InvalidResultSubject.build(**error_input).message
     )
   end
 
-  test '::Error::WrongSubjectMethodArity.build' do
-    assert BCDD::Result::Error::WrongSubjectMethodArity < BCDD::Result::Error
+  test '::Error::InvalidSubjectMethodArity.build' do
+    assert BCDD::Result::Error::InvalidSubjectMethodArity < BCDD::Result::Error
 
     subject = Object.new
 
@@ -71,7 +71,7 @@ class BCDD::Result::ErrorTest < Minitest::Test
 
     assert_equal(
       'Object#do_something has unsupported arity (3). Expected 0..2',
-      BCDD::Result::Error::WrongSubjectMethodArity.build(**error_input).message
+      BCDD::Result::Error::InvalidSubjectMethodArity.build(**error_input).message
     )
   end
 end

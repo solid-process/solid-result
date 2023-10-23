@@ -50,7 +50,7 @@ class BCDD::Result
         case SubjectMethodArity[method]
         when 0 then subject.send(method_name)
         when 1 then subject.send(method_name, **acc)
-        else raise Error::WrongSubjectMethodArity.build(subject: subject, method: method, max_arity: 1)
+        else raise Error::InvalidSubjectMethodArity.build(subject: subject, method: method, max_arity: 1)
         end
 
       ensure_result_object(result, origin: :method)
@@ -61,7 +61,7 @@ class BCDD::Result
 
       return result if result.subject.equal?(subject)
 
-      raise Error::WrongResultSubject.build(given_result: result, expected_subject: subject)
+      raise Error::InvalidResultSubject.build(given_result: result, expected_subject: subject)
     end
 
     private_constant :SubjectMethodArity
