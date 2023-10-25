@@ -30,11 +30,9 @@ class BCDD::Result::Context
   def self.mixin(with: nil)
     addons = Mixin::Addons.options(with)
 
-    mod = ::Module.new
+    mod = ::BCDD::Result::Mixin.module!
     mod.send(:include, Mixin::Methods)
     mod.send(:include, *addons) unless addons.empty?
     mod
   end
-
-  private_constant :Mixin
 end

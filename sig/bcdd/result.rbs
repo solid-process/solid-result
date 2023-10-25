@@ -113,6 +113,8 @@ class BCDD::Result
 
       def self.options: (Array[Symbol]) -> Array[Module]
     end
+
+    def self.module!: -> Module
   end
 
   def self.mixin: (?with: Array[Symbol]) -> Module
@@ -328,8 +330,6 @@ module BCDD::Result::Contract
 end
 
 class BCDD::Result::Expectations
-  def self.module!: -> Module
-
   def self.mixin: (
     ?with: Symbol,
     ?success: Hash[Symbol, untyped] | Array[Symbol],
@@ -366,6 +366,8 @@ module BCDD::Result::Expectations::Mixin
 
     def self.options: (Symbol) -> Array[Module]
   end
+
+  def self.module!: -> Module
 end
 
 class BCDD::Result::Context < BCDD::Result

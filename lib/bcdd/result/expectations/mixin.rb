@@ -31,7 +31,12 @@ class BCDD::Result
         Array(names).filter_map { |name| OPTIONS[name] }
       end
     end
-  end
 
-  private_constant :Mixin
+    def self.module!
+      ::Module.new do
+        def self.included(base); base.const_set(:ResultExpectationsMixin, self); end
+        def self.extended(base); base.const_set(:ResultExpectationsMixin, self); end
+      end
+    end
+  end
 end

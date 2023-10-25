@@ -32,6 +32,4 @@ class BCDD::Result::Context
       end
     end
   end
-
-  private_constant :Mixin
 end
