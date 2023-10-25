@@ -11,7 +11,7 @@ class BCDD::Result
 
       exposed_value = acc.merge(value).slice(*keys)
 
-      self.class.new(type: type, value: exposed_value, subject: subject, acc: acc)
+      self.class.new(type: type, value: exposed_value, subject: subject)
     end
   end
 end

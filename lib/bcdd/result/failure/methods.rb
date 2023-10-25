@@ -10,7 +10,7 @@ module BCDD::Result::Failure::Methods
   end
 
   def value_or
-    yield
+    yield(value)
   end
 
   private

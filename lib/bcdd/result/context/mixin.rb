@@ -4,18 +4,18 @@ class BCDD::Result::Context
   module Mixin
     module Methods
       def Success(type, **value)
-        Success.new(type: type, value: value, subject: self, acc: Accumulator.data!(self, value))
+        Success.new(type: type, value: value, subject: self)
       end
 
       def Failure(type, **value)
-        Failure.new(type: type, value: value, subject: self, acc: Accumulator::EMPTY_DATA)
+        Failure.new(type: type, value: value, subject: self)
       end
     end
 
     module Addons
       module Continuable
         private def Continue(**value)
-          Success.new(type: :continued, value: value, subject: self, acc: Accumulator.data!(self, value))
+          Success.new(type: :continued, value: value, subject: self)
         end
       end
 
@@ -30,7 +30,7 @@ class BCDD::Result::Context
   def self.mixin(with: nil)
     addons = Mixin::Addons.options(with)
 
-    mod = ::Module.new { def self.included(base); base.include(Accumulator::Enabled) if base.is_a?(::Class); end }
+    mod = ::Module.new
     mod.send(:include, Mixin::Methods)
     mod.send(:include, *addons) unless addons.empty?
     mod

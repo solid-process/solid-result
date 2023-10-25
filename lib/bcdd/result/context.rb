@@ -2,7 +2,6 @@
 
 class BCDD::Result
   class Context < self
-    require_relative 'context/accumulator'
     require_relative 'context/failure'
     require_relative 'context/success'
     require_relative 'context/mixin'
@@ -16,12 +15,10 @@ class BCDD::Result
       Failure.new(type: type, value: value)
     end
 
-    HashValue = ->(value) { (value.is_a?(::Hash) and value) or raise ::ArgumentError, 'value must be a Hash' }
+    def initialize(value:, **options)
+      value.is_a?(::Hash) or raise ::ArgumentError, 'value must be a Hash'
 
-    def initialize(value:, acc: Accumulator::EMPTY_DATA, **options)
-      HashValue[value]
-
-      @acc = acc
+      @acc = {}
 
       super(value: value, **options)
     end
@@ -30,9 +27,11 @@ class BCDD::Result
       super(method_name, context_data, &block)
     end
 
-    private
+    protected
 
     attr_reader :acc
+
+    private
 
     SubjectMethodArity = ->(method) do
       return 0 if method.arity.zero?
@@ -59,7 +58,7 @@ class BCDD::Result
     def ensure_result_object(result, origin:)
       raise_unexpected_outcome_error(result, origin) unless result.is_a?(Context)
 
-      return result if result.subject.equal?(subject)
+      return result.tap { _1.acc.merge!(acc) } if result.subject.equal?(subject)
 
       raise Error::InvalidResultSubject.build(given_result: result, expected_subject: subject)
     end

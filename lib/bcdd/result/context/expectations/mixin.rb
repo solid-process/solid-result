@@ -14,14 +14,14 @@ class BCDD::Result::Context
       private
 
       def _Result
-        @_Result ||= Result.with(subject: self, acc: Accumulator.data(self))
+        @_Result ||= Result.with(subject: self)
       end
     RUBY
 
     module Addons
       module Continuable
         private def Continue(**value)
-          Success.new(type: :continued, value: value, subject: self, acc: Accumulator.data!(self, value))
+          Success.new(type: :continued, value: value, subject: self)
         end
       end
 
