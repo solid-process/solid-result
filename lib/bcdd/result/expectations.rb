@@ -4,10 +4,17 @@ class BCDD::Result
   class Expectations
     require_relative 'expectations/mixin'
 
+    def self.module!
+      ::Module.new do
+        def self.included(base); base.const_set(:ResultExpectations, self); end
+        def self.extended(base); base.const_set(:ResultExpectations, self); end
+      end
+    end
+
     def self.mixin(success: nil, failure: nil, with: nil)
       addons = Mixin::Addons.options(with)
 
-      mod = ::Module.new
+      mod = module!
       mod.const_set(:Result, new(success: success, failure: failure).freeze)
       mod.module_eval(Mixin::METHODS)
       mod.send(:include, *addons) unless addons.empty?

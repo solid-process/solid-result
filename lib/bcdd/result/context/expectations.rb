@@ -7,7 +7,7 @@ class BCDD::Result::Context
     def self.mixin(success: nil, failure: nil, with: nil)
       addons = Mixin::Addons.options(with)
 
-      mod = ::Module.new
+      mod = ::BCDD::Result::Expectations.module!
       mod.const_set(:Result, new(success: success, failure: failure).freeze)
       mod.module_eval(Mixin::METHODS)
       mod.send(:include, *addons) unless addons.empty?
@@ -36,6 +36,6 @@ class BCDD::Result::Context
 
     private
 
-    attr_reader :subject, :contract, :acc
+    attr_reader :subject, :contract
   end
 end
