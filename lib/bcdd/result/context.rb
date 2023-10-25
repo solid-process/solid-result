@@ -15,12 +15,12 @@ class BCDD::Result
       Failure.new(type: type, value: value)
     end
 
-    def initialize(value:, **options)
+    def initialize(type:, value:, subject: nil, expectations: nil)
       value.is_a?(::Hash) or raise ::ArgumentError, 'value must be a Hash'
 
       @acc = {}
 
-      super(value: value, **options)
+      super
     end
 
     def and_then(method_name = nil, **context_data, &block)

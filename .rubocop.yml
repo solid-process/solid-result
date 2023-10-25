@@ -33,6 +33,9 @@ Style/Lambda:
 Style/SingleLineMethods:
   Enabled: false
 
+Style/MapToSet:
+  Enabled: false
+
 Style/MixinGrouping:
   Enabled: false
 

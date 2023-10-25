@@ -7,7 +7,7 @@ class BCDD::Result
     attr_reader :allowed_types
 
     def initialize(types)
-      @allowed_types = Array(types).to_set(&:to_sym).freeze
+      @allowed_types = Array(types).map(&:to_sym).to_set.freeze
     end
 
     def type?(type)

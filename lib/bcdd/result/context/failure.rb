@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-class BCDD::Result
-  class Context::Failure < Context
-    include Failure::Methods
+class BCDD::Result::Context::Failure < BCDD::Result::Context
+  include BCDD::Result::Failure::Methods
 
-    def and_expose(_type, _keys)
-      self
-    end
+  def and_expose(_type, _keys)
+    self
   end
 end
