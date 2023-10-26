@@ -21,8 +21,8 @@ class BCDD::Result::Context::AndThenWithSubjectContinueSingletonTest < Minitest:
       Continue(number1: arg1, number2: arg2)
     end
 
-    def validate_non_zero(**input)
-      return Continue(**input) unless input[:number2].zero?
+    def validate_non_zero(number2:, **)
+      return Continue() unless number2.zero?
 
       Failure(:division_by_zero, message: 'arg2 must not be zero')
     end

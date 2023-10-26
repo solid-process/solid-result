@@ -104,10 +104,10 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
       Continue(number1: arg1, number2: arg2)
     end
 
-    def validate_non_zero(number2:, **input)
+    def validate_non_zero(number2:, **)
       return Failure(:division_by_zero, message: 'arg2 must not be zero') if number2.zero?
 
-      Continue(number2: number2, **input)
+      Continue()
     end
 
     def divide(number1:, number2:)
