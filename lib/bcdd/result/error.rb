@@ -15,16 +15,14 @@ class BCDD::Result::Error < StandardError
   end
 
   class UnexpectedOutcome < self
-    def self.build(outcome:, origin:)
-      message =
-        "Unexpected outcome: #{outcome.inspect}. The #{origin} must return this object wrapped by " \
-        'BCDD::Result::Success or BCDD::Result::Failure'
+    def self.build(outcome:, origin:, expected: nil)
+      expected ||= 'BCDD::Result::Success or BCDD::Result::Failure'
 
-      new(message)
+      new("Unexpected outcome: #{outcome.inspect}. The #{origin} must return this object wrapped by #{expected}")
     end
   end
 
-  class WrongResultSubject < self
+  class InvalidResultSubject < self
     def self.build(given_result:, expected_subject:)
       message =
         "You cannot call #and_then and return a result that does not belong to the subject!\n" \
@@ -36,9 +34,9 @@ class BCDD::Result::Error < StandardError
     end
   end
 
-  class WrongSubjectMethodArity < self
-    def self.build(subject:, method:)
-      new("#{subject.class}##{method.name} has unsupported arity (#{method.arity}). Expected 0, 1 or 2.")
+  class InvalidSubjectMethodArity < self
+    def self.build(subject:, method:, max_arity:)
+      new("#{subject.class}##{method.name} has unsupported arity (#{method.arity}). Expected 0..#{max_arity}")
     end
   end
 

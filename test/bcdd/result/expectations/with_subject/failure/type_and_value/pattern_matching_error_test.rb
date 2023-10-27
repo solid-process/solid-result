@@ -26,12 +26,15 @@ class BCDD::Result::ExpectationsWithSubjectFailureTypeAndValuePatterMatchingErro
   end
 
   test 'unexpected value error' do
-    err = assert_raises(BCDD::Result::Expectations::Error::UnexpectedValue) do
+    err = assert_raises(BCDD::Result::Contract::Error::UnexpectedValue) do
       Divide.new.call(10, 0)
     end
 
-    assert_equal(
-      'value :"arg2 must not be zero" is not allowed for :division_by_zero type',
+    assert_match(
+      Regexp.new(
+        'value :"arg2 must not be zero" is not allowed for :division_by_zero type ' \
+        '\(.*arg2 must not be zero.*\)'
+      ),
       err.message
     )
   end

@@ -7,7 +7,9 @@ require_relative 'result/handler'
 require_relative 'result/failure'
 require_relative 'result/success'
 require_relative 'result/mixin'
+require_relative 'result/contract'
 require_relative 'result/expectations'
+require_relative 'result/context'
 
 class BCDD::Result
   attr_accessor :unknown
@@ -21,7 +23,7 @@ class BCDD::Result
   def initialize(type:, value:, subject: nil, expectations: nil)
     data = Data.new(name, type, value)
 
-    @type_checker = Expectations.evaluate(data, expectations)
+    @type_checker = Contract.evaluate(data, expectations)
     @subject = subject
     @data = data
 
@@ -69,7 +71,7 @@ class BCDD::Result
   def and_then(method_name = nil, context = nil)
     return self if failure?
 
-    method_name && block_given? and raise ArgumentError, 'method_name and block are mutually exclusive'
+    method_name && block_given? and raise ::ArgumentError, 'method_name and block are mutually exclusive'
 
     return call_subject_method(method_name, context) if method_name
 
@@ -129,7 +131,7 @@ class BCDD::Result
       when 0 then subject.send(method_name)
       when 1 then subject.send(method_name, value)
       when 2 then subject.send(method_name, value, context)
-      else raise Error::WrongSubjectMethodArity.build(subject: subject, method: method)
+      else raise Error::InvalidSubjectMethodArity.build(subject: subject, method: method, max_arity: 2)
       end
 
     ensure_result_object(result, origin: :method)
@@ -140,6 +142,6 @@ class BCDD::Result
 
     return result if result.subject.equal?(subject)
 
-    raise Error::WrongResultSubject.build(given_result: result, expected_subject: subject)
+    raise Error::InvalidResultSubject.build(given_result: result, expected_subject: subject)
   end
 end

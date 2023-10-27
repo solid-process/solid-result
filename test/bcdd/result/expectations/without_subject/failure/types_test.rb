@@ -4,7 +4,7 @@ require 'test_helper'
 
 class BCDD::Result::ExpectationsWithoutSubjectFailureTypesTest < Minitest::Test
   class Divide
-    Expected = BCDD::Result::Expectations.new(
+    Result = BCDD::Result::Expectations.new(
       failure: %i[invalid_arg division_by_zero]
     )
 
@@ -17,20 +17,20 @@ class BCDD::Result::ExpectationsWithoutSubjectFailureTypesTest < Minitest::Test
     private
 
     def validate_numbers(arg1, arg2)
-      arg1.is_a?(::Numeric) or return Expected::Failure(:invalid_arg, 'arg1 must be numeric')
-      arg2.is_a?(::Numeric) or return Expected::Failure(:invalid_arg, 'arg2 must be numeric')
+      arg1.is_a?(::Numeric) or return Result::Failure(:invalid_arg, 'arg1 must be numeric')
+      arg2.is_a?(::Numeric) or return Result::Failure(:invalid_arg, 'arg2 must be numeric')
 
-      Expected::Success(:numbers, [arg1, arg2])
+      Result::Success(:numbers, [arg1, arg2])
     end
 
     def validate_non_zero(numbers)
-      return Expected::Success(:numbers, numbers) unless numbers.last.zero?
+      return Result::Success(:numbers, numbers) unless numbers.last.zero?
 
-      Expected::Failure(:division_by_zero, 'arg2 must not be zero')
+      Result::Failure(:division_by_zero, 'arg2 must not be zero')
     end
 
     def divide((number1, number2))
-      Expected::Success(:division_completed, number1 / number2)
+      Result::Success(:division_completed, number1 / number2)
     end
   end
 
@@ -75,7 +75,7 @@ class BCDD::Result::ExpectationsWithoutSubjectFailureTypesTest < Minitest::Test
   end
 
   test 'invalid result type' do
-    err = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       Divide.new.call(10, '2').failure?(:numbers)
     end
 
@@ -88,15 +88,15 @@ class BCDD::Result::ExpectationsWithoutSubjectFailureTypesTest < Minitest::Test
   test 'invalid hooks' do
     result = Divide.new.call(6, '2')
 
-    err1 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err1 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.on_failure(:err) { :this_type_is_not_defined_in_the_expectations }
     end
 
-    err2 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err2 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.on_failure(:error) { :this_type_is_not_defined_in_the_expectations }
     end
 
-    err3 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err3 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.on(:bar) { :this_type_is_not_defined_in_the_expectations }
     end
 
@@ -119,19 +119,19 @@ class BCDD::Result::ExpectationsWithoutSubjectFailureTypesTest < Minitest::Test
   test 'invalid handlers' do
     result = Divide.new.call(6, '2')
 
-    err1 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err1 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.handle do |on|
         on.failure(:error) { :this_type_is_not_defined_in_the_expectations }
       end
     end
 
-    err2 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err2 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.handle do |on|
         on.failure(:err) { :this_type_is_not_defined_in_the_expectations }
       end
     end
 
-    err3 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err3 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.handle do |on|
         on.type(:bar) { :this_type_is_not_defined_in_the_expectations }
       end

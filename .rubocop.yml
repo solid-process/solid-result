@@ -15,31 +15,41 @@ Layout/LineLength:
 Layout/ExtraSpacing:
   AllowBeforeTrailingComments: true
 
-Style/ClassAndModuleChildren:
+Layout/MultilineMethodCallIndentation:
   Enabled: false
 
-Style/CaseEquality:
-  Exclude:
-    - lib/bcdd/result/expectations/contract/for_types_and_values.rb
-
-Style/Lambda:
-  EnforcedStyle: literal
-
-Style/MapToSet:
-  Exclude:
-    - lib/bcdd/result/expectations/contract/for_types.rb
-
-Style/MixinGrouping:
+Lint/UnderscorePrefixedVariableName:
   Enabled: false
 
 Style/AccessModifierDeclarations:
   Enabled: false
 
+Style/CaseEquality:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/Lambda:
+  EnforcedStyle: literal
+
+Style/ParallelAssignment:
+  Enabled: false
+
+Style/SingleLineMethods:
+  Enabled: false
+
+Style/MapToSet:
+  Enabled: false
+
+Style/MixinGrouping:
+  Enabled: false
+
 Naming/MethodName:
-  Exclude:
-    - lib/bcdd/result/mixin.rb
-    - lib/bcdd/result/expectations.rb
-    - lib/bcdd/result/expectations/mixin.rb
+  Enabled: false
+
+Naming/VariableName:
+  Enabled: false
 
 Metrics/BlockLength:
   Exclude:
@@ -51,4 +61,7 @@ Metrics/ClassLength:
     - test/**/*.rb
 
 Minitest/MultipleAssertions:
+  Enabled: false
+
+Minitest/AssertEmptyLiteral:
   Enabled: false

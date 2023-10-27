@@ -25,16 +25,21 @@ class BCDD::Result
         Array(names).filter_map { |name| OPTIONS[name] }
       end
     end
+
+    def self.module!
+      ::Module.new do
+        def self.included(base); base.const_set(:ResultMixin, self); end
+        def self.extended(base); base.const_set(:ResultMixin, self); end
+      end
+    end
   end
 
   def self.mixin(with: nil)
     addons = Mixin::Addons.options(with)
 
-    mod = Module.new
+    mod = Mixin.module!
     mod.send(:include, Mixin::Methods)
     mod.send(:include, *addons) unless addons.empty?
     mod
   end
-
-  private_constant :Mixin
 end

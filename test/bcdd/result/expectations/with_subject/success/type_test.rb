@@ -74,7 +74,7 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
   end
 
   test 'invalid result type' do
-    err = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       Divide.new.call(10, 2).success?(:numbers)
     end
 
@@ -87,11 +87,11 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
   test 'invalid hooks' do
     result = Divide.new.call(6, 2)
 
-    err1 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err1 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.on_success(:foo) { :this_type_is_not_defined_in_the_expectations }
     end
 
-    err2 = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err2 = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.on_success(:bar) { :this_type_is_not_defined_in_the_expectations }
     end
 
@@ -109,7 +109,7 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
   test 'invalid handlers' do
     result = Divide.new.call(6, 2)
 
-    err = assert_raises(BCDD::Result::Expectations::Error::UnexpectedType) do
+    err = assert_raises(BCDD::Result::Contract::Error::UnexpectedType) do
       result.handle do |on|
         on.success(:foo) { :this_type_is_not_defined_in_the_expectations }
       end

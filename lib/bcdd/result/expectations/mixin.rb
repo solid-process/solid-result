@@ -1,27 +1,27 @@
 # frozen_string_literal: true
 
-class BCDD::Result::Expectations
-  module Mixin
+class BCDD::Result
+  module Expectations::Mixin
     METHODS = <<~RUBY
       def Success(...)
-        __expected::Success(...)
+        _Result.Success(...)
       end
 
       def Failure(...)
-        __expected::Failure(...)
+        _Result.Failure(...)
       end
 
       private
 
-      def __expected
-        @__expected ||= Expected.with(subject: self)
+      def _Result
+        @_Result ||= Result.with(subject: self)
       end
     RUBY
 
     module Addons
       module Continuable
         private def Continue(value)
-          ::BCDD::Result::Success.new(type: :continued, value: value, subject: self)
+          Success.new(type: :continued, value: value, subject: self)
         end
       end
 
@@ -31,7 +31,12 @@ class BCDD::Result::Expectations
         Array(names).filter_map { |name| OPTIONS[name] }
       end
     end
-  end
 
-  private_constant :Mixin
+    def self.module!
+      ::Module.new do
+        def self.included(base); base.const_set(:ResultExpectationsMixin, self); end
+        def self.extended(base); base.const_set(:ResultExpectationsMixin, self); end
+      end
+    end
+  end
 end

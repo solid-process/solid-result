@@ -6,7 +6,7 @@ end
 
 class BCDD::Result
   private attr_accessor unknown: bool
-  private attr_reader type_checker: BCDD::Result::Expectations::TypeChecker
+  private attr_reader type_checker: BCDD::Result::Contract::TypeChecker
 
   attr_reader data: BCDD::Result::Data
   attr_reader subject: untyped
@@ -15,7 +15,7 @@ class BCDD::Result
     type: Symbol,
     value: untyped,
     ?subject: untyped,
-    ?expectations: BCDD::Result::Expectations::Contract::Evaluator
+    ?expectations: BCDD::Result::Contract::Evaluator
   ) -> void
 
   def type: -> Symbol
@@ -31,7 +31,7 @@ class BCDD::Result
   def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
   def on_unknown: () { (untyped, Symbol) -> void } -> BCDD::Result
 
-  def and_then: (?Symbol method_name, ?untyped context) ?{ (untyped) -> untyped } -> BCDD::Result
+  def and_then: (?Symbol method_name, ?untyped context) ?{ (untyped) -> untyped } -> untyped
 
   def handle: () { (BCDD::Result::Handler) -> void } -> untyped
 
@@ -54,17 +54,42 @@ class BCDD::Result
 end
 
 class BCDD::Result
-  class Failure < BCDD::Result
-  end
-
-  def self.Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
-end
-
-class BCDD::Result
   class Success < BCDD::Result
+    module Methods
+      def success?: (?Symbol type) -> bool
+      def failure?: (?Symbol type) -> bool
+      def value_or: { () -> untyped } -> untyped
+      def value: -> untyped
+
+      private
+      def name: -> Symbol
+      def type_checker: -> BCDD::Result::Contract::TypeChecker
+    end
+
+    include Methods
   end
 
   def self.Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
+end
+
+
+class BCDD::Result
+  class Failure < BCDD::Result
+    module Methods
+      def success?: (?Symbol type) -> bool
+      def failure?: (?Symbol type) -> bool
+      def value_or: { (untyped) -> untyped } -> untyped
+      def value: -> untyped
+
+      private
+      def name: -> Symbol
+      def type_checker: -> BCDD::Result::Contract::TypeChecker
+    end
+
+    include Methods
+  end
+
+  def self.Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
 end
 
 class BCDD::Result
@@ -79,13 +104,17 @@ class BCDD::Result
       module Continuable
         include BCDD::Result::Mixin::Methods
 
-        private def Continue: (untyped) -> BCDD::Result::Success
+        private
+
+        def Continue: (untyped) -> BCDD::Result::Success
       end
 
       OPTIONS: Hash[Symbol, Module]
 
       def self.options: (Array[Symbol]) -> Array[Module]
     end
+
+    def self.module!: -> Module
   end
 
   def self.mixin: (?with: Array[Symbol]) -> Module
@@ -109,7 +138,7 @@ class BCDD::Result
 end
 
 class BCDD::Result
-  class Error < ::StandardError
+  class Error < StandardError
     def self.build: (**untyped) -> BCDD::Result::Error
 
     class NotImplemented < BCDD::Result::Error
@@ -119,18 +148,18 @@ class BCDD::Result
     end
 
     class UnexpectedOutcome < BCDD::Result::Error
-      def self.build: (outcome: untyped, origin: Symbol)
+      def self.build: (outcome: untyped, origin: Symbol, ?expected: String)
           -> BCDD::Result::Error::UnexpectedOutcome
     end
 
-    class WrongResultSubject < BCDD::Result::Error
+    class InvalidResultSubject < BCDD::Result::Error
       def self.build: (given_result: BCDD::Result, expected_subject: untyped)
-          -> BCDD::Result::Error::WrongResultSubject
+          -> BCDD::Result::Error::InvalidResultSubject
     end
 
-    class WrongSubjectMethodArity < BCDD::Result::Error
-      def self.build: (subject: untyped, method: ::Method)
-        -> BCDD::Result::Error::WrongSubjectMethodArity
+    class InvalidSubjectMethodArity < BCDD::Result::Error
+      def self.build: (subject: untyped, method: Method, max_arity: Integer)
+        -> BCDD::Result::Error::InvalidSubjectMethodArity
     end
 
     class UnhandledTypes < BCDD::Result::Error
@@ -146,7 +175,7 @@ class BCDD::Result
 
     def initialize: (
       BCDD::Result,
-      type_checker: BCDD::Result::Expectations::TypeChecker
+      type_checker: BCDD::Result::Contract::TypeChecker
     ) -> void
 
     def []: (*Symbol) { (untyped, Symbol) -> void } -> untyped
@@ -170,10 +199,10 @@ end
 class BCDD::Result::Handler
   class AllowedTypes
     attr_reader unchecked: Set[Symbol]
-    attr_reader type_checker: BCDD::Result::Expectations::TypeChecker
+    attr_reader type_checker: BCDD::Result::Contract::TypeChecker
 
     def initialize: (
-      BCDD::Result::Expectations::TypeChecker
+      BCDD::Result::Contract::TypeChecker
     ) -> void
 
     def allow?: (Array[Symbol]) -> bool
@@ -188,69 +217,34 @@ class BCDD::Result::Handler
   end
 end
 
-class BCDD::Result::Expectations
-  MIXIN_METHODS: String
-
-  def self.mixin: (
-    ?success: Hash[Symbol, untyped] | Array[Symbol],
-    ?failure: Hash[Symbol, untyped] | Array[Symbol]
-  ) -> Module
+module BCDD::Result::Contract
+  NONE: BCDD::Result::Contract::Evaluator
 
   def self.evaluate: (
     BCDD::Result::Data,
-    BCDD::Result::Expectations::Contract::Evaluator
-  ) -> BCDD::Result::Expectations::TypeChecker
-
-  def initialize: (
-    ?subject: untyped,
-    ?success: Hash[Symbol, untyped] | Array[Symbol],
-    ?failure: Hash[Symbol, untyped] | Array[Symbol],
-    ?contract: BCDD::Result::Expectations::Contract::Evaluator
-  ) -> void
-
-  def Success: (Symbol, ?untyped) -> BCDD::Result::Success
-  def Failure: (Symbol, ?untyped) -> BCDD::Result::Failure
-
-  private
-
-  attr_reader subject: untyped
-  attr_reader contract: BCDD::Result::Expectations::Contract::Evaluator
-end
-
-module BCDD::Result::Expectations::Mixin
-  METHODS: String
-
-  module Addons
-    module Continuable
-      private def Continue: (untyped) -> BCDD::Result::Success
-    end
-
-    OPTIONS: Hash[Symbol, Module]
-
-    def self.options: (Array[Symbol]) -> Array[Module]
-  end
-end
-
-module BCDD::Result::Expectations::Contract
-  NONE: BCDD::Result::Expectations::Contract::Evaluator
+    BCDD::Result::Contract::Evaluator
+  ) -> BCDD::Result::Contract::TypeChecker
 
   ToEnsure: ^(Hash[Symbol, untyped] | Array[Symbol])
-    -> BCDD::Result::Expectations::Contract::Evaluator
+    -> BCDD::Result::Contract::Evaluator
 
   def self.new: (
     success: Hash[Symbol, untyped] | Array[Symbol],
     failure: Hash[Symbol, untyped] | Array[Symbol]
-  ) -> BCDD::Result::Expectations::Contract::Evaluator
+  ) -> BCDD::Result::Contract::Evaluator
+
+  def self.nil_as_valid_value_checking!: (?enabled: bool) -> void
+  def self.nil_as_valid_value_checking?: -> bool
 end
 
-class BCDD::Result::Expectations
+module BCDD::Result::Contract
   class TypeChecker
     attr_reader result_type: Symbol
-    attr_reader expectations: BCDD::Result::Expectations::Contract::Evaluator
+    attr_reader expectations: BCDD::Result::Contract::Evaluator
 
     def initialize: (
       Symbol,
-      expectations: BCDD::Result::Expectations::Contract::Evaluator
+      expectations: BCDD::Result::Contract::Evaluator
     ) -> void
 
     def allow?: (Array[Symbol]) -> bool
@@ -261,27 +255,27 @@ class BCDD::Result::Expectations
 
     def validate: (
       Array[Symbol],
-      expected: BCDD::Result::Expectations::Contract::Interface,
+      expected: BCDD::Result::Contract::Interface,
       allow_empty: bool
     ) -> bool
   end
 end
 
-class BCDD::Result::Expectations::Error < BCDD::Result::Error
-  class UnexpectedType < BCDD::Result::Expectations::Error
+class BCDD::Result::Contract::Error < BCDD::Result::Error
+  class UnexpectedType < BCDD::Result::Contract::Error
     def self.build: (type: Symbol, allowed_types: Set[Symbol])
-        -> BCDD::Result::Expectations::Error::UnexpectedType
+        -> BCDD::Result::Contract::Error::UnexpectedType
   end
 
-  class UnexpectedValue < BCDD::Result::Expectations::Error
-    def self.build: (type: Symbol, value: untyped)
-      -> BCDD::Result::Expectations::Error::UnexpectedValue
+  class UnexpectedValue < BCDD::Result::Contract::Error
+    def self.build: (type: Symbol, value: untyped, ?cause: Exception)
+      -> BCDD::Result::Contract::Error::UnexpectedValue
   end
 end
 
-module BCDD::Result::Expectations::Contract
+module BCDD::Result::Contract
   module Interface
-    def ==: (BCDD::Result::Expectations::Contract::Interface) -> bool
+    def ==: (BCDD::Result::Contract::Interface) -> bool
 
     def allowed_types: -> Set[Symbol]
 
@@ -295,7 +289,7 @@ module BCDD::Result::Expectations::Contract
   end
 end
 
-module BCDD::Result::Expectations::Contract
+module BCDD::Result::Contract
   module Disabled
     extend Interface
 
@@ -303,7 +297,7 @@ module BCDD::Result::Expectations::Contract
   end
 end
 
-module BCDD::Result::Expectations::Contract
+module BCDD::Result::Contract
   class ForTypes
     include Interface
 
@@ -311,7 +305,7 @@ module BCDD::Result::Expectations::Contract
   end
 end
 
-module BCDD::Result::Expectations::Contract
+module BCDD::Result::Contract
   class ForTypesAndValues
     include Interface
 
@@ -319,21 +313,171 @@ module BCDD::Result::Expectations::Contract
   end
 end
 
-module BCDD::Result::Expectations::Contract
+module BCDD::Result::Contract
   class Evaluator
     include Interface
 
     attr_reader allowed_types: Set[Symbol]
-    attr_reader success: BCDD::Result::Expectations::Contract::Interface
-    attr_reader failure: BCDD::Result::Expectations::Contract::Interface
+    attr_reader success: BCDD::Result::Contract::Interface
+    attr_reader failure: BCDD::Result::Contract::Interface
 
     def initialize: (
-      BCDD::Result::Expectations::Contract::Interface,
-      BCDD::Result::Expectations::Contract::Interface
+      BCDD::Result::Contract::Interface,
+      BCDD::Result::Contract::Interface
     ) -> void
 
     private
 
-    def for: (BCDD::Result::Data) -> BCDD::Result::Expectations::Contract::Interface
+    def for: (BCDD::Result::Data) -> BCDD::Result::Contract::Interface
+  end
+end
+
+class BCDD::Result::Expectations
+  def self.mixin: (
+    ?with: Symbol,
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol]
+  ) -> Module
+
+  def initialize: (
+    ?subject: untyped,
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol],
+    ?contract: BCDD::Result::Contract::Evaluator
+  ) -> void
+
+  def Success: (Symbol, ?untyped) -> BCDD::Result::Success
+  def Failure: (Symbol, ?untyped) -> BCDD::Result::Failure
+
+  def with: (subject: untyped) -> BCDD::Result::Expectations
+
+  private
+
+  attr_reader subject: untyped
+  attr_reader contract: BCDD::Result::Contract::Evaluator
+end
+
+module BCDD::Result::Expectations::Mixin
+  METHODS: String
+
+  module Addons
+    module Continuable
+      private def Continue: (untyped) -> BCDD::Result::Success
+    end
+
+    OPTIONS: Hash[Symbol, Module]
+
+    def self.options: (Symbol) -> Array[Module]
+  end
+
+  def self.module!: -> Module
+end
+
+class BCDD::Result::Context < BCDD::Result
+  EXPECTED_OUTCOME: String
+
+  SubjectMethodArity: ^(Method) -> Integer
+
+  attr_reader acc: Hash[Symbol, untyped]
+
+  def initialize: (
+    type: Symbol,
+    value: untyped,
+    ?subject: untyped,
+    ?expectations: BCDD::Result::Contract::Evaluator
+  ) -> void
+
+  def and_then: (?Symbol, **untyped) ?{ (Hash[Symbol, untyped]) -> untyped } -> BCDD::Result::Context
+
+  private
+
+  def call_subject_method: (Symbol, Hash[Symbol, untyped]) -> BCDD::Result::Context
+  def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result::Context
+
+  def raise_unexpected_outcome_error: (BCDD::Result::Context | untyped, Symbol) -> void
+end
+
+class BCDD::Result::Context
+  class Success < BCDD::Result::Context
+    include BCDD::Result::Success::Methods
+
+    def and_expose: (Symbol, Array[Symbol]) -> BCDD::Result::Context::Success
+  end
+
+  def self.Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
+end
+
+class BCDD::Result::Context
+  class Failure < BCDD::Result::Context
+    include BCDD::Result::Failure::Methods
+
+    def and_expose: (Symbol, Array[Symbol]) -> BCDD::Result::Context::Failure
+  end
+
+  def self.Failure: (Symbol, **untyped) -> BCDD::Result::Context::Failure
+end
+
+class BCDD::Result::Context
+  module Mixin
+    module Methods
+      def Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
+
+      def Failure: (Symbol, **untyped) -> BCDD::Result::Context::Failure
+    end
+
+    module Addons
+      module Continuable
+        include BCDD::Result::Context::Mixin::Methods
+
+        private
+
+        def Continue: (**untyped) -> BCDD::Result::Context::Success
+      end
+
+      OPTIONS: Hash[Symbol, Module]
+
+      def self.options: (Array[Symbol]) -> Array[Module]
+    end
+  end
+
+  def self.mixin: (?with: Array[Symbol]) -> Module
+end
+
+class BCDD::Result::Context::Expectations
+  def self.mixin: (
+    ?with: Symbol,
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol]
+  ) -> Module
+
+  def initialize: (
+    ?subject: untyped,
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol],
+    ?contract: BCDD::Result::Contract::Evaluator
+  ) -> void
+
+  def Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
+  def Failure: (Symbol, **untyped) -> BCDD::Result::Context::Failure
+
+  def with: (subject: untyped) -> BCDD::Result::Context::Expectations
+
+  private
+
+  attr_reader subject: untyped
+  attr_reader contract: BCDD::Result::Contract::Evaluator
+end
+
+module BCDD::Result::Context::Expectations::Mixin
+  METHODS: String
+
+  module Addons
+    module Continuable
+      private def Continue: (**untyped) -> BCDD::Result::Context::Success
+    end
+
+    OPTIONS: Hash[Symbol, Module]
+
+    def self.options: (Symbol) -> Array[Module]
   end
 end

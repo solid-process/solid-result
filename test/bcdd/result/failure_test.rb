@@ -8,6 +8,10 @@ class BCDD::Result
       assert Failure < BCDD::Result
     end
 
+    test 'has BCDD::Result::Failure::Methods' do
+      assert Failure < BCDD::Result::Failure::Methods
+    end
+
     test '#success? should return false' do
       result = Failure.new(type: :err, value: nil)
 

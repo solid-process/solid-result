@@ -4,24 +4,24 @@ require 'test_helper'
 
 class BCDD::Result::ExpectationsWithoutSubjectSuccessTypeAndValueInvalidValueTest < Minitest::Test
   class Divide
-    Expected = BCDD::Result::Expectations.new(
+    Result = BCDD::Result::Expectations.new(
       success: {
         division_completed: ->(value) { value.is_a?(Integer) || value.is_a?(Float) }
       }
     )
 
     def call(arg1, arg2)
-      arg1.is_a?(::Numeric) or return Expected::Failure(:invalid_arg, 'arg1 must be numeric')
-      arg2.is_a?(::Numeric) or return Expected::Failure(:invalid_arg, 'arg2 must be numeric')
+      arg1.is_a?(::Numeric) or return Result::Failure(:invalid_arg, 'arg1 must be numeric')
+      arg2.is_a?(::Numeric) or return Result::Failure(:invalid_arg, 'arg2 must be numeric')
 
-      return Expected::Failure(:division_by_zero, 'arg2 must not be zero') if arg2.zero?
+      return Result::Failure(:division_by_zero, 'arg2 must not be zero') if arg2.zero?
 
-      Expected::Success(:division_completed, (arg1 / arg2).to_s)
+      Result::Success(:division_completed, (arg1 / arg2).to_s)
     end
   end
 
   test 'unexpected value error' do
-    err = assert_raises(BCDD::Result::Expectations::Error::UnexpectedValue) do
+    err = assert_raises(BCDD::Result::Contract::Error::UnexpectedValue) do
       Divide.new.call(10, 2)
     end
 

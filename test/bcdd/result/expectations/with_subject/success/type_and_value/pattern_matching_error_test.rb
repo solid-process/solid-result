@@ -25,12 +25,15 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeAndValuePatterMatchingErro
   end
 
   test 'unexpected value error' do
-    err = assert_raises(BCDD::Result::Expectations::Error::UnexpectedValue) do
+    err = assert_raises(BCDD::Result::Contract::Error::UnexpectedValue) do
       Divide.new.call(10, 2)
     end
 
-    assert_equal(
-      'value "5" is not allowed for :division_completed type',
+    assert_match(
+      Regexp.new(
+        'value "5" is not allowed for :division_completed type ' \
+        '\(.*5.*\)'
+      ),
       err.message
     )
   end
