@@ -1,5 +1,31 @@
 ## [Unreleased]
 
+### Added
+
+- Add `BCDD::Result::Context`. It is a `BCDD::Result`, meaning it has all the features of the `BCDD::Result`. The main difference is that it only accepts keyword arguments as a value, which applies to the `and_then`: The called methods must receive keyword arguments, and the dependency injection will be performed through keyword arguments.<br/><br/>
+As the input/output are hashes, the results of each `and_then` call will automatically accumulate. This is useful in operations chaining, as the result of the previous operations will be automatically available for the next one. Because of this behavior, the `BCDD::Result::Context` has the `#and_expose` method to expose only the desired keys from the accumulated result.
+
+- Add `BCDD::Result::Context::Expectations.new` and `BCDD::Result::Context::Expectations.mixin`. Both are similar to `BCDD::Result::Expectations.new` and `BCDD::Result::Expectations.mixin`, but they are for `BCDD::Result::Context` instead of `BCDD::Result`.
+  - The `BCDD::Result::Context.mixin` and `BCDD::Result::Context::Expectations.mixin` support the `with: :Continue` option.
+
+- Enhance Pattern Matching support. When a `NoMatchingPatternError` occurs inside a value checking, the `BCDD::Result::Contract::Error::UnexpectedValue` message will include the value and the expected patterns.
+
+- Add `BCDD::Result::Success::Methods` to be share common methods between `BCDD::Result::Success` and `BCDD::Result::Context::Success`.
+
+- Add `BCDD::Result::Failure::Methods` to be share common methods between `BCDD::Failure::Success` and `BCDD::Result::Context::Failure`.
+
+- Make all mixin generators produce a named module. The module name will be added to the target class/module (who included/extended a `BCDD::Result`/`BCDD::Result::Context` mixin module).
+
+- Add `BCDD::Result::Contract.nil_as_valid_value_checking!`. Please use this method when using the one-line pattern-matching operators on the result's value expectations.
+
+### Changed
+
+- **(BREAKING)** Rename `BCDD::Result::WrongResultSubject` to `BCDD::Result::Error::InvalidResultSubject`.
+- **(BREAKING)** Rename `BCDD::Result::WrongSubjectMethodArity` to `BCDD::Result::Error::InvalidSubjectMethodArity`.
+- **(BREAKING)** Rename the constant produced by `BCDD::Result::Expectations.mixins` from `Expected` to `Result`.
+- Extract the major part of the `BCDD::Result::Expectations` components/features to `BCDD::Result::Contract`.
+  - **(BREAKING)** `BCDD::Result::Expectations::Error` became `BCDD::Result::Contract::Error`. So, `BCDD::Result::Expectations::Error::UnexpectedType` and `BCDD::Result::Expectations::Error::UnexpectedValue` are now `BCDD::Result::Contract::Error::UnexpectedType` and `BCDD::Result::Contract::Error::UnexpectedValue`.
+
 ## [0.6.0] - 2023-10-11
 
 ### Added
