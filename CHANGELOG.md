@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.7.0] - 2023-10-27
+
 ### Added
 
 - Add `BCDD::Result::Context`. It is a `BCDD::Result`, meaning it has all the features of the `BCDD::Result`. The main difference is that it only accepts keyword arguments as a value, which applies to the `and_then`: The called methods must receive keyword arguments, and the dependency injection will be performed through keyword arguments.<br/><br/>
