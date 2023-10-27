@@ -32,7 +32,7 @@ class BCDD::Result::ExpectationsWithoutSubjectSuccessTypeAndValuePatterMatchingE
     assert_match(
       Regexp.new(
         'value "5" is not allowed for :division_completed type ' \
-        '\(cause:.*5.*\)'
+        '\(.*5.*\)'
       ),
       err.message
     )

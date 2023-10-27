@@ -37,7 +37,7 @@ class BCDD::Result::Context::ExpectationsWithoutSubjectFailureTypeAndValueInvali
     assert_match(
       Regexp.new(
         'value {:message=>:\"arg2 must be numeric\"} is not allowed for :invalid_arg type ' \
-        '\(cause:.*arg2 must be numeric.*\)'
+        '\(.*arg2 must be numeric.*\)'
       ),
       err.message
     )

@@ -23,11 +23,13 @@ class BCDD::Result
     end
 
     def type_and_value!(data)
-      type = data.type
-      value = data.value
-      allowed_value = @types_and_values[type!(type)]
+      type, value = data.type, data.value
 
-      return value if allowed_value === value
+      value_checking = @types_and_values[type!(type)]
+
+      checking_result = value_checking === value
+
+      return value if checking_result || (Contract.nil_as_valid_value_checking? && checking_result.nil?)
 
       raise Contract::Error::UnexpectedValue.build(type: type, value: value)
     rescue ::NoMatchingPatternError => e

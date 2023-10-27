@@ -9,7 +9,7 @@ class BCDD::Result::Contract::Error < BCDD::Result::Error
 
   class UnexpectedValue < self
     def self.build(type:, value:, cause: nil)
-      cause_message = cause ? " (cause: #{cause.message})" : ''
+      cause_message = " (#{cause.message})" if cause
 
       new("value #{value.inspect} is not allowed for :#{type} type#{cause_message}")
     end

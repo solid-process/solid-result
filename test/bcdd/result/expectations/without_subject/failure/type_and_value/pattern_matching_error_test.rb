@@ -33,7 +33,7 @@ class BCDD::Result::ExpectationsWithoutSubjectFailureTypeAndValuePatterMatchingE
     assert_match(
       Regexp.new(
         'value :"arg2 must not be zero" is not allowed for :division_by_zero type ' \
-        '\(cause:.*arg2 must not be zero.*\)'
+        '\(.*arg2 must not be zero.*\)'
       ),
       err.message
     )

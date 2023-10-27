@@ -232,6 +232,9 @@ module BCDD::Result::Contract
     success: Hash[Symbol, untyped] | Array[Symbol],
     failure: Hash[Symbol, untyped] | Array[Symbol]
   ) -> BCDD::Result::Contract::Evaluator
+
+  def self.nil_as_valid_value_checking!: (?enabled: bool) -> void
+  def self.nil_as_valid_value_checking?: -> bool
 end
 
 module BCDD::Result::Contract

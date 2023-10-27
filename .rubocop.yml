@@ -18,6 +18,9 @@ Layout/ExtraSpacing:
 Layout/MultilineMethodCallIndentation:
   Enabled: false
 
+Lint/UnderscorePrefixedVariableName:
+  Enabled: false
+
 Style/AccessModifierDeclarations:
   Enabled: false
 
@@ -29,6 +32,9 @@ Style/ClassAndModuleChildren:
 
 Style/Lambda:
   EnforcedStyle: literal
+
+Style/ParallelAssignment:
+  Enabled: false
 
 Style/SingleLineMethods:
   Enabled: false
