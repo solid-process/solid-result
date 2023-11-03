@@ -21,7 +21,7 @@ class BCDD::Result::Context
     module Addons
       module Continuable
         private def Continue(**value)
-          Success.new(type: :continued, value: value, subject: self)
+          Success.new(type: BCDD::Result::CONTINUED, value: value, subject: self)
         end
       end
 

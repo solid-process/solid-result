@@ -12,13 +12,15 @@ require_relative 'result/expectations'
 require_relative 'result/context'
 
 class BCDD::Result
-  attr_accessor :unknown
+  attr_accessor :unknown, :end_line
 
   attr_reader :subject, :data, :type_checker
 
   protected :subject
 
   private :unknown, :unknown=, :type_checker
+
+  CONTINUED = :continued
 
   def initialize(type:, value:, subject: nil, expectations: nil)
     data = Data.new(name, type, value)
@@ -69,7 +71,7 @@ class BCDD::Result
   end
 
   def and_then(method_name = nil, context = nil)
-    return self if failure?
+    return self if end_line?
 
     method_name && block_given? and raise ::ArgumentError, 'method_name and block are mutually exclusive'
 

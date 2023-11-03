@@ -56,3 +56,23 @@ class BCDD::Result::Context::AndThenWithSubjectContinueInstanceTest < Minitest::
     assert_equal({ message: 'arg2 must not be zero' }, failure3.value)
   end
 end
+
+class BCDD::Result::Context::AndThenWithSubjectContinueFollowedBySuccessResultsInstanceTest < Minitest::Test
+  class ContinuedFollowedBySuccessResults
+    include BCDD::Result::Context.mixin(with: :Continue)
+
+    def call
+      Continue(value: 0)
+        .and_then { Success(:first_success, value: 1) }
+        .and_then { Success(:second_success, value: 2) }
+    end
+  end
+
+  test 'method chain interupts after the first Success' do
+    success = ContinuedFollowedBySuccessResults.new.call
+
+    assert_predicate success, :success?
+    assert_equal :first_success, success.type
+    assert_equal({ value: 1 }, success.value)
+  end
+end

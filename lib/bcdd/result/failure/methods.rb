@@ -13,6 +13,10 @@ module BCDD::Result::Failure::Methods
     yield(value)
   end
 
+  def end_line?
+    true
+  end
+
   private
 
   def name

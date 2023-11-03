@@ -13,6 +13,20 @@ module BCDD::Result::Success::Methods
     value
   end
 
+  def and_then(...)
+    result = super
+
+    if type == BCDD::Result::CONTINUED && result.success? && result.type != BCDD::Result::CONTINUED
+      result.end_line = true
+    end
+
+    result
+  end
+
+  def end_line?
+    !!end_line
+  end
+
   private
 
   def name
