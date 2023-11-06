@@ -481,3 +481,61 @@ module BCDD::Result::Context::Expectations::Mixin
     def self.options: (Symbol) -> Array[Module]
   end
 end
+
+class BCDD::Result::Config
+  include Singleton
+
+  private attr_reader _exposable: BCDD::Result::Config::Exposable
+
+  def self.instance: -> BCDD::Result::Config
+
+  def initialize: -> void
+
+  def freeze: -> BCDD::Result::Config
+
+  def exposable: -> Hash[String, Hash[Symbol, untyped]]
+
+  def exposed?: (String) -> bool
+
+  def expose!: (*String) -> Hash[String, Hash[Symbol, untyped]]
+
+  def unexpose!: (*String) -> Hash[String, Hash[Symbol, untyped]]
+end
+
+class BCDD::Result::Config::Exposable
+  module Option
+    RESULT: String
+
+    LIST: Array[String]
+    AFFECTS: Hash[String, Array[String]]
+    MAPPING: Hash[String, Hash[Symbol, untyped]]
+  end
+
+  AVAILABLE_OPTIONS: String
+
+  private attr_reader _options: Hash[String, bool]
+
+  def initialize: -> void
+
+  def freeze: -> BCDD::Result::Config::Exposable
+
+  def options: -> Hash[String, Hash[Symbol, untyped]]
+
+  def enabled?: (String) -> bool
+
+  def enable!: (Array[String]) -> Hash[String, Hash[Symbol, untyped]]
+
+  def disable!: (Array[String]) -> Hash[String, Hash[Symbol, untyped]]
+
+  private
+
+  def enable_many: (Array[String], to: bool) -> Hash[String, Hash[Symbol, untyped]]
+
+  def enable_one: (String, bool) -> void
+
+  def enable_one!: (bool, target: untyped, name: Symbol, value: untyped) -> bool
+
+  def option_required!: (Array[String]) -> void
+
+  def option_invalid!: (String) -> void
+end
