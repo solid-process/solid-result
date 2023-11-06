@@ -10,6 +10,7 @@ require_relative 'result/mixin'
 require_relative 'result/contract'
 require_relative 'result/expectations'
 require_relative 'result/context'
+require_relative 'result/config'
 
 class BCDD::Result
   attr_accessor :unknown
@@ -19,6 +20,16 @@ class BCDD::Result
   protected :subject
 
   private :unknown, :unknown=, :type_checker
+
+  def self.config
+    Config.instance
+  end
+
+  def self.configuration
+    yield(config)
+
+    config.freeze
+  end
 
   def initialize(type:, value:, subject: nil, expectations: nil)
     data = Data.new(name, type, value)

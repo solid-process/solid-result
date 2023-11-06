@@ -1,5 +1,30 @@
 ## [Unreleased]
 
+- Add `BCDD::Result.config`
+  - **Exposable**
+    ```ruby
+    BCDD::Result.config.exposable
+
+    BCDD::Result.config.exposed?('Result')
+
+    BCDD::Result.config.expose!('Result')
+
+    BCDD::Result.config.unexpose!('Result')
+    ```
+
+- Add `BCDD::Result.configuration`. It freezes the configuration, disallowing methods that promote changes but allowing the query ones. You can use this feature to ensure integrity in your configuration.
+  ```ruby
+  BCDD::Result.config.exposed?('Result') # false
+
+  BCDD::Result.configuration do |config|
+    config.expose!('Result')
+  end
+
+  BCDD::Result.config.exposed?('Result') # true
+
+  BCDD::Result.config.unexpose!('Result') # raises FrozenError
+  ```
+
 ## [0.7.0] - 2023-10-27
 
 ### Added

@@ -11,6 +11,10 @@ class BCDD::Result
   attr_reader data: BCDD::Result::Data
   attr_reader subject: untyped
 
+  def self.config: -> BCDD::Result::Config
+
+  def self.configuration: { (BCDD::Result::Config) -> void } -> BCDD::Result::Config
+
   def initialize: (
     type: Symbol,
     value: untyped,
