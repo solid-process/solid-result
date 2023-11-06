@@ -2,4 +2,4 @@
 
 require_relative 'bcdd/result'
 
-Object.const_set(:Result, BCDD::Result)
+BCDD::Result.config.expose!('Result')
