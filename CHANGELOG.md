@@ -1,29 +1,45 @@
 ## [Unreleased]
 
+### Added
+
 - Add `BCDD::Result.config`
-  - **Exposable**
+  - **Constant Aliases**
     ```ruby
-    BCDD::Result.config.exposable
+    BCDD::Result.config.constant_alias.options
 
-    BCDD::Result.config.exposed?('Result')
+    BCDD::Result.config.constant_alias.enabled?('Result')
 
-    BCDD::Result.config.expose!('Result')
+    BCDD::Result.config.constant_alias.enable!('Result')
 
-    BCDD::Result.config.unexpose!('Result')
+    BCDD::Result.config.constant_alias.disable!('Result')
+    ```
+  - **Default Add-ons**
+    ```ruby
+    BCDD::Result.config.pattern_matching.options
+
+    BCDD::Result.config.pattern_matching.enabled?(:nil_as_valid_value_checking)
+
+    BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
+
+    BCDD::Result.config.pattern_matching.disable!(:nil_as_valid_value_checking)
     ```
 
 - Add `BCDD::Result.configuration`. It freezes the configuration, disallowing methods that promote changes but allowing the query ones. You can use this feature to ensure integrity in your configuration.
   ```ruby
-  BCDD::Result.config.exposed?('Result') # false
+  BCDD::Result.config.constant_alias.enabled?('Result') # false
 
   BCDD::Result.configuration do |config|
-    config.expose!('Result')
+    config.constant_alias.enable!('Result')
   end
 
-  BCDD::Result.config.exposed?('Result') # true
+  BCDD::Result.config.constant_alias.enabled?('Result') # true
 
-  BCDD::Result.config.unexpose!('Result') # raises FrozenError
+  BCDD::Result.config.constant_alias.disable!('Result') # raises FrozenError
   ```
+
+### Changed
+
+- **(BREAKING)** Replace `BCDD::Result::Contract.nil_as_valid_value_checking!` with `BCDD::Result.config`.
 
 ## [0.7.0] - 2023-10-27
 

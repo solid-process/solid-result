@@ -29,15 +29,5 @@ module BCDD::Result::Contract
     Evaluator.new(ToEnsure[success], ToEnsure[failure])
   end
 
-  @nil_as_valid_value_checking = false
-
-  def self.nil_as_valid_value_checking!(enabled: true)
-    @nil_as_valid_value_checking = enabled
-  end
-
-  def self.nil_as_valid_value_checking?
-    @nil_as_valid_value_checking
-  end
-
   private_constant :ToEnsure
 end

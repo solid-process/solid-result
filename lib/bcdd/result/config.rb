@@ -4,37 +4,23 @@ require 'singleton'
 
 class BCDD::Result
   class Config
+    require_relative 'config/constant_alias'
+    require_relative 'config/pattern_matching'
+
     include Singleton
 
-    require_relative 'config/exposable'
-
-    attr_reader :_exposable
-
-    private :_exposable
+    attr_reader :pattern_matching, :constant_alias
 
     def initialize
-      @_exposable = Exposable.new
+      @constant_alias = ConstantAlias.new
+      @pattern_matching = PatternMatching.new
     end
 
     def freeze
-      _exposable.freeze
+      constant_alias.freeze
+      pattern_matching.freeze
+
       super
-    end
-
-    def exposable
-      _exposable.options
-    end
-
-    def exposed?(option)
-      _exposable.enabled?(option)
-    end
-
-    def expose!(*options)
-      _exposable.enable!(options)
-    end
-
-    def unexpose!(*options)
-      _exposable.disable!(options)
     end
   end
 end

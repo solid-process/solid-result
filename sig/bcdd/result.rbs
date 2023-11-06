@@ -236,9 +236,6 @@ module BCDD::Result::Contract
     success: Hash[Symbol, untyped] | Array[Symbol],
     failure: Hash[Symbol, untyped] | Array[Symbol]
   ) -> BCDD::Result::Contract::Evaluator
-
-  def self.nil_as_valid_value_checking!: (?enabled: bool) -> void
-  def self.nil_as_valid_value_checking?: -> bool
 end
 
 module BCDD::Result::Contract
@@ -314,6 +311,10 @@ module BCDD::Result::Contract
     include Interface
 
     def initialize: (Hash[Symbol, untyped]) -> void
+
+    private
+
+    def nil_as_valid_value_checking?: -> bool
   end
 end
 
@@ -489,24 +490,17 @@ end
 class BCDD::Result::Config
   include Singleton
 
-  private attr_reader _exposable: BCDD::Result::Config::Exposable
+  attr_reader constant_alias: BCDD::Result::Config::ConstantAlias
+  attr_reader pattern_matching: BCDD::Result::Config::PatternMatching
 
   def self.instance: -> BCDD::Result::Config
 
   def initialize: -> void
 
   def freeze: -> BCDD::Result::Config
-
-  def exposable: -> Hash[String, Hash[Symbol, untyped]]
-
-  def exposed?: (String) -> bool
-
-  def expose!: (*String) -> Hash[String, Hash[Symbol, untyped]]
-
-  def unexpose!: (*String) -> Hash[String, Hash[Symbol, untyped]]
 end
 
-class BCDD::Result::Config::Exposable
+class BCDD::Result::Config::ConstantAlias
   module Option
     RESULT: String
 
@@ -521,25 +515,60 @@ class BCDD::Result::Config::Exposable
 
   def initialize: -> void
 
-  def freeze: -> BCDD::Result::Config::Exposable
+  def freeze: -> BCDD::Result::Config::ConstantAlias
 
   def options: -> Hash[String, Hash[Symbol, untyped]]
 
   def enabled?: (String) -> bool
 
-  def enable!: (Array[String]) -> Hash[String, Hash[Symbol, untyped]]
+  def enable!: (*String) -> Hash[String, Hash[Symbol, untyped]]
 
-  def disable!: (Array[String]) -> Hash[String, Hash[Symbol, untyped]]
+  def disable!: (*String) -> Hash[String, Hash[Symbol, untyped]]
 
   private
 
-  def enable_many: (Array[String], to: bool) -> Hash[String, Hash[Symbol, untyped]]
+  def set_many: (Array[String], to: bool) -> Hash[String, Hash[Symbol, untyped]]
 
-  def enable_one: (String, bool) -> void
+  def set_one: (String, bool) -> void
 
-  def enable_one!: (bool, target: untyped, name: Symbol, value: untyped) -> bool
+  def set_one!: (bool, target: untyped, name: Symbol, value: untyped) -> bool
 
   def option_required!: (Array[String]) -> void
 
   def option_invalid!: (String) -> void
+end
+
+class BCDD::Result::Config::PatternMatching
+  module Option
+    NIL_AS_VALID_VALUE_CHECKING: Symbol
+
+    LIST: Array[Symbol]
+    AFFECTS: Hash[Symbol, Array[String]]
+  end
+
+  AVAILABLE_OPTIONS: String
+
+  private attr_reader _options: Hash[Symbol, bool]
+
+  def initialize: -> void
+
+  def freeze: -> BCDD::Result::Config::PatternMatching
+
+  def options: -> Hash[Symbol, Hash[Symbol, untyped]]
+
+  def enabled?: (Symbol) -> bool
+
+  def enable!: (*Symbol) -> Hash[Symbol, Hash[Symbol, untyped]]
+
+  def disable!: (*Symbol) -> Hash[Symbol, Hash[Symbol, untyped]]
+
+  private
+
+  def set_many: (Array[Symbol], to: bool) -> Hash[Symbol, Hash[Symbol, untyped]]
+
+  def set_one: (Symbol, bool) -> void
+
+  def option_required!: (Array[Symbol]) -> void
+
+  def option_invalid!: (Symbol) -> void
 end

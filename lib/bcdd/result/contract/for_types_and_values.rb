@@ -29,11 +29,17 @@ class BCDD::Result
 
       checking_result = value_checking === value
 
-      return value if checking_result || (Contract.nil_as_valid_value_checking? && checking_result.nil?)
+      return value if checking_result || (nil_as_valid_value_checking? && checking_result.nil?)
 
       raise Contract::Error::UnexpectedValue.build(type: type, value: value)
     rescue ::NoMatchingPatternError => e
       raise Contract::Error::UnexpectedValue.build(type: data.type, value: data.value, cause: e)
+    end
+
+    private
+
+    def nil_as_valid_value_checking?
+      Config.instance.pattern_matching.enabled?(:nil_as_valid_value_checking)
     end
   end
 end

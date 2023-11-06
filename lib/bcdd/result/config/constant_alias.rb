@@ -2,7 +2,7 @@
 
 class BCDD::Result
   class Config
-    class Exposable
+    class ConstantAlias
       module Option
         LIST = [
           RESULT = 'Result'
@@ -38,37 +38,37 @@ class BCDD::Result
         _options[name] || false
       end
 
-      def enable!(names)
-        enable_many(names, to: true)
+      def enable!(*names)
+        set_many(names, to: true)
       end
 
-      def disable!(names)
-        enable_many(names, to: false)
+      def disable!(*names)
+        set_many(names, to: false)
       end
 
       private
 
-      def enable_many(names, to:)
+      def set_many(names, to:)
         option_required!(names)
 
-        names.each { |name| enable_one(name, to) }
+        names.each { |name| set_one(name, to) }
 
         options.slice(*names)
       end
 
-      def enable_one(option_name, boolean)
+      def set_one(option_name, boolean)
         mapping = Option::MAPPING.fetch(option_name)
 
         target, name, value = mapping.fetch_values(:target, :name, :value)
 
-        enable_one!(boolean, target: target, name: name, value: value)
+        set_one!(boolean, target: target, name: name, value: value)
 
         _options[name] = boolean
       rescue ::KeyError
         option_invalid!(name)
       end
 
-      def enable_one!(boolean, target:, name:, value:)
+      def set_one!(boolean, target:, name:, value:)
         defined = target.const_defined?(name, false)
 
         boolean ? defined || target.const_set(name, value) : defined && target.send(:remove_const, name)
@@ -85,6 +85,6 @@ class BCDD::Result
       end
     end
 
-    private_constant :Exposable
+    private_constant :ConstantAlias
   end
 end
