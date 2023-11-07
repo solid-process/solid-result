@@ -24,7 +24,7 @@ class BCDD::Result::Context
       OPTIONS = { continue: Continuable }.freeze
 
       def self.options(names)
-        Array(names).filter_map { |name| OPTIONS[name] }
+        ::BCDD::Result::Config::Options.filter(names, OPTIONS)
       end
     end
   end

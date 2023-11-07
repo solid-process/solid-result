@@ -31,7 +31,7 @@ class BCDD::Result
       OPTIONS = { continue: Continuable }.freeze
 
       def self.options(names)
-        Array(names).filter_map { |name| OPTIONS[name] }
+        Config::Options.filter(names, OPTIONS)
       end
     end
   end

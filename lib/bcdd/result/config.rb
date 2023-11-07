@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require 'singleton'
-require 'forwardable'
 
+require_relative 'config/options'
 require_relative 'config/switcher'
 require_relative 'config/constant_alias'
 

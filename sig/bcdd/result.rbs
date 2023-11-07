@@ -544,3 +544,7 @@ module BCDD::Result::Config::ConstantAlias
   MAPPING: Hash[String, Hash[Symbol, untyped]]
   Listener: Proc
 end
+
+module BCDD::Result::Config::Options
+  def self.filter: (untyped, Hash[untyped, untyped]) -> Array[Module]
+end

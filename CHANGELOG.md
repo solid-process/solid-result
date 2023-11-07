@@ -45,6 +45,20 @@
 
 - **(BREAKING)** Replace `mixin(with:)` with `mixin(config:)` keyword argument.
 
+- **(BREAKING)** Change the addons definition.
+  - **From**
+  ```ruby
+  BCDD::Result.mixin(with: :Continue)
+  BCDD::Result.mixin(with: [:Continue])
+  ```
+  - **To**
+  ```ruby
+  BCDD::Result.mixin(with: :continue)
+  BCDD::Result.mixin(with: [:continue])
+  BCDD::Result.mixin(with: { continue: true })
+  ```
+  - These examples are valid to all kinds of mixins (`BCDD::Result.mixin`, `BCDD::Result::Context.mixin`, `BCDD::Result::Expectations.mixin`, `BCDD::Result::Context::Expectations.mixin`)
+
 ### Removed
 
 - **(BREAKING)** Remove the `lib/result` file. Now you can define `Result` as an alias for `BCDD::Result` using `BCDD::Result::Config.constant_alias.enable!('Result')`.
