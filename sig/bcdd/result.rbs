@@ -96,6 +96,10 @@ end
 
 class BCDD::Result
   module Mixin
+    module Factory
+      def self.module!: -> Module
+    end
+
     module Methods
       def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
 
@@ -115,11 +119,11 @@ class BCDD::Result
 
       def self.options: (Array[Symbol]) -> Array[Module]
     end
-
-    def self.module!: -> Module
   end
 
   def self.mixin: (?config: Array[Symbol]) -> Module
+
+  def self.mixin_module: -> singleton(BCDD::Result::Mixin)
 end
 
 class BCDD::Result
@@ -426,6 +430,8 @@ end
 
 class BCDD::Result::Context
   module Mixin
+    Factory: singleton(BCDD::Result::Mixin::Factory)
+
     module Methods
       def Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
 
@@ -447,7 +453,7 @@ class BCDD::Result::Context
     end
   end
 
-  def self.mixin: (?config: Array[Symbol]) -> Module
+  def self.mixin_module: -> singleton(BCDD::Result::Context::Mixin)
 end
 
 class BCDD::Result::Context::Expectations < BCDD::Result::Expectations

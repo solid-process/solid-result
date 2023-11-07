@@ -2,6 +2,8 @@
 
 class BCDD::Result::Context
   module Mixin
+    Factory = BCDD::Result::Mixin::Factory
+
     module Methods
       def Success(type, **value)
         Success.new(type: type, value: value, subject: self)
@@ -27,12 +29,9 @@ class BCDD::Result::Context
     end
   end
 
-  def self.mixin(config: nil)
-    addons = Mixin::Addons.options(config)
-
-    mod = ::BCDD::Result::Mixin.module!
-    mod.send(:include, Mixin::Methods)
-    mod.send(:include, *addons) unless addons.empty?
-    mod
+  def self.mixin_module
+    Mixin
   end
+
+  private_class_method :mixin_module
 end
