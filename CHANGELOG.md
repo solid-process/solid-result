@@ -2,44 +2,49 @@
 
 ### Added
 
-- Add `BCDD::Result.config`
+- Add `BCDD::Result::Config`
   - **Constant Aliases**
     ```ruby
-    BCDD::Result.config.constant_alias.options
+    BCDD::Result::Config.constant_alias.options
 
-    BCDD::Result.config.constant_alias.enabled?('Result')
+    BCDD::Result::Config.constant_alias.enabled?('Result')
 
-    BCDD::Result.config.constant_alias.enable!('Result')
+    BCDD::Result::Config.constant_alias.enable!('Result')
 
-    BCDD::Result.config.constant_alias.disable!('Result')
+    BCDD::Result::Config.constant_alias.disable!('Result')
     ```
   - **Default Add-ons**
     ```ruby
-    BCDD::Result.config.pattern_matching.options
+    BCDD::Result::Config.pattern_matching.options
 
-    BCDD::Result.config.pattern_matching.enabled?(:nil_as_valid_value_checking)
+    BCDD::Result::Config.pattern_matching.enabled?(:nil_as_valid_value_checking)
 
-    BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
+    BCDD::Result::Config.pattern_matching.enable!(:nil_as_valid_value_checking)
 
-    BCDD::Result.config.pattern_matching.disable!(:nil_as_valid_value_checking)
+    BCDD::Result::Config.pattern_matching.disable!(:nil_as_valid_value_checking)
     ```
 
-- Add `BCDD::Result.configuration`. It freezes the configuration, disallowing methods that promote changes but allowing the query ones. You can use this feature to ensure integrity in your configuration.
+- Add `BCDD::Result::configuration`. It freezes the configuration, disallowing methods that promote changes but allowing the query ones. You can use this feature to ensure integrity in your configuration.
   ```ruby
-  BCDD::Result.config.constant_alias.enabled?('Result') # false
+  BCDD::Result::Config.constant_alias.enabled?('Result') # false
 
   BCDD::Result.configuration do |config|
     config.constant_alias.enable!('Result')
   end
 
-  BCDD::Result.config.constant_alias.enabled?('Result') # true
+  BCDD::Result::Config.constant_alias.enabled?('Result') # true
 
-  BCDD::Result.config.constant_alias.disable!('Result') # raises FrozenError
+  BCDD::Result::Config.constant_alias.disable!('Result') # raises FrozenError
   ```
 
 ### Changed
 
-- **(BREAKING)** Replace `BCDD::Result::Contract.nil_as_valid_value_checking!` with `BCDD::Result.config`.
+- **(BREAKING)** Replace `BCDD::Result::Contract.nil_as_valid_value_checking!` with `BCDD::Result::Config.pattern_matching.enable!(:nil_as_valid_value_checking)`.
+- **(BREAKING)** Replace `BCDD::Result::Contract.nil_as_valid_value_checking?` with `BCDD::Result::Config.pattern_matching.enabled?(:nil_as_valid_value_checking)`.
+
+### Removed
+
+- **(BREAKING)** Remove the `lib/result` file. Now you can define `Result` as an alias for `BCDD::Result` using `BCDD::Result::Config.constant_alias.enable!('Result')`.
 
 ## [0.7.0] - 2023-10-27
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'singleton'
+require 'forwardable'
 
 require_relative 'config/switcher'
 require_relative 'config/constant_alias'
@@ -36,5 +37,19 @@ class BCDD::Result
 
       super
     end
+
+    def self.freeze; instance.freeze; end
+    def self.constant_alias; instance.constant_alias; end
+    def self.pattern_matching; instance.pattern_matching; end
+
+    def self.options
+      %i[constant_alias pattern_matching]
+    end
+
+    def self.inspect
+      "#<#{name} options=#{options.inspect}>"
+    end
+
+    private_class_method :instance
   end
 end

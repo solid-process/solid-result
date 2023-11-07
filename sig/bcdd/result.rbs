@@ -11,9 +11,7 @@ class BCDD::Result
   attr_reader data: BCDD::Result::Data
   attr_reader subject: untyped
 
-  def self.config: -> BCDD::Result::Config
-
-  def self.configuration: { (BCDD::Result::Config) -> void } -> BCDD::Result::Config
+  def self.configuration: { (singleton(BCDD::Result::Config)) -> void } -> BCDD::Result::Config
 
   def initialize: (
     type: Symbol,
@@ -501,6 +499,11 @@ class BCDD::Result::Config
   def initialize: -> void
 
   def freeze: -> BCDD::Result::Config
+
+  def self.freeze: -> BCDD::Result::Config
+  def self.constant_alias: -> BCDD::Result::Config::Switcher
+  def self.pattern_matching: -> BCDD::Result::Config::Switcher
+  def self.options: -> Array[Symbol]
 end
 
 class BCDD::Result::Config::Switcher

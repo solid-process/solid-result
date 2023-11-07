@@ -17,6 +17,10 @@ class BCDD::Result
         @listener = listener
       end
 
+      def inspect
+        "#<#{self.class.name} options=#{_options.inspect}>"
+      end
+
       def freeze
         _options.freeze
         super
