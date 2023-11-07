@@ -5,14 +5,20 @@ class BCDD::Result
     require_relative 'expectations/mixin'
 
     def self.mixin(success: nil, failure: nil, config: nil)
-      addons = Mixin::Addons.options(config)
+      addons = mixin_module::Addons.options(config)
 
-      mod = Mixin.module!
+      mod = mixin_module::Factory.module!
       mod.const_set(:Result, new(success: success, failure: failure).freeze)
-      mod.module_eval(Mixin::METHODS)
+      mod.module_eval(mixin_module::METHODS)
       mod.send(:include, *addons) unless addons.empty?
       mod
     end
+
+    def self.mixin_module
+      Mixin
+    end
+
+    private_class_method :mixin_module
 
     def initialize(subject: nil, success: nil, failure: nil, contract: nil)
       @subject = subject

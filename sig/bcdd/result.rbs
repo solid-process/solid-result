@@ -342,6 +342,8 @@ class BCDD::Result::Expectations
     ?failure: Hash[Symbol, untyped] | Array[Symbol]
   ) -> Module
 
+  def self.mixin_module: -> singleton(BCDD::Result::Expectations::Mixin)
+
   def initialize: (
     ?subject: untyped,
     ?success: Hash[Symbol, untyped] | Array[Symbol],
@@ -361,6 +363,10 @@ class BCDD::Result::Expectations
 end
 
 module BCDD::Result::Expectations::Mixin
+  module Factory
+    def self.module!: -> Module
+  end
+
   METHODS: String
 
   module Addons
@@ -372,8 +378,6 @@ module BCDD::Result::Expectations::Mixin
 
     def self.options: (Symbol) -> Array[Module]
   end
-
-  def self.module!: -> Module
 end
 
 class BCDD::Result::Context < BCDD::Result
@@ -446,33 +450,16 @@ class BCDD::Result::Context
   def self.mixin: (?config: Array[Symbol]) -> Module
 end
 
-class BCDD::Result::Context::Expectations
-  def self.mixin: (
-    ?config: Symbol,
-    ?success: Hash[Symbol, untyped] | Array[Symbol],
-    ?failure: Hash[Symbol, untyped] | Array[Symbol]
-  ) -> Module
-
-  def initialize: (
-    ?subject: untyped,
-    ?success: Hash[Symbol, untyped] | Array[Symbol],
-    ?failure: Hash[Symbol, untyped] | Array[Symbol],
-    ?contract: BCDD::Result::Contract::Evaluator
-  ) -> void
+class BCDD::Result::Context::Expectations < BCDD::Result::Expectations
+  def self.mixin_module: -> singleton(BCDD::Result::Context::Expectations::Mixin)
 
   def Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
   def Failure: (Symbol, **untyped) -> BCDD::Result::Context::Failure
-
-  def with: (subject: untyped) -> BCDD::Result::Context::Expectations
-
-  private
-
-  attr_reader subject: untyped
-  attr_reader contract: BCDD::Result::Contract::Evaluator
 end
 
 module BCDD::Result::Context::Expectations::Mixin
   METHODS: String
+  Factory: singleton(BCDD::Result::Expectations::Mixin::Factory)
 
   module Addons
     module Continuable
