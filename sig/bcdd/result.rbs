@@ -490,8 +490,11 @@ end
 class BCDD::Result::Config
   include Singleton
 
-  attr_reader constant_alias: BCDD::Result::Config::ConstantAlias
-  attr_reader pattern_matching: BCDD::Result::Config::PatternMatching
+  CONSTANT_ALIAS: Proc
+  PATTERN_MATCHING: Proc
+
+  attr_reader constant_alias: BCDD::Result::Config::Switcher
+  attr_reader pattern_matching: BCDD::Result::Config::Switcher
 
   def self.instance: -> BCDD::Result::Config
 
@@ -500,75 +503,48 @@ class BCDD::Result::Config
   def freeze: -> BCDD::Result::Config
 end
 
-class BCDD::Result::Config::ConstantAlias
-  module Option
-    RESULT: String
+class BCDD::Result::Config::Switcher
+  private attr_reader _affects: Hash[Symbol | String, Array[String]]
+  private attr_reader _options: Hash[Symbol | String, bool]
+  private attr_reader listener: Proc
 
-    LIST: Array[String]
-    AFFECTS: Hash[String, Array[String]]
-    MAPPING: Hash[String, Hash[Symbol, untyped]]
-  end
+  def self.factory:(
+    options: Hash[Symbol | String, Array[String]],
+    ?listener: Proc
+  ) -> Proc
 
-  AVAILABLE_OPTIONS: String
+  def initialize: (
+    options: Hash[Symbol | String, Array[String]],
+    listener: Proc
+  ) -> void
 
-  private attr_reader _options: Hash[String, bool]
+  def freeze: -> BCDD::Result::Config::Switcher
 
-  def initialize: -> void
+  def options: -> Hash[Symbol | String, Hash[Symbol, untyped]]
 
-  def freeze: -> BCDD::Result::Config::ConstantAlias
+  def enabled?: (Symbol | String) -> bool
 
-  def options: -> Hash[String, Hash[Symbol, untyped]]
+  def enable!: (*(Symbol | String)) -> Hash[Symbol | String, Hash[Symbol, untyped]]
 
-  def enabled?: (String) -> bool
-
-  def enable!: (*String) -> Hash[String, Hash[Symbol, untyped]]
-
-  def disable!: (*String) -> Hash[String, Hash[Symbol, untyped]]
+  def disable!: (*(Symbol | String)) -> Hash[Symbol | String, Hash[Symbol, untyped]]
 
   private
 
-  def set_many: (Array[String], to: bool) -> Hash[String, Hash[Symbol, untyped]]
+  def set_many: (Array[Symbol | String], to: bool) -> Hash[Symbol | String, Hash[Symbol, untyped]]
 
-  def set_one: (String, bool) -> void
+  def set_one: (Symbol | String, bool) -> void
 
-  def set_one!: (bool, target: untyped, name: Symbol, value: untyped) -> bool
+  def require_option!: (Array[Symbol | String]) -> void
 
-  def option_required!: (Array[String]) -> void
+  def validate_option!: (Symbol | String) -> void
 
-  def option_invalid!: (String) -> void
+  def available_options_message: -> String
 end
 
-class BCDD::Result::Config::PatternMatching
-  module Option
-    NIL_AS_VALID_VALUE_CHECKING: Symbol
+module BCDD::Result::Config::ConstantAlias
+  RESULT: String
 
-    LIST: Array[Symbol]
-    AFFECTS: Hash[Symbol, Array[String]]
-  end
-
-  AVAILABLE_OPTIONS: String
-
-  private attr_reader _options: Hash[Symbol, bool]
-
-  def initialize: -> void
-
-  def freeze: -> BCDD::Result::Config::PatternMatching
-
-  def options: -> Hash[Symbol, Hash[Symbol, untyped]]
-
-  def enabled?: (Symbol) -> bool
-
-  def enable!: (*Symbol) -> Hash[Symbol, Hash[Symbol, untyped]]
-
-  def disable!: (*Symbol) -> Hash[Symbol, Hash[Symbol, untyped]]
-
-  private
-
-  def set_many: (Array[Symbol], to: bool) -> Hash[Symbol, Hash[Symbol, untyped]]
-
-  def set_one: (Symbol, bool) -> void
-
-  def option_required!: (Array[Symbol]) -> void
-
-  def option_invalid!: (Symbol) -> void
+  OPTIONS: Hash[String, Array[String]]
+  MAPPING: Hash[String, Hash[Symbol, untyped]]
+  Listener: Proc
 end
