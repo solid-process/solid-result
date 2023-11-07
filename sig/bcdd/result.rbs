@@ -119,7 +119,7 @@ class BCDD::Result
     def self.module!: -> Module
   end
 
-  def self.mixin: (?with: Array[Symbol]) -> Module
+  def self.mixin: (?config: Array[Symbol]) -> Module
 end
 
 class BCDD::Result
@@ -337,7 +337,7 @@ end
 
 class BCDD::Result::Expectations
   def self.mixin: (
-    ?with: Symbol,
+    ?config: Symbol,
     ?success: Hash[Symbol, untyped] | Array[Symbol],
     ?failure: Hash[Symbol, untyped] | Array[Symbol]
   ) -> Module
@@ -443,12 +443,12 @@ class BCDD::Result::Context
     end
   end
 
-  def self.mixin: (?with: Array[Symbol]) -> Module
+  def self.mixin: (?config: Array[Symbol]) -> Module
 end
 
 class BCDD::Result::Context::Expectations
   def self.mixin: (
-    ?with: Symbol,
+    ?config: Symbol,
     ?success: Hash[Symbol, untyped] | Array[Symbol],
     ?failure: Hash[Symbol, untyped] | Array[Symbol]
   ) -> Module

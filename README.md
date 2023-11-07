@@ -838,7 +838,7 @@ This addon will create the `Continue(value)` method, which will know how to prod
 
 ```ruby
 module Divide
-  extend self, BCDD::Result.mixin(with: :Continue)
+  extend self, BCDD::Result.mixin(config: :continue)
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
@@ -1274,12 +1274,12 @@ The `BCDD::Result::Expectations.mixin` also accepts the `with:` argument. It is 
 
 **Continue**
 
-It is similar to `BCDD::Result.mixin(with: :Continue)`, the key difference is that the `Continue(value)` will be ignored by the expectations. This is extremely useful when you want to use `Continue(value)` to chain operations, but you don't want to declare N success types in the expectations.
+It is similar to `BCDD::Result.mixin(config: :continue)`, the key difference is that the `Continue(value)` will be ignored by the expectations. This is extremely useful when you want to use `Continue(value)` to chain operations, but you don't want to declare N success types in the expectations.
 
 ```ruby
 class Divide
   include BCDD::Result::Expectations.mixin(
-    with: :Continue,
+    config: :continue,
     success: :division_completed,
     failure: %i[invalid_arg division_by_zero]
   )
@@ -1581,7 +1581,7 @@ The `BCDD::Result::Context.mixin` and `BCDD::Result::Context::Expectations.mixin
 
 **Continue**
 
-The `BCDD::Result::Context.mixin(with: :Continue)` or `BCDD::Result::Context::Expectations.mixin(with: :Continue)` adds a `Continue(**input)` that will be ignored by the expectations. This is extremely useful when you want to use `Continue()` to chain operations, but you don't want to declare N success types in the expectations.
+The `BCDD::Result::Context.mixin(config: :continue)` or `BCDD::Result::Context::Expectations.mixin(config: :continue)` adds a `Continue(**input)` that will be ignored by the expectations. This is extremely useful when you want to use `Continue()` to chain operations, but you don't want to declare N success types in the expectations.
 
 Let's use a mix of `BCDD::Result::Context` features to see in action with this add-on:
 
@@ -1596,7 +1596,7 @@ module Divide
   require 'logger'
 
   extend self, BCDD::Result::Context::Expectations.mixin(
-    with: :Continue,
+    config: :continue,
     success: {
       division_completed: ->(value) { value => { number: Numeric } }
     },

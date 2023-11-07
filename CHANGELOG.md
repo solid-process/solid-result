@@ -40,7 +40,10 @@
 ### Changed
 
 - **(BREAKING)** Replace `BCDD::Result::Contract.nil_as_valid_value_checking!` with `BCDD::Result::Config.pattern_matching.enable!(:nil_as_valid_value_checking)`.
+
 - **(BREAKING)** Replace `BCDD::Result::Contract.nil_as_valid_value_checking?` with `BCDD::Result::Config.pattern_matching.enabled?(:nil_as_valid_value_checking)`.
+
+- **(BREAKING)** Replace `mixin(with:)` with `mixin(config:)` keyword argument.
 
 ### Removed
 

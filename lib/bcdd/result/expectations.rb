@@ -4,8 +4,8 @@ class BCDD::Result
   class Expectations
     require_relative 'expectations/mixin'
 
-    def self.mixin(success: nil, failure: nil, with: nil)
-      addons = Mixin::Addons.options(with)
+    def self.mixin(success: nil, failure: nil, config: nil)
+      addons = Mixin::Addons.options(config)
 
       mod = Mixin.module!
       mod.const_set(:Result, new(success: success, failure: failure).freeze)

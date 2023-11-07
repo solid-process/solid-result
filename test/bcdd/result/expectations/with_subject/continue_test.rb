@@ -5,7 +5,7 @@ require 'test_helper'
 class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
   class DivideType
     include BCDD::Result::Expectations.mixin(
-      with: :Continue,
+      config: :continue,
       success: :ok,
       failure: :err
     )
@@ -38,7 +38,7 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
 
   class DivideTypes
     include BCDD::Result::Expectations.mixin(
-      with: :Continue,
+      config: :continue,
       success: :division_completed,
       failure: %i[invalid_arg division_by_zero]
     )
@@ -71,7 +71,7 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
 
   module DivideTypeAndValue
     extend self, BCDD::Result::Expectations.mixin(
-      with: :Continue,
+      config: :continue,
       success: { division_completed: Numeric },
       failure: { invalid_arg: String, division_by_zero: String }
     )

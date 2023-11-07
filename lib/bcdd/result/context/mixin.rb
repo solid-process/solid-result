@@ -19,7 +19,7 @@ class BCDD::Result::Context
         end
       end
 
-      OPTIONS = { Continue: Continuable }.freeze
+      OPTIONS = { continue: Continuable }.freeze
 
       def self.options(names)
         Array(names).filter_map { |name| OPTIONS[name] }
@@ -27,8 +27,8 @@ class BCDD::Result::Context
     end
   end
 
-  def self.mixin(with: nil)
-    addons = Mixin::Addons.options(with)
+  def self.mixin(config: nil)
+    addons = Mixin::Addons.options(config)
 
     mod = ::BCDD::Result::Mixin.module!
     mod.send(:include, Mixin::Methods)

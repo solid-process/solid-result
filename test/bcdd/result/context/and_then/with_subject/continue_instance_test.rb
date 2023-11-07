@@ -4,7 +4,7 @@ require 'test_helper'
 
 class BCDD::Result::Context::AndThenWithSubjectContinueInstanceTest < Minitest::Test
   class Divide
-    include BCDD::Result::Context.mixin(with: :Continue)
+    include BCDD::Result::Context.mixin(config: :continue)
 
     def call(arg1, arg2)
       validate_numbers(arg1, arg2)

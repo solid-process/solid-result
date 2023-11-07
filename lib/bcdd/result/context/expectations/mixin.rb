@@ -25,7 +25,7 @@ class BCDD::Result::Context
         end
       end
 
-      OPTIONS = { Continue: Continuable }.freeze
+      OPTIONS = { continue: Continuable }.freeze
 
       def self.options(names)
         Array(names).filter_map { |name| OPTIONS[name] }

@@ -29,7 +29,7 @@ class BCDD::Result
 
       checking_result = value_checking === value
 
-      return value if checking_result || (nil_as_valid_value_checking? && checking_result.nil?)
+      return value if checking_result || (checking_result.nil? && nil_as_valid_value_checking?)
 
       raise Contract::Error::UnexpectedValue.build(type: type, value: value)
     rescue ::NoMatchingPatternError => e
