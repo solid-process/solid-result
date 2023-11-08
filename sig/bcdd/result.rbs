@@ -234,12 +234,13 @@ module BCDD::Result::Contract
     BCDD::Result::Contract::Evaluator
   ) -> BCDD::Result::Contract::TypeChecker
 
-  ToEnsure: ^(Hash[Symbol, untyped] | Array[Symbol])
+  ToEnsure: ^(Hash[Symbol, untyped] | Array[Symbol], Hash[Symbol, Hash[Symbol, bool]])
     -> BCDD::Result::Contract::Evaluator
 
   def self.new: (
     success: Hash[Symbol, untyped] | Array[Symbol],
-    failure: Hash[Symbol, untyped] | Array[Symbol]
+    failure: Hash[Symbol, untyped] | Array[Symbol],
+    config: Hash[Symbol, Hash[Symbol, bool]]
   ) -> BCDD::Result::Contract::Evaluator
 end
 
@@ -315,7 +316,10 @@ module BCDD::Result::Contract
   class ForTypesAndValues
     include Interface
 
-    def initialize: (Hash[Symbol, untyped]) -> void
+    def initialize: (
+      Hash[Symbol, untyped],
+      Hash[Symbol, Hash[Symbol, bool]]
+    ) -> void
 
     private
 
@@ -363,7 +367,8 @@ class BCDD::Result::Expectations
     ?subject: untyped,
     ?success: Hash[Symbol, untyped] | Array[Symbol],
     ?failure: Hash[Symbol, untyped] | Array[Symbol],
-    ?contract: BCDD::Result::Contract::Evaluator
+    ?contract: BCDD::Result::Contract::Evaluator,
+    ?config: Hash[Symbol, Hash[Symbol, bool]]
   ) -> void
 
   def Success: (Symbol, ?untyped) -> BCDD::Result::Success
@@ -562,7 +567,7 @@ end
 module BCDD::Result::Config::Options
   def self.with_defaults: (
     Hash[Symbol, Hash[Symbol, bool]],
-    config: Symbol
+    Symbol
   ) -> Hash[Symbol, bool]
 
   def self.filter_map: (

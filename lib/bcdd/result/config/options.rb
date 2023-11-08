@@ -3,7 +3,7 @@
 class BCDD::Result
   class Config
     module Options
-      def self.with_defaults(all_flags, config:)
+      def self.with_defaults(all_flags, config)
         all_flags ||= {}
 
         default_flags = Config.instance.to_h.fetch(config)
@@ -14,7 +14,7 @@ class BCDD::Result
       end
 
       def self.filter_map(all_flags, config:, from:)
-        with_defaults(all_flags, config: config)
+        with_defaults(all_flags, config)
           .filter_map { |name, truthy| from[name] if truthy }
       end
 
