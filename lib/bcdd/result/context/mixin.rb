@@ -33,5 +33,9 @@ class BCDD::Result::Context
     Mixin
   end
 
-  private_class_method :mixin_module
+  def self.result_factory
+    ::BCDD::Result::Context
+  end
+
+  private_class_method :mixin_module, :result_factory
 end

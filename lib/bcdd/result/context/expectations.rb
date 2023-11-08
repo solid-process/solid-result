@@ -8,7 +8,11 @@ class BCDD::Result::Context
       Mixin
     end
 
-    private_class_method :mixin_module
+    def self.result_factory_without_expectations
+      ::BCDD::Result::Context
+    end
+
+    private_class_method :mixin!, :mixin_module, :result_factory_without_expectations
 
     def Success(type, **value)
       Success.new(type: type, value: value, subject: subject, expectations: contract)

@@ -41,6 +41,7 @@ class BCDD::Result
 
     mod = mixin_module::Factory.module!
     mod.send(:include, mixin_module::Methods)
+    mod.const_set(:Result, result_factory)
     mod.send(:include, *addons) unless addons.empty?
     mod
   end
@@ -49,5 +50,9 @@ class BCDD::Result
     Mixin
   end
 
-  private_class_method :mixin_module
+  def self.result_factory
+    ::BCDD::Result
+  end
+
+  private_class_method :mixin_module, :result_factory
 end

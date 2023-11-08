@@ -125,6 +125,8 @@ class BCDD::Result
   def self.mixin: (?config: Hash[Symbol, Hash[Symbol, bool]]) -> Module
 
   def self.mixin_module: -> singleton(BCDD::Result::Mixin)
+
+  def self.result_factory: -> singleton(BCDD::Result)
 end
 
 class BCDD::Result
@@ -347,7 +349,15 @@ class BCDD::Result::Expectations
     ?failure: Hash[Symbol, untyped] | Array[Symbol]
   ) -> Module
 
+  def self.mixin!: (
+    ?config: Hash[Symbol, Hash[Symbol, bool]],
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol]
+  ) -> Module
+
   def self.mixin_module: -> singleton(BCDD::Result::Expectations::Mixin)
+
+  def self.result_factory_without_expectations: -> singleton(BCDD::Result)
 
   def initialize: (
     ?subject: untyped,
@@ -455,10 +465,14 @@ class BCDD::Result::Context
   end
 
   def self.mixin_module: -> singleton(BCDD::Result::Context::Mixin)
+
+  def self.result_factory: -> singleton(BCDD::Result::Context)
 end
 
 class BCDD::Result::Context::Expectations < BCDD::Result::Expectations
   def self.mixin_module: -> singleton(BCDD::Result::Context::Expectations::Mixin)
+
+  def self.result_factory_without_expectations: -> singleton(BCDD::Result)
 
   def Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
   def Failure: (Symbol, **untyped) -> BCDD::Result::Context::Failure

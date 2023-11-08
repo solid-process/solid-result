@@ -1231,7 +1231,7 @@ The value checking has support for handling pattern-matching errors, and the cle
 
 How does this operator work? They raise an error when the pattern does not match but returns nil when it matches.
 
-Because of this, you will need to enable `nil` as a valid value checking. You can do it by calling the `BCDD::Result::Contract.nil_as_valid_value_checking!` method.
+Because of this, you will need to enable `nil` as a valid value checking. You can do it by calling the `BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)` method.
 
 **Attention:**
 
@@ -1242,7 +1242,7 @@ If you decide to enable this, you will do it at the beginning of your code or in
 # Put this line in an initializer or at the beginning of your code.
 # It is required if you decide to use pattern matching to validate all of your result's values.
 #
-BCDD::Result::Contract.nil_as_valid_value_checking!
+BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
 
 module Divide
   extend BCDD::Result::Expectations.mixin(
@@ -1534,7 +1534,7 @@ This is an example using the mixin mode, but the standalone mode is also support
 # Put this line in an initializer or at the beginning of your code.
 # It is required if you decide to use pattern matching to validate all of your result's values.
 #
-BCDD::Result::Contract.nil_as_valid_value_checking!
+BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
 
 class Divide
   include BCDD::Result::Context::Expectations.mixin(
@@ -1553,7 +1553,7 @@ class Divide
 
     arg2.zero? and return Failure(:division_by_zero, message: 'arg2 must not be zero')
 
-    Success(:division_completed, number: arg1 / arg2)
+    Success(:division_completed, number: (arg1 / arg2))
   end
 end
 
@@ -1590,7 +1590,7 @@ Let's use a mix of `BCDD::Result::Context` features to see in action with this a
 # Put this line in an initializer or at the beginning of your code.
 # It is required if you decide to use pattern matching to validate all of your result's values.
 #
-BCDD::Result::Contract.nil_as_valid_value_checking!
+BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
 
 module Divide
   require 'logger'

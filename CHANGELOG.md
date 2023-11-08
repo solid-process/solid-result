@@ -3,37 +3,51 @@
 ### Added
 
 - Add `BCDD::Result.config`
-  - **Constant Aliases**
+  - **Feature**
     ```ruby
-    BCDD::Result.config.constant_alias.options
-
-    BCDD::Result.config.constant_alias.enabled?('Result')
-
-    BCDD::Result.config.constant_alias.enable!('Result')
-
-    BCDD::Result.config.constant_alias.disable!('Result')
+    BCDD::Result.config.feature.options
+    BCDD::Result.config.feature.enabled?(:expectations)
+    BCDD::Result.config.feature.enable!(:expectations)
+    BCDD::Result.config.feature.disable!(:expectations)
     ```
   - **Default Add-ons**
     ```ruby
+    BCDD::Result.config.addon.options
+    BCDD::Result.config.addon.enabled?(:continue)
+    BCDD::Result.config.addon.enable!(:continue)
+    BCDD::Result.config.addon.disable!(:continue)
+    ```
+  - **Pattern matching**
+    ```ruby
     BCDD::Result.config.pattern_matching.options
-
     BCDD::Result.config.pattern_matching.enabled?(:nil_as_valid_value_checking)
-
     BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
-
     BCDD::Result.config.pattern_matching.disable!(:nil_as_valid_value_checking)
+    ```
+  - **Constant Aliases**
+    ```ruby
+    BCDD::Result.config.constant_alias.options
+    BCDD::Result.config.constant_alias.enabled?('Result')
+    BCDD::Result.config.constant_alias.enable!('Result')
+    BCDD::Result.config.constant_alias.disable!('Result')
     ```
 
 - Add `BCDD::Result::configuration`. It freezes the configuration, disallowing methods that promote changes but allowing the query ones. You can use this feature to ensure integrity in your configuration.
   ```ruby
-  BCDD::Result.config.constant_alias.enabled?('Result') # false
-
   BCDD::Result.configuration do |config|
+    config.addon.enable!(:continue)
+
     config.constant_alias.enable!('Result')
+
+    config.pattern_matching.disable!(:nil_as_valid_value_checking)
+
+    # config.feature.disable!(:expectations) if ::Rails.env.production?
   end
 
+  BCDD::Result.config.addon.enabled?(:continue)         # true
   BCDD::Result.config.constant_alias.enabled?('Result') # true
 
+  BCDD::Result.config.addon.disable!(:continue)         # raises FrozenError
   BCDD::Result.config.constant_alias.disable!('Result') # raises FrozenError
   ```
 

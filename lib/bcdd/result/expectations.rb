@@ -4,7 +4,13 @@ class BCDD::Result
   class Expectations
     require_relative 'expectations/mixin'
 
-    def self.mixin(success: nil, failure: nil, config: nil)
+    def self.mixin(**options)
+      return mixin!(**options) if Config.instance.feature.enabled?(:expectations)
+
+      result_factory_without_expectations.mixin(**options.slice(:config))
+    end
+
+    def self.mixin!(success: nil, failure: nil, config: nil)
       addons = mixin_module::Addons.options(config)
 
       mod = mixin_module::Factory.module!
@@ -18,7 +24,11 @@ class BCDD::Result
       Mixin
     end
 
-    private_class_method :mixin_module
+    def self.result_factory_without_expectations
+      ::BCDD::Result
+    end
+
+    private_class_method :mixin!, :mixin_module, :result_factory_without_expectations
 
     def initialize(subject: nil, success: nil, failure: nil, contract: nil)
       @subject = subject
