@@ -482,9 +482,10 @@ end
 class BCDD::Result::Config
   include Singleton
 
-  CONSTANT_ALIAS: Proc
+  ADDON: Hash[Symbol, Hash[Symbol, untyped]]
   PATTERN_MATCHING: Hash[Symbol, Hash[Symbol, untyped]]
 
+  attr_reader addon: BCDD::Result::Config::Switcher
   attr_reader constant_alias: BCDD::Result::Config::Switcher
   attr_reader pattern_matching: BCDD::Result::Config::Switcher
 

@@ -10,6 +10,13 @@ class BCDD::Result
   class Config
     include Singleton
 
+    ADDON = {
+      continue: {
+        default: false,
+        affects: %w[BCDD::Result BCDD::Result::Context BCDD::Result::Expectations BCDD::Result::Context::Expectations]
+      }
+    }.transform_values!(&:freeze).freeze
+
     PATTERN_MATCHING = {
       nil_as_valid_value_checking: {
         default: false,
@@ -20,6 +27,7 @@ class BCDD::Result
     attr_reader :addon, :constant_alias, :pattern_matching
 
     def initialize
+      @addon = Switcher.new(options: ADDON)
       @constant_alias = ConstantAlias.switcher
       @pattern_matching = Switcher.new(options: PATTERN_MATCHING)
     end
@@ -34,6 +42,7 @@ class BCDD::Result
 
     def options
       {
+        addon: addon,
         constant_alias: constant_alias,
         pattern_matching: pattern_matching
       }
@@ -47,6 +56,6 @@ class BCDD::Result
       "#<#{self.class.name} options=#{options.keys.inspect}>"
     end
 
-    private_constant :PATTERN_MATCHING
+    private_constant :ADDON, :PATTERN_MATCHING
   end
 end
