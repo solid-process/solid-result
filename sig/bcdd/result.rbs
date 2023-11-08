@@ -118,11 +118,11 @@ class BCDD::Result
 
       OPTIONS: Hash[Symbol, Module]
 
-      def self.options: (Array[Symbol]) -> Array[Module]
+      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
     end
   end
 
-  def self.mixin: (?config: Array[Symbol]) -> Module
+  def self.mixin: (?config: Hash[Symbol, Hash[Symbol, bool]]) -> Module
 
   def self.mixin_module: -> singleton(BCDD::Result::Mixin)
 end
@@ -342,7 +342,7 @@ end
 
 class BCDD::Result::Expectations
   def self.mixin: (
-    ?config: Symbol,
+    ?config: Hash[Symbol, Hash[Symbol, bool]],
     ?success: Hash[Symbol, untyped] | Array[Symbol],
     ?failure: Hash[Symbol, untyped] | Array[Symbol]
   ) -> Module
@@ -381,7 +381,7 @@ module BCDD::Result::Expectations::Mixin
 
     OPTIONS: Hash[Symbol, Module]
 
-    def self.options: (Symbol) -> Array[Module]
+    def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
   end
 end
 
@@ -450,7 +450,7 @@ class BCDD::Result::Context
 
       OPTIONS: Hash[Symbol, Module]
 
-      def self.options: (Array[Symbol]) -> Array[Module]
+      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
     end
   end
 
@@ -475,7 +475,7 @@ module BCDD::Result::Context::Expectations::Mixin
 
     OPTIONS: Hash[Symbol, Module]
 
-    def self.options: (Symbol) -> Array[Module]
+    def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
   end
 end
 

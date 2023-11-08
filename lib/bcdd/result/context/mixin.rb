@@ -23,8 +23,8 @@ class BCDD::Result::Context
 
       OPTIONS = { continue: Continuable }.freeze
 
-      def self.options(names)
-        ::BCDD::Result::Config::Options.filter(names, OPTIONS)
+      def self.options(config_flags)
+        ::BCDD::Result::Config::Options.unwrap(options: { addon: OPTIONS }, flags: config_flags)
       end
     end
   end

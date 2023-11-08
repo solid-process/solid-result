@@ -746,10 +746,10 @@ class Divide
   private
 
   def validate_numbers
-    arg1.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg1 must be numeric') # This will raise an error
+    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric') # This will raise an error
     arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
 
-    BCDD::Result::Success(:ok, [arg1, arg2]) # This will raise an error
+    Success(:ok, [arg1, arg2]) # This will raise an error
   end
 
   def validate_non_zero(numbers)
@@ -838,7 +838,7 @@ This addon will create the `Continue(value)` method, which will know how to prod
 
 ```ruby
 module Divide
-  extend self, BCDD::Result.mixin(config: :continue)
+  extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
@@ -947,10 +947,10 @@ class Divide
 end
 ```
 
-This mode also defines an `Expected` constant to be used inside and outside the module.
+This mode also defines an `Result` constant to be used inside and outside the module.
 
 > **PROTIP:**
-> You can use the `Expected` constant to mock the result's type and value in your tests. As they will have the exact expectations, your tests will check if the result clients are handling the result correctly.
+> You can use the `Result` constant to mock the result's type and value in your tests. As they will have the exact expectations, your tests will check if the result clients are handling the result correctly.
 
 Now that you know the two modes, let's understand how expectations can be beneficial and powerful for defining contracts.
 
@@ -1274,12 +1274,12 @@ The `BCDD::Result::Expectations.mixin` also accepts the `with:` argument. It is 
 
 **Continue**
 
-It is similar to `BCDD::Result.mixin(config: :continue)`, the key difference is that the `Continue(value)` will be ignored by the expectations. This is extremely useful when you want to use `Continue(value)` to chain operations, but you don't want to declare N success types in the expectations.
+It is similar to `BCDD::Result.mixin(config: { addon: { continue: true } })`, the key difference is that the `Continue(value)` will be ignored by the expectations. This is extremely useful when you want to use `Continue(value)` to chain operations, but you don't want to declare N success types in the expectations.
 
 ```ruby
 class Divide
   include BCDD::Result::Expectations.mixin(
-    config: :continue,
+    config: { addon: { continue: true } },
     success: :division_completed,
     failure: %i[invalid_arg division_by_zero]
   )
@@ -1581,7 +1581,7 @@ The `BCDD::Result::Context.mixin` and `BCDD::Result::Context::Expectations.mixin
 
 **Continue**
 
-The `BCDD::Result::Context.mixin(config: :continue)` or `BCDD::Result::Context::Expectations.mixin(config: :continue)` adds a `Continue(**input)` that will be ignored by the expectations. This is extremely useful when you want to use `Continue()` to chain operations, but you don't want to declare N success types in the expectations.
+The `BCDD::Result::Context.mixin(config: { addon: { continue: true } })` or `BCDD::Result::Context::Expectations.mixin(config: { addon: { continue: true } })` adds a `Continue(**input)` that will be ignored by the expectations. This is extremely useful when you want to use `Continue()` to chain operations, but you don't want to declare N success types in the expectations.
 
 Let's use a mix of `BCDD::Result::Context` features to see in action with this add-on:
 
@@ -1596,7 +1596,7 @@ module Divide
   require 'logger'
 
   extend self, BCDD::Result::Context::Expectations.mixin(
-    config: :continue,
+    config: { addon: { continue: true } },
     success: {
       division_completed: ->(value) { value => { number: Numeric } }
     },

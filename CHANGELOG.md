@@ -53,9 +53,7 @@
   ```
   - **To**
   ```ruby
-  BCDD::Result.mixin(with: :continue)
-  BCDD::Result.mixin(with: [:continue])
-  BCDD::Result.mixin(with: { continue: true })
+  BCDD::Result.mixin(config: { addon: { continue: true } })
   ```
   - These examples are valid to all kinds of mixins (`BCDD::Result.mixin`, `BCDD::Result::Context.mixin`, `BCDD::Result::Expectations.mixin`, `BCDD::Result::Context::Expectations.mixin`)
 
