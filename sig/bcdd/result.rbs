@@ -483,7 +483,7 @@ class BCDD::Result::Config
   include Singleton
 
   CONSTANT_ALIAS: Proc
-  PATTERN_MATCHING: Proc
+  PATTERN_MATCHING: Hash[Symbol, Hash[Symbol, untyped]]
 
   attr_reader constant_alias: BCDD::Result::Config::Switcher
   attr_reader pattern_matching: BCDD::Result::Config::Switcher
@@ -493,11 +493,8 @@ class BCDD::Result::Config
   def initialize: -> void
 
   def freeze: -> BCDD::Result::Config
-
-  def self.freeze: -> BCDD::Result::Config
-  def self.constant_alias: -> BCDD::Result::Config::Switcher
-  def self.pattern_matching: -> BCDD::Result::Config::Switcher
-  def self.options: -> Array[Symbol]
+  def options: -> Hash[Symbol, BCDD::Result::Config::Switcher]
+  def to_h: -> Hash[Symbol, Hash[Symbol | String, bool]]
 end
 
 class BCDD::Result::Config::Switcher
@@ -505,17 +502,14 @@ class BCDD::Result::Config::Switcher
   private attr_reader _options: Hash[Symbol | String, bool]
   private attr_reader listener: Proc
 
-  def self.factory:(
-    options: Hash[Symbol | String, Array[String]],
-    ?listener: Proc
-  ) -> Proc
-
   def initialize: (
-    options: Hash[Symbol | String, Array[String]],
-    listener: Proc
+    options: Hash[Symbol | String, Hash[Symbol, untyped]],
+    ?listener: Proc
   ) -> void
 
   def freeze: -> BCDD::Result::Config::Switcher
+
+  def to_h: -> Hash[Symbol | String, bool]
 
   def options: -> Hash[Symbol | String, Hash[Symbol, untyped]]
 
@@ -541,9 +535,11 @@ end
 module BCDD::Result::Config::ConstantAlias
   RESULT: String
 
-  OPTIONS: Hash[String, Array[String]]
+  OPTIONS: Hash[String, Hash[Symbol, untyped]]
   MAPPING: Hash[String, Hash[Symbol, untyped]]
   Listener: Proc
+
+  def self.switcher: -> BCDD::Result::Config::Switcher
 end
 
 module BCDD::Result::Config::Options

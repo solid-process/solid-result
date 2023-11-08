@@ -7,13 +7,9 @@ class BCDD::Result
 
       private :_options, :_affects, :listener
 
-      def self.factory(options:, listener: nil)
-        -> { new(options: options, listener: listener) }
-      end
-
-      def initialize(options:, listener:)
-        @_affects = options
-        @_options = options.keys.to_h { [_1, false] }
+      def initialize(options:, listener: nil)
+        @_options = options.transform_values { _1.fetch(:default) }
+        @_affects = options.transform_values { _1.fetch(:affects) }
         @listener = listener
       end
 
@@ -24,6 +20,10 @@ class BCDD::Result
       def freeze
         _options.freeze
         super
+      end
+
+      def to_h
+        _options.dup
       end
 
       def options

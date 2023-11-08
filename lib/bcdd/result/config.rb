@@ -10,46 +10,43 @@ class BCDD::Result
   class Config
     include Singleton
 
-    CONSTANT_ALIAS = Switcher.factory(
-      options: ConstantAlias::OPTIONS,
-      listener: ConstantAlias::Listener
-    )
-
-    PATTERN_MATCHING = Switcher.factory(
-      options: {
-        nil_as_valid_value_checking: %w[
-          BCDD::Result::Expectations
-          BCDD::Result::Context::Expectations
-        ]
+    PATTERN_MATCHING = {
+      nil_as_valid_value_checking: {
+        default: false,
+        affects: %w[BCDD::Result::Expectations BCDD::Result::Context::Expectations]
       }
-    )
+    }.transform_values!(&:freeze).freeze
 
-    attr_reader :constant_alias, :pattern_matching
+    attr_reader :addon, :constant_alias, :pattern_matching
 
     def initialize
-      @constant_alias = CONSTANT_ALIAS.call
-      @pattern_matching = PATTERN_MATCHING.call
+      @constant_alias = ConstantAlias.switcher
+      @pattern_matching = Switcher.new(options: PATTERN_MATCHING)
     end
 
     def freeze
+      addon.freeze
       constant_alias.freeze
       pattern_matching.freeze
 
       super
     end
 
-    def self.freeze; instance.freeze; end
-    def self.constant_alias; instance.constant_alias; end
-    def self.pattern_matching; instance.pattern_matching; end
-
-    def self.options
-      %i[constant_alias pattern_matching]
+    def options
+      {
+        constant_alias: constant_alias,
+        pattern_matching: pattern_matching
+      }
     end
 
-    def self.inspect
-      "#<#{name} options=#{options.inspect}>"
+    def to_h
+      options.transform_values(&:to_h)
     end
 
-    private_class_method :instance
+    def inspect
+      "#<#{self.class.name} options=#{options.keys.inspect}>"
+    end
+
+    private_constant :PATTERN_MATCHING
   end
 end
