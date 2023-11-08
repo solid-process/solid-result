@@ -37,7 +37,7 @@ class BCDD::Result
       OPTIONS = { continue: Continuable }.freeze
 
       def self.options(config_flags)
-        Config::Options.unwrap(options: { addon: OPTIONS }, flags: config_flags)
+        Config::Options.addon(map: config_flags, from: OPTIONS)
       end
     end
   end

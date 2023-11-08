@@ -560,11 +560,19 @@ module BCDD::Result::Config::ConstantAlias
 end
 
 module BCDD::Result::Config::Options
-  UnwrapValueFromOptions: Proc
-  MapOptionsWithDefaults: Proc
+  def self.with_defaults: (
+    Hash[Symbol, Hash[Symbol, bool]],
+    config: Symbol
+  ) -> Hash[Symbol, bool]
 
-  def self.unwrap: (
-    flags: Hash[Symbol, Hash[Symbol, bool]],
-    options: Hash[Symbol, Hash[Symbol, untyped]]
+  def self.filter_map: (
+    Hash[Symbol, Hash[Symbol, bool]],
+    config: Symbol,
+    from: Hash[Symbol, untyped]
   ) -> Array[untyped]
+
+  def self.addon: (
+    map: Hash[Symbol, Hash[Symbol, bool]],
+    from: Hash[Symbol, Module]
+  ) -> Array[Module]
 end
