@@ -19,14 +19,14 @@ class BCDD::Result
         _Result::Success(:ok, 1)
       end
 
-      BCDD::Result::Config.pattern_matching.enable!(:nil_as_valid_value_checking)
+      BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
 
       result = _Result::Success(:ok, 1)
 
       assert result.success?(:ok)
       assert_equal(1, result.value)
     ensure
-      BCDD::Result::Config.pattern_matching.disable!(:nil_as_valid_value_checking)
+      BCDD::Result.config.pattern_matching.disable!(:nil_as_valid_value_checking)
     end
 
     test 'BCDD::Result::Context::Expectations' do
@@ -44,14 +44,14 @@ class BCDD::Result
         _Result::Success(:ok, number: 1)
       end
 
-      BCDD::Result::Config.pattern_matching.enable!(:nil_as_valid_value_checking)
+      BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
 
       result = _Result::Success(:ok, number: 1)
 
       assert result.success?(:ok)
       assert_equal({ number: 1 }, result.value)
     ensure
-      BCDD::Result::Config.pattern_matching.disable!(:nil_as_valid_value_checking)
+      BCDD::Result.config.pattern_matching.disable!(:nil_as_valid_value_checking)
     end
   end
 end

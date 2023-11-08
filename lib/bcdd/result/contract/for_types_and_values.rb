@@ -39,7 +39,7 @@ class BCDD::Result
     private
 
     def nil_as_valid_value_checking?
-      Config.pattern_matching.enabled?(:nil_as_valid_value_checking)
+      Config.instance.pattern_matching.enabled?(:nil_as_valid_value_checking)
     end
   end
 end

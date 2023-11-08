@@ -21,10 +21,14 @@ class BCDD::Result
 
   private :unknown, :unknown=, :type_checker
 
-  def self.configuration
-    yield(Config)
+  def self.config
+    Config.instance
+  end
 
-    Config.freeze
+  def self.configuration
+    yield(config)
+
+    config.freeze
   end
 
   def initialize(type:, value:, subject: nil, expectations: nil)
