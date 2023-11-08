@@ -544,5 +544,11 @@ module BCDD::Result::Config::ConstantAlias
 end
 
 module BCDD::Result::Config::Options
-  def self.filter: (untyped, Hash[untyped, untyped]) -> Array[Module]
+  UnwrapValueFromOptions: Proc
+  MapOptionsWithDefaults: Proc
+
+  def self.unwrap: (
+    flags: Hash[Symbol, Hash[Symbol, bool]],
+    options: Hash[Symbol, Hash[Symbol, untyped]]
+  ) -> Array[untyped]
 end
