@@ -1,4 +1,5 @@
 - [\[Unreleased\]](#unreleased)
+- [\[0.8.0\] - 2023-12-11](#080---2023-12-11)
   - [Added](#added)
   - [Changed](#changed)
   - [Removed](#removed)
@@ -23,6 +24,8 @@
   - [Added](#added-7)
 
 ## [Unreleased]
+
+## [0.8.0] - 2023-12-11
 
 ### Added
 
