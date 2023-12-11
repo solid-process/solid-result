@@ -66,6 +66,9 @@ Minitest/MultipleAssertions:
 Minitest/AssertEmptyLiteral:
   Enabled: false
 
+Minitest/AssertOperator:
+  Enabled: false
+
 Naming/FileName:
   Exclude:
     - lib/bcdd-result.rb
