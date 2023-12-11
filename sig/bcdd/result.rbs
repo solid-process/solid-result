@@ -235,7 +235,7 @@ module BCDD::Result::Contract
   ) -> BCDD::Result::Contract::TypeChecker
 
   ToEnsure: ^(Hash[Symbol, untyped] | Array[Symbol], Hash[Symbol, Hash[Symbol, bool]])
-    -> BCDD::Result::Contract::Evaluator
+    -> BCDD::Result::Contract::Interface
 
   def self.new: (
     success: Hash[Symbol, untyped] | Array[Symbol],
@@ -362,6 +362,14 @@ class BCDD::Result::Expectations
   def self.mixin_module: -> singleton(BCDD::Result::Expectations::Mixin)
 
   def self.result_factory_without_expectations: -> singleton(BCDD::Result)
+
+  def self.new: (
+    ?subject: untyped,
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol],
+    ?contract: BCDD::Result::Contract::Evaluator,
+    ?config: Hash[Symbol, Hash[Symbol, bool]]
+  ) -> (BCDD::Result::Expectations | untyped)
 
   def initialize: (
     ?subject: untyped,

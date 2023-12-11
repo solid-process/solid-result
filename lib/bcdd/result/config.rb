@@ -63,7 +63,7 @@ class BCDD::Result
     end
 
     def inspect
-      "#<#{self.class.name} options=#{options.keys.inspect}>"
+      "#<#{self.class.name} options=#{options.keys.sort.inspect}>"
     end
 
     private_constant :ADDON, :FEATURE, :PATTERN_MATCHING

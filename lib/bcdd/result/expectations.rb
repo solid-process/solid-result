@@ -28,6 +28,14 @@ class BCDD::Result
       ::BCDD::Result
     end
 
+    def self.new(...)
+      return result_factory_without_expectations unless Config.instance.feature.enabled?(:expectations)
+
+      instance = allocate
+      instance.send(:initialize, ...)
+      instance
+    end
+
     private_class_method :mixin!, :mixin_module, :result_factory_without_expectations
 
     def initialize(subject: nil, success: nil, failure: nil, contract: nil, config: nil)
