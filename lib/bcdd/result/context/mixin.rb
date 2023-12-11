@@ -2,6 +2,8 @@
 
 class BCDD::Result::Context
   module Mixin
+    Factory = BCDD::Result::Mixin::Factory
+
     module Methods
       def Success(type, **value)
         Success.new(type: type, value: value, subject: self)
@@ -19,20 +21,21 @@ class BCDD::Result::Context
         end
       end
 
-      OPTIONS = { Continue: Continuable }.freeze
+      OPTIONS = { continue: Continuable }.freeze
 
-      def self.options(names)
-        Array(names).filter_map { |name| OPTIONS[name] }
+      def self.options(config_flags)
+        ::BCDD::Result::Config::Options.addon(map: config_flags, from: OPTIONS)
       end
     end
   end
 
-  def self.mixin(with: nil)
-    addons = Mixin::Addons.options(with)
-
-    mod = ::BCDD::Result::Mixin.module!
-    mod.send(:include, Mixin::Methods)
-    mod.send(:include, *addons) unless addons.empty?
-    mod
+  def self.mixin_module
+    Mixin
   end
+
+  def self.result_factory
+    ::BCDD::Result::Context
+  end
+
+  private_class_method :mixin_module, :result_factory
 end

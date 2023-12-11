@@ -4,7 +4,12 @@ class BCDD::Result
   class Contract::ForTypesAndValues
     include Contract::Interface
 
-    def initialize(types_and_values)
+    def initialize(types_and_values, config)
+      @nil_as_valid_value_checking =
+        Config::Options
+          .with_defaults(config, :pattern_matching)
+          .fetch(:nil_as_valid_value_checking)
+
       @types_and_values = types_and_values.transform_keys(&:to_sym)
 
       @types_contract = Contract::ForTypes.new(@types_and_values.keys)
@@ -29,7 +34,7 @@ class BCDD::Result
 
       checking_result = value_checking === value
 
-      return value if checking_result || (Contract.nil_as_valid_value_checking? && checking_result.nil?)
+      return value if checking_result || (checking_result.nil? && @nil_as_valid_value_checking)
 
       raise Contract::Error::UnexpectedValue.build(type: type, value: value)
     rescue ::NoMatchingPatternError => e

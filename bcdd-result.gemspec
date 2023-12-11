@@ -8,11 +8,9 @@ Gem::Specification.new do |spec|
   spec.authors = ['Rodrigo Serradura']
   spec.email = ['rodrigo.serradura@gmail.com']
 
-  spec.summary = 'A pragmatic result abstraction (monad based) for Ruby.'
-  spec.description =
-    "Empower Ruby apps with a pragmatic use of Railway Oriented Programming.\n\n" \
-    "It's a general-purpose result monad that allows you to create objects representing " \
-    'a success (BCDD::Result::Success) or failure (BCDD::Result::Failure).'
+  spec.summary = 'Empower Ruby apps with pragmatic use of Result monad, Railway Oriented Programming, and B/CDD.'
+
+  spec.description = 'Empower Ruby apps with pragmatic use of Result monad, Railway Oriented Programming, and B/CDD.'
 
   spec.homepage = 'https://github.com/b-cdd/result'
   spec.license = 'MIT'

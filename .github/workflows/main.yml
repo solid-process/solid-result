@@ -13,20 +13,20 @@ jobs:
     name: Ruby ${{ matrix.ruby }}
     strategy:
       matrix:
-        ruby:
-          - '3.2.2'
-          - '3.1.4'
-          - '3.0.6'
-          - '2.7.8'
-
+        ruby: [2.7, 3.0, 3.1, 3.2, head]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-    - name: Run the default task
-      run: bundle exec rake
-    - name: Run the steep check
+    - name: Run BCDD::Result.configuration test (Minitest)
+      run: bundle exec rake test_configuration TEST_CONFIG_FREEZING=true
+    - name: Run tests (Minitest)
+      run: bundle exec rake test
+    - name: Run static code analysis (Rubocop)
+      run: bundle exec rake rubocop
+    - name: Run static type checking (Steep)
       run: bundle exec steep check
+      if: ${{ matrix.ruby == 3.2 }}

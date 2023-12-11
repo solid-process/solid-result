@@ -2,6 +2,15 @@
 
 class BCDD::Result
   module Expectations::Mixin
+    module Factory
+      def self.module!
+        ::Module.new do
+          def self.included(base); base.const_set(:ResultExpectationsMixin, self); end
+          def self.extended(base); base.const_set(:ResultExpectationsMixin, self); end
+        end
+      end
+    end
+
     METHODS = <<~RUBY
       def Success(...)
         _Result.Success(...)
@@ -25,17 +34,10 @@ class BCDD::Result
         end
       end
 
-      OPTIONS = { Continue: Continuable }.freeze
+      OPTIONS = { continue: Continuable }.freeze
 
-      def self.options(names)
-        Array(names).filter_map { |name| OPTIONS[name] }
-      end
-    end
-
-    def self.module!
-      ::Module.new do
-        def self.included(base); base.const_set(:ResultExpectationsMixin, self); end
-        def self.extended(base); base.const_set(:ResultExpectationsMixin, self); end
+      def self.options(config_flags)
+        Config::Options.addon(map: config_flags, from: OPTIONS)
       end
     end
   end

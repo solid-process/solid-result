@@ -4,7 +4,7 @@ require 'test_helper'
 
 class BCDD::RailwayOrientedProgrammingResultMixinSingletonTest < Minitest::Test
   module Divide
-    extend self, BCDD::Result.mixin(with: :Continue)
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
     def call(arg1, arg2)
       validate_numbers(arg1, arg2)

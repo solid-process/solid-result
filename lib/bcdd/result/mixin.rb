@@ -2,6 +2,15 @@
 
 class BCDD::Result
   module Mixin
+    module Factory
+      def self.module!
+        ::Module.new do
+          def self.included(base); base.const_set(:ResultMixin, self); end
+          def self.extended(base); base.const_set(:ResultMixin, self); end
+        end
+      end
+    end
+
     module Methods
       def Success(type, value = nil)
         Success.new(type: type, value: value, subject: self)
@@ -19,27 +28,31 @@ class BCDD::Result
         end
       end
 
-      OPTIONS = { Continue: Continuable }.freeze
+      OPTIONS = { continue: Continuable }.freeze
 
-      def self.options(names)
-        Array(names).filter_map { |name| OPTIONS[name] }
-      end
-    end
-
-    def self.module!
-      ::Module.new do
-        def self.included(base); base.const_set(:ResultMixin, self); end
-        def self.extended(base); base.const_set(:ResultMixin, self); end
+      def self.options(config_flags)
+        Config::Options.addon(map: config_flags, from: OPTIONS)
       end
     end
   end
 
-  def self.mixin(with: nil)
-    addons = Mixin::Addons.options(with)
+  def self.mixin(config: nil)
+    addons = mixin_module::Addons.options(config)
 
-    mod = Mixin.module!
-    mod.send(:include, Mixin::Methods)
+    mod = mixin_module::Factory.module!
+    mod.send(:include, mixin_module::Methods)
+    mod.const_set(:Result, result_factory)
     mod.send(:include, *addons) unless addons.empty?
     mod
   end
+
+  def self.mixin_module
+    Mixin
+  end
+
+  def self.result_factory
+    ::BCDD::Result
+  end
+
+  private_class_method :mixin_module, :result_factory
 end

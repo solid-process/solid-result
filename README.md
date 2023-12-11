@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center" id="-bcddresult">🔀 BCDD::Result</h1>
-  <p align="center"><i>Empower Ruby apps with a pragmatic use of Railway Oriented Programming.</i></p>
+  <p align="center"><i>Empower Ruby apps with pragmatic use of Result monad, Railway Oriented Programming, and B/CDD.</i></p>
   <p align="center">
     <img src="https://img.shields.io/badge/ruby->%3D%202.7.0-ruby.svg?colorA=99004d&colorB=cc0066" alt="Ruby">
     <a href="https://rubygems.org/gems/bcdd-result"><img src="https://badge.fury.io/rb/bcdd-result.svg" alt="bcdd-result gem version" height="18"></a>
@@ -23,7 +23,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`BCDD::Result` *versus* `Result`](#bcddresult-versus-result)
 - [Reference](#reference)
   - [Result Attributes](#result-attributes)
-    - [Receiving types in `result.success?` or `result.failure?`](#receiving-types-in-resultsuccess-or-resultfailure)
+    - [Checking types with `result.success?` or `result.failure?`](#checking-types-with-resultsuccess-or-resultfailure)
   - [Result Hooks](#result-hooks)
     - [`result.on`](#resulton)
     - [`result.on_type`](#resulton_type)
@@ -69,6 +69,12 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
       - [Module example (Singleton Methods)](#module-example-singleton-methods-1)
     - [`BCDD::Result::Context::Expectations`](#bcddresultcontextexpectations)
     - [Mixin add-ons](#mixin-add-ons)
+  - [`BCDD::Result.configuration`](#bcddresultconfiguration)
+    - [`config.addon.enable!(:continue)`](#configaddonenablecontinue)
+    - [`config.constant_alias.enable!('Result')`](#configconstant_aliasenableresult)
+    - [`config.pattern_matching.disable!(:nil_as_valid_value_checking)`](#configpattern_matchingdisablenil_as_valid_value_checking)
+    - [`config.feature.disable!(:expectations)`](#configfeaturedisableexpectations)
+  - [`BCDD::Result.config`](#bcddresultconfig)
 - [About](#about)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -84,7 +90,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'bcdd-result', require: 'bcdd/result'
+gem 'bcdd-result'
 ```
 
 And then execute:
@@ -94,6 +100,10 @@ And then execute:
 If bundler is not being used to manage dependencies, install the gem by executing:
 
     $ gem install bcdd-result
+
+And require it in your code:
+
+    require 'bcdd/result'
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
@@ -119,17 +129,27 @@ BCDD::Result::Failure(:err) #
 
 #### `BCDD::Result` *versus* `Result`
 
-The `BCDD::Result` is the main module of this gem. It contains all the features, constants, and methods you will use to create and manipulate results.
+This gem provides a way to create constant aliases for `BCDD::Result` and other classes/modules.
 
-The `Result` is an alias of `BCDD::Result`. It was created to facilitate the use of this gem in the code. So, instead of requiring `BCDD::Result` everywhere, you can require `Result` and use it as an alias.
+To enable it, you must call the `BCDD::Result.configuration` method and pass a block to it. You can turn the aliases you want on/off in this block.
 
 ```ruby
-require 'result'
-
-Result::Success(:ok) # <BCDD::Result::Success type=:ok value=nil>
+BCDD::Result.configuration do |config|
+  config.constant_alias.enable!('Result')
+end
 ```
 
-All the examples in this README that use `BCDD::Result` can also be used with `Result`.
+So, instead of using `BCDD::Result` everywhere, you can use `Result` as an alias/shortcut.
+
+```ruby
+Result::Success(:ok) # <BCDD::Result::Success type=:ok value=nil>
+
+Result::Failure(:err) # <BCDD::Result::Failure type=:err value=nil>
+```
+
+If you have enabled constant aliasing, all examples in this README that use `BCDD::Result` can be implemented using `Result`.
+
+There are other aliases and configurations available. Check the [BCDD::Result.configuration]() section for more information.
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
@@ -169,12 +189,12 @@ result.value    # nil
 ################
 # With a value #
 ################
-result = BCDD::Result::Failure(:err, my: 'value')
+result = BCDD::Result::Failure(:err, 'my_value')
 
 result.success? # false
 result.failure? # true
 result.type     # :err
-result.value    # {:my => "value"}
+result.value    # "my_value"
 
 ###################
 # Without a value #
@@ -187,9 +207,11 @@ result.type     # :no
 result.value    # nil
 ```
 
+In both cases, the `type` must be a symbol, and the `value` can be any kind of object.
+
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-#### Receiving types in `result.success?` or `result.failure?`
+#### Checking types with `result.success?` or `result.failure?`
 
 `BCDD::Result#success?` and `BCDD::Result#failure?` are methods that allow you to check if the result is a success or a failure.
 
@@ -198,9 +220,11 @@ You can also check the result type by passing an argument to it. For example, `r
 ```ruby
 result = BCDD::Result::Success(:ok)
 
-result.success?        # true
-result.success?(:ok)   # true
-result.success?(:okay) # false
+result.success?(:ok)
+
+# This is the same as:
+
+result.success? && result.type == :ok
 ```
 
 The same is valid for `BCDD::Result#failure?`.
@@ -208,9 +232,11 @@ The same is valid for `BCDD::Result#failure?`.
 ```ruby
 result = BCDD::Result::Failure(:err)
 
-result.failure?         # true
-result.failure?(:err)   # true
-result.failure?(:error) # false
+result.failure?(:err)
+
+# This is the same as:
+
+result.failure? && result.type == :err
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
@@ -218,7 +244,7 @@ result.failure?(:error) # false
 ### Result Hooks
 
 Result hooks are methods that allow you to execute a block of code based on the type of result obtained.
-To demonstrate their use, I will implement a function that can divide two numbers.
+To demonstrate their use, I will implement a method that can divide two numbers.
 
 ```ruby
 def divide(arg1, arg2)
@@ -282,8 +308,7 @@ result = divide(nil, 2)
 
 output =
   result
-    .on_type(:invalid_arg) { |msg| puts msg }
-    .on_type(:division_by_zero) { |msg| puts msg }
+    .on_type(:invalid_arg, :division_by_zero) { |msg| puts msg }
     .on_type(:division_completed) { |number| puts number }
 
 # The code above will print 'arg1 must be numeric' and return the result itself.
@@ -303,15 +328,17 @@ The `BCDD::Result#on_success` method is quite similar to the `BCDD::Result#on` h
 2. If the type declaration is not included, the method will execute the block for any successful result, regardless of its type.
 
 ```ruby
-# It executes the block and return itself.
+# In both examples, it executes the block and returns the result itself.
 
 divide(4, 2).on_success { |number| puts number }
 
 divide(4, 2).on_success(:division_completed) { |number| puts number }
 
-# It doesn't execute the block, but return itself.
+# It doesn't execute the block as the type is different.
 
 divide(4, 4).on_success(:ok) { |value| puts value }
+
+# It doesn't execute the block, as the result is a success, but the hook expects a failure.
 
 divide(4, 4).on_failure { |error| puts error }
 ```
@@ -328,17 +355,19 @@ It is the opposite of `Result#on_success`:
 2. If the type declaration is not included, the method will execute the block for any failed result, regardless of its type.
 
 ```ruby
-# It executes the block and return itself.
+# In both examples, it executes the block and returns the result itself.
 
 divide(nil, 2).on_failure { |error| puts error }
 
-divide(4, 0).on_failure(:invalid_arg, :division_by_zero) { |error| puts error }
+divide(4, 0).on_failure(:division_by_zero) { |error| puts error }
 
-# It doesn't execute the block, but return itself.
-
-divide(4, 0).on_success { |number| puts number }
+# It doesn't execute the block as the type is different.
 
 divide(4, 0).on_failure(:invalid_arg) { |error| puts error }
+
+# It doesn't execute the block, as the result is a failure, but the hook expects a success.
+
+divide(4, 0).on_success { |number| puts number }
 ```
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
@@ -570,7 +599,7 @@ module Divide
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
-      .and_then { |numbers| validate_non_zero(numbers) }
+      .and_then { |numbers| validate_nonzero(numbers) }
       .and_then { |numbers| divide(numbers) }
   end
 
@@ -583,8 +612,8 @@ module Divide
     BCDD::Result::Success(:ok, [arg1, arg2])
   end
 
-  def validate_non_zero(numbers)
-    return BCDD::Result::Success(:ok, numbers) unless numbers.last.zero?
+  def validate_nonzero(numbers)
+    return BCDD::Result::Success(:ok, numbers) if numbers.last.nonzero?
 
     BCDD::Result::Failure(:division_by_zero, 'arg2 must not be zero')
   end
@@ -615,9 +644,11 @@ Divide.call(2, 2)
 
 #### `BCDD::Result.mixin`
 
-This method generates a module that can be included or extended by any object. It adds two methods to the target object: `Success()` and `Failure()`. The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the former will utilize the target object (which has received the include/extend) as the result's subject.
+This method generates a module that any object can include or extend. It adds two methods to the target object: `Success()` and `Failure()`.
 
-As a result, you can utilize the `#and_then` method to invoke methods from the result's subject.
+The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the former will utilize the target object (which has received the include/extend) as the result's subject.
+
+Because the result has a subject, the `#and_then` method can call methods from it.
 
 ##### Class example (Instance Methods)
 
@@ -634,7 +665,7 @@ class Divide
 
   def call
     validate_numbers
-      .and_then(:validate_non_zero)
+      .and_then(:validate_nonzero)
       .and_then(:divide)
   end
 
@@ -649,7 +680,7 @@ class Divide
     Success(:ok, [arg1, arg2])
   end
 
-  def validate_non_zero(numbers)
+  def validate_nonzero(numbers)
     return Success(:ok, numbers) unless numbers.last.zero?
 
     Failure(:division_by_zero, 'arg2 must not be zero')
@@ -675,7 +706,7 @@ module Divide
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
-      .and_then(:validate_non_zero)
+      .and_then(:validate_nonzero)
       .and_then(:divide)
   end
 
@@ -688,7 +719,7 @@ module Divide
     Success(:ok, [arg1, arg2])
   end
 
-  def validate_non_zero(numbers)
+  def validate_nonzero(numbers)
     return Success(:ok, numbers) unless numbers.last.zero?
 
     Failure(:division_by_zero, 'arg2 must not be zero')
@@ -717,7 +748,7 @@ If you try to use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or result
 **Note:** You can still use the block syntax, but all the results must be produced by the subject's `Success()` and `Failure()` methods.
 
 ```ruby
-module ValidateNonZero
+module ValidateNonzero
   extend self, BCDD::Result.mixin
 
   def call(numbers)
@@ -727,40 +758,26 @@ module ValidateNonZero
   end
 end
 
-class Divide
-  include BCDD::Result.mixin
+module Divide
+  extend self, BCDD::Result.mixin
 
-  attr_reader :arg1, :arg2
-
-  def initialize(arg1, arg2)
-    @arg1 = arg1
-    @arg2 = arg2
-  end
-
-  def call
-    validate_numbers
-      .and_then(:validate_non_zero)
+  def call(arg1, arg2)
+    validate_numbers(arg1, arg2)
+      .and_then(:validate_nonzero)
       .and_then(:divide)
   end
 
   private
 
-  def validate_numbers
-    arg1.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg1 must be numeric') # This will raise an error
+  def validate_numbers(arg1, arg2)
+    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
     arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
 
-    BCDD::Result::Success(:ok, [arg1, arg2]) # This will raise an error
+    Success(:ok, [arg1, arg2])
   end
 
-  def validate_non_zero(numbers)
-    ValidateNonZero.call(numbers) # This will raise an error
-
-    # This would work:
-    # In this case we are handling the other subject result and returning our own
-    # ValidateNonZero.call(numbers).handle do |on|
-    #   on.success { |numbers| Success(:ok, numbers) }
-    #   on.failure { |err| Failure(:division_by_zero, err) }
-    # end
+  def validate_nonzero(numbers)
+    ValidateNonzero.call(numbers) # This will raise an error
   end
 
   def divide((number1, number2))
@@ -769,11 +786,77 @@ class Divide
 end
 ```
 
+Look at the error produced by the code above:
+
+```ruby
+Divide.call(2, 0)
+
+# You cannot call #and_then and return a result that does not belong to the subject! (BCDD::Result::Error::InvalidResultSubject)
+# Expected subject: Divide
+# Given subject: ValidateNonzero
+# Given result: #<BCDD::Result::Failure type=:division_by_zero value="arg2 must not be zero">
+```
+
+In order to fix this, you must handle the result produced by `ValidateNonzero.call()` and return a result that belongs to the subject.
+
+```ruby
+module ValidateNonzero
+  extend self, BCDD::Result.mixin
+
+  def call(numbers)
+    return Success(:ok, numbers) unless numbers.last.zero?
+
+    Failure(:division_by_zero, 'arg2 must not be zero')
+  end
+end
+
+module Divide
+  extend self, BCDD::Result.mixin
+
+  def call(arg1, arg2)
+    validate_numbers(arg1, arg2)
+      .and_then(:validate_nonzero)
+      .and_then(:divide)
+  end
+
+  private
+
+  def validate_numbers(arg1, arg2)
+    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    Success(:ok, [arg1, arg2])
+  end
+
+  def validate_nonzero(numbers)
+    # In this case we are handling the other subject result and returning our own
+    ValidateNonzero.call(numbers).handle do |on|
+      on.success { |numbers| Success(:ok, numbers) }
+
+      on.failure { |err| Failure(:division_by_zero, err) }
+    end
+  end
+
+  def divide((number1, number2))
+    Success(:division_completed, number1 / number2)
+  end
+end
+```
+
+Look at the output of the code above:
+
+```ruby
+Divide.call(2, 0)
+
+#<BCDD::Result::Failure type=:division_by_zero value="arg2 must not be zero">
+```
+
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ##### Dependency Injection
 
-The `BCDD::Result#and_then` accepts a second argument that will be used to share a value with the subject's method. To receive this argument, the subject's method must have an arity of two, where the first argument will be the result value and the second will be the shared value.
+The `BCDD::Result#and_then` accepts a second argument that will be used to share a value with the subject's method.
+To receive this argument, the subject's method must have an arity of two, where the first argument will be the result value and the second will be the shared value.
 
 ```ruby
 require 'logger'
@@ -783,7 +866,7 @@ module Divide
 
   def call(arg1, arg2, logger: ::Logger.new(STDOUT))
     validate_numbers(arg1, arg2)
-      .and_then(:validate_non_zero, logger)
+      .and_then(:validate_nonzero, logger)
       .and_then(:divide, logger)
   end
 
@@ -796,7 +879,7 @@ module Divide
     Success(:ok, [arg1, arg2])
   end
 
-  def validate_non_zero(numbers, logger)
+  def validate_nonzero(numbers, logger)
     if numbers.last.zero?
       logger.error('arg2 must not be zero')
 
@@ -830,19 +913,19 @@ Divide.call(4, 2, logger: Logger.new(IO::NULL))
 
 ##### Add-ons
 
-The `BCDD::Result.mixin` also accepts the `with:` argument. It is a hash that will be used to define the methods that will be added to the target object.
+The `BCDD::Result.mixin` also accepts the `config:` argument. It is a hash that will be used to define custom behaviors for the mixin.
 
-**Continue**
+**continue**
 
 This addon will create the `Continue(value)` method, which will know how to produce a `Success(:continued, value)`. It is useful when you want to perform a sequence of operations but want to avoid returning a specific result for each step.
 
 ```ruby
 module Divide
-  extend self, BCDD::Result.mixin(with: :Continue)
+  extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
-      .and_then(:validate_non_zero)
+      .and_then(:validate_nonzero)
       .and_then(:divide)
   end
 
@@ -855,7 +938,7 @@ module Divide
     Continue([arg1, arg2])
   end
 
-  def validate_non_zero(numbers)
+  def validate_nonzero(numbers)
     return Continue(numbers) unless numbers.last.zero?
 
     Failure(:division_by_zero, 'arg2 must not be zero')
@@ -904,11 +987,11 @@ Look what happens if you try to create a result without one of the expected type
 ```ruby
 Divide::Result::Success(:ok)
 # type :ok is not allowed. Allowed types: :numbers, :division_completed
-# (BCDD::Result::Expectations::Error::UnexpectedType)
+# (BCDD::Result::Contract::Error::UnexpectedType)
 
 Divide::Result::Failure(:err)
 # type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero
-# (BCDD::Result::Expectations::Error::UnexpectedType)
+# (BCDD::Result::Contract::Error::UnexpectedType)
 ```
 
 The _**mixin mode**_ is similar to `BCDD::Result::Mixin`, but it also defines the expectations for the result's types and values.
@@ -922,7 +1005,7 @@ class Divide
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
-      .and_then(:validate_non_zero)
+      .and_then(:validate_nonzero)
       .and_then(:divide)
   end
 
@@ -935,7 +1018,7 @@ class Divide
     Success(:numbers, [arg1, arg2])
   end
 
-  def validate_non_zero(numbers)
+  def validate_nonzero(numbers)
     return Success(:numbers, numbers) unless numbers.last.zero?
 
     Failure(:division_by_zero, 'arg2 must not be zero')
@@ -947,10 +1030,10 @@ class Divide
 end
 ```
 
-This mode also defines an `Expected` constant to be used inside and outside the module.
+This mode also defines an `Result` constant to be used inside and outside the module.
 
 > **PROTIP:**
-> You can use the `Expected` constant to mock the result's type and value in your tests. As they will have the exact expectations, your tests will check if the result clients are handling the result correctly.
+> You can use the `Result` constant to mock the result's type and value in your tests. As they will have the exact expectations, your tests will check if the result clients are handling the result correctly.
 
 Now that you know the two modes, let's understand how expectations can be beneficial and powerful for defining contracts.
 
@@ -975,7 +1058,7 @@ result.success?(:division_completed) # true
 
 result.success?(:ok)
 # type :ok is not allowed. Allowed types: :numbers, :division_completed
-# (BCDD::Result::Expectations::Error::UnexpectedType)
+# (BCDD::Result::Contract::Error::UnexpectedType)
 ```
 
 **Failure example:**
@@ -989,7 +1072,7 @@ result.failure?(:division_by_zero) # false
 
 result.failure?(:err)
 # type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero
-# (BCDD::Result::Expectations::Error::UnexpectedType)
+# (BCDD::Result::Contract::Error::UnexpectedType)
 ```
 
 *PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
@@ -1011,7 +1094,7 @@ result
 
 result.on(:number) { |_| :this_type_does_not_exist }
 # type :number is not allowed. Allowed types: :numbers, :division_completed, :invalid_arg, :division_by_zero
-# (BCDD::Result::Expectations::Error::UnexpectedType)
+# (BCDD::Result::Contract::Error::UnexpectedType)
 ```
 
 *PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
@@ -1037,11 +1120,11 @@ result
 
 result.on_success(:ok) { |_| :this_type_does_not_exist }
 # type :ok is not allowed. Allowed types: :numbers, :division_completed
-# (BCDD::Result::Expectations::Error::UnexpectedType)
+# (BCDD::Result::Contract::Error::UnexpectedType)
 
 result.on_failure(:err) { |_| :this_type_does_not_exist }
 # type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero
-# (BCDD::Result::Expectations::Error::UnexpectedType)
+# (BCDD::Result::Contract::Error::UnexpectedType)
 ```
 
 *PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
@@ -1058,17 +1141,17 @@ result = Divide.call(10, 2)
 result.handle do |on|
   on.type(:ok) { |_| :this_type_does_not_exist }
 end
-# type :ok is not allowed. Allowed types: :numbers, :division_completed, :invalid_arg, :division_by_zero (BCDD::Result::Expectations::Error::UnexpectedType)
+# type :ok is not allowed. Allowed types: :numbers, :division_completed, :invalid_arg, :division_by_zero (BCDD::Result::Contract::Error::UnexpectedType)
 
 result.handle do |on|
   on.success(:ok) { |_| :this_type_does_not_exist }
 end
-# type :ok is not allowed. Allowed types: :numbers, :division_completed (BCDD::Result::Expectations::Error::UnexpectedType)
+# type :ok is not allowed. Allowed types: :numbers, :division_completed (BCDD::Result::Contract::Error::UnexpectedType)
 
 result.handle do |on|
   on.failure(:err) { |_| :this_type_does_not_exist }
 end
-# type :err is not allowed. Allowed types: :numbers, :division_completed (BCDD::Result::Expectations::Error::UnexpectedType)
+# type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero (BCDD::Result::Contract::Error::UnexpectedType)
 ```
 
 *PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
@@ -1099,11 +1182,11 @@ end
 
 Divide.call('4', 2)
 # type :invalid_arg is not allowed. Allowed types: :err
-# (BCDD::Result::Expectations::Error::UnexpectedType)
+# (BCDD::Result::Contract::Error::UnexpectedType)
 
 Divide.call(4, 2)
 # type :division_completed is not allowed. Allowed types: :ok
-# (BCDD::Result::Expectations::Error::UnexpectedType)
+# (BCDD::Result::Contract::Error::UnexpectedType)
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
@@ -1126,11 +1209,11 @@ end
 
 Divide.call('4', 2)
 # type :invalid_arg is not allowed. Allowed types: :err
-# (BCDD::Result::Expectations::Error::UnexpectedType)
+# (BCDD::Result::Contract::Error::UnexpectedType)
 
 Divide.call(4, 2)
 # type :division_completed is not allowed. Allowed types: :ok
-# (BCDD::Result::Expectations::Error::UnexpectedType)
+# (BCDD::Result::Contract::Error::UnexpectedType)
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
@@ -1201,26 +1284,26 @@ The value validation will only be performed through the methods `Success()` and 
 
 ```ruby
 Divide::Result::Success(:ok)
-# type :ok is not allowed. Allowed types: :numbers, :division_completed (BCDD::Result::Expectations::Error::UnexpectedType)
+# type :ok is not allowed. Allowed types: :numbers, :division_completed (BCDD::Result::Contract::Error::UnexpectedType)
 
 Divide::Result::Success(:numbers, [1])
-# value [1] is not allowed for :numbers type (BCDD::Result::Expectations::Error::UnexpectedValue)
+# value [1] is not allowed for :numbers type (BCDD::Result::Contract::Error::UnexpectedValue)
 
 Divide::Result::Success(:division_completed, '2')
-# value "2" is not allowed for :division_completed type (BCDD::Result::Expectations::Error::UnexpectedValue)
+# value "2" is not allowed for :division_completed type (BCDD::Result::Contract::Error::UnexpectedValue)
 ```
 
 ##### Failure()
 
 ```ruby
 Divide::Result::Failure(:err)
-# type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero (BCDD::Result::Expectations::Error::UnexpectedType)
+# type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero (BCDD::Result::Contract::Error::UnexpectedType)
 
 Divide::Result::Failure(:invalid_arg, :arg1_must_be_numeric)
-# value :arg1_must_be_numeric is not allowed for :invalid_arg type (BCDD::Result::Expectations::Error::UnexpectedValue)
+# value :arg1_must_be_numeric is not allowed for :invalid_arg type (BCDD::Result::Contract::Error::UnexpectedValue)
 
 Divide::Result::Failure(:division_by_zero, msg: 'arg2 must not be zero')
-# value {:msg=>"arg2 must not be zero"} is not allowed for :division_by_zero type (BCDD::Result::Expectations::Error::UnexpectedValue)
+# value {:msg=>"arg2 must not be zero"} is not allowed for :division_by_zero type (BCDD::Result::Contract::Error::UnexpectedValue)
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
@@ -1231,21 +1314,14 @@ The value checking has support for handling pattern-matching errors, and the cle
 
 How does this operator work? They raise an error when the pattern does not match but returns nil when it matches.
 
-Because of this, you will need to enable `nil` as a valid value checking. You can do it by calling the `BCDD::Result::Contract.nil_as_valid_value_checking!` method.
-
-**Attention:**
-
-If you decide to enable this, you will do it at the beginning of your code or in an initializer. And remember, this will affect all kinds of result expectations (`BCDD::Result::Expectations` and `BCDD::Result::Context::Expectations`). So, it is recommended to use it only when you are using pattern matching for **ALL** the result's value validations.
+Because of this, you will need to enable `nil` as a valid value checking. You can do it through the `BCDD::Result.configuration` or by allowing it directly on the mixin config.
 
 ```ruby
-#
-# Put this line in an initializer or at the beginning of your code.
-# It is required if you decide to use pattern matching to validate all of your result's values.
-#
-BCDD::Result::Contract.nil_as_valid_value_checking!
-
 module Divide
   extend BCDD::Result::Expectations.mixin(
+    config: {
+      pattern_matching: { nil_as_valid_value_checking: true }
+    },
     success: {
       division_completed: ->(value) { value => (Integer | Float) }
     },
@@ -1263,30 +1339,30 @@ module Divide
 end
 
 Divide.call(10, 5)
-# value "5" is not allowed for :division_completed type ("5": Float === "5" does not return true) (BCDD::Result::Contract::Error::UnexpectedValue)
+# value "2" is not allowed for :division_completed type ("2": Float === "2" does not return true) (BCDD::Result::Contract::Error::UnexpectedValue)
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 #### `BCDD::Result::Expectations.mixin` add-ons
 
-The `BCDD::Result::Expectations.mixin` also accepts the `with:` argument. It is a hash that will be used to define the methods that will be added to the target object.
+The `BCDD::Result::Expectations.mixin` also accepts the `config:` argument. It is a hash that can be used to define custom behaviors for the mixin.
 
 **Continue**
 
-It is similar to `BCDD::Result.mixin(with: :Continue)`, the key difference is that the `Continue(value)` will be ignored by the expectations. This is extremely useful when you want to use `Continue(value)` to chain operations, but you don't want to declare N success types in the expectations.
+It is similar to `BCDD::Result.mixin(config: { addon: { continue: true } })`, the key difference is that the `Continue(value)` will be ignored by the expectations. This is extremely useful when you want to use `Continue(value)` to chain operations, but you don't want to declare N success types in the expectations.
 
 ```ruby
 class Divide
   include BCDD::Result::Expectations.mixin(
-    with: :Continue,
+    config: { addon: { continue: true } },
     success: :division_completed,
     failure: %i[invalid_arg division_by_zero]
   )
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
-      .and_then(:validate_non_zero)
+      .and_then(:validate_nonzero)
       .and_then(:divide)
   end
 
@@ -1299,7 +1375,7 @@ class Divide
     Continue([arg1, arg2])
   end
 
-  def validate_non_zero(numbers)
+  def validate_nonzero(numbers)
     return Continue(numbers) unless numbers.last.zero?
 
     Failure(:division_by_zero, 'arg2 must not be zero')
@@ -1310,7 +1386,7 @@ class Divide
   end
 end
 
-result = Divide.new.call(4,2)
+result = Divide.new.call(4, 2)
 # => #<BCDD::Result::Success type=:division_completed value=2>
 
 # The example below shows an error because the :ok type is not allowed.
@@ -1318,7 +1394,7 @@ result = Divide.new.call(4,2)
 # This is because the :continued type is ignored by the expectations.
 #
 result.success?(:ok)
-# type :ok is not allowed. Allowed types: :division_completed (BCDD::Result::Expectations::Error::UnexpectedType)
+# type :ok is not allowed. Allowed types: :division_completed (BCDD::Result::Contract::Error::UnexpectedType)
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
@@ -1368,14 +1444,14 @@ Let's see this feature and the data accumulation in action:
 ##### Class example (Instance Methods)
 
 ```ruby
-class Divide
-  require 'logger'
+require 'logger'
 
+class Divide
   include BCDD::Result::Context.mixin
 
   def call(arg1, arg2, logger: ::Logger.new(STDOUT))
     validate_numbers(arg1, arg2)
-      .and_then(:validate_non_zero)
+      .and_then(:validate_nonzero)
       .and_then(:divide, logger: logger)
   end
 
@@ -1388,7 +1464,7 @@ class Divide
     Success(:ok, number1: arg1, number2: arg2)
   end
 
-  def validate_non_zero(number2:, **)
+  def validate_nonzero(number2:, **)
     return Success(:ok) if number2.nonzero?
 
     Failure(:err, message: 'arg2 must not be zero')
@@ -1434,8 +1510,9 @@ class Divide
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
-      .and_then(:validate_non_zero)
+      .and_then(:validate_nonzero)
       .and_then(:divide)
+      .and_expose(:division_completed, [:number])
   end
 
   private
@@ -1447,7 +1524,7 @@ class Divide
     Success(:ok, number1: arg1, number2: arg2)
   end
 
-  def validate_non_zero(number2:, **)
+  def validate_nonzero(number2:, **)
     return Success(:ok) if number2.nonzero?
 
     Failure(:err, message: 'arg2 must not be zero')
@@ -1483,7 +1560,7 @@ module Divide
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
-      .and_then(:validate_non_zero)
+      .and_then(:validate_nonzero)
       .and_then(:divide)
       .and_expose(:division_completed, [:number])
   end
@@ -1497,7 +1574,7 @@ module Divide
     Success(:ok, number1: arg1, number2: arg2)
   end
 
-  def validate_non_zero(number2:, **)
+  def validate_nonzero(number2:, **)
     return Success(:ok) if number2.nonzero?
 
     Failure(:err, message: 'arg2 must not be zero')
@@ -1530,14 +1607,11 @@ The `BCDD::Result::Context::Expectations` is a `BCDD::Result::Expectations` with
 This is an example using the mixin mode, but the standalone mode is also supported.
 
 ```ruby
-#
-# Put this line in an initializer or at the beginning of your code.
-# It is required if you decide to use pattern matching to validate all of your result's values.
-#
-BCDD::Result::Contract.nil_as_valid_value_checking!
-
 class Divide
   include BCDD::Result::Context::Expectations.mixin(
+    config: {
+      pattern_matching: { nil_as_valid_value_checking: true }
+    },
     success: {
       division_completed: ->(value) { value => { number: Numeric } }
     },
@@ -1553,7 +1627,7 @@ class Divide
 
     arg2.zero? and return Failure(:division_by_zero, message: 'arg2 must not be zero')
 
-    Success(:division_completed, number: arg1 / arg2)
+    Success(:division_completed, number: (arg1 / arg2))
   end
 end
 
@@ -1577,26 +1651,23 @@ Divide::Result::Success(:division_completed, number: '2')
 
 #### Mixin add-ons
 
-The `BCDD::Result::Context.mixin` and `BCDD::Result::Context::Expectations.mixin` also accepts the `with:` argument. And it works the same way as the `BCDD::Result` mixins.
+The `BCDD::Result::Context.mixin` and `BCDD::Result::Context::Expectations.mixin` also accepts the `config:` argument. And it works the same way as the `BCDD::Result` mixins.
 
 **Continue**
 
-The `BCDD::Result::Context.mixin(with: :Continue)` or `BCDD::Result::Context::Expectations.mixin(with: :Continue)` adds a `Continue(**input)` that will be ignored by the expectations. This is extremely useful when you want to use `Continue()` to chain operations, but you don't want to declare N success types in the expectations.
+The `BCDD::Result::Context.mixin(config: { addon: { continue: true } })` or `BCDD::Result::Context::Expectations.mixin(config: { addon: { continue: true } })` adds a `Continue(**input)` that will be ignored by the expectations. This is extremely useful when you want to use `Continue()` to chain operations, but you don't want to declare N success types in the expectations.
 
 Let's use a mix of `BCDD::Result::Context` features to see in action with this add-on:
 
 ```ruby
-#
-# Put this line in an initializer or at the beginning of your code.
-# It is required if you decide to use pattern matching to validate all of your result's values.
-#
-BCDD::Result::Contract.nil_as_valid_value_checking!
-
 module Divide
   require 'logger'
 
   extend self, BCDD::Result::Context::Expectations.mixin(
-    with: :Continue,
+    config: {
+      addon:            { continue: true },
+      pattern_matching: { nil_as_valid_value_checking: true }
+    },
     success: {
       division_completed: ->(value) { value => { number: Numeric } }
     },
@@ -1608,7 +1679,7 @@ module Divide
 
   def call(arg1, arg2, logger: ::Logger.new(STDOUT))
     validate_numbers(arg1, arg2)
-      .and_then(:validate_non_zero)
+      .and_then(:validate_nonzero)
       .and_then(:divide, logger: logger)
       .and_expose(:division_completed, [:number])
   end
@@ -1622,7 +1693,7 @@ module Divide
     Continue(number1: arg1, number2: arg2)
   end
 
-  def validate_non_zero(number2:, **)
+  def validate_nonzero(number2:, **)
     return Continue() if number2.nonzero?
 
     Failure(:division_by_zero, message: 'arg2 must not be zero')
@@ -1651,7 +1722,118 @@ Divide.call(14, 0)
 #<BCDD::Result::Context::Failure type=:division_by_zero value={:message=>"arg2 must not be zero"}>
 ```
 
+### `BCDD::Result.configuration`
+
+The `BCDD::Result.configuration` allows you to configure default behaviors for `BCDD::Result` and `BCDD::Result::Context` through a configuration block. After using it, the configuration is frozen, ensuring the expected behaviors for your application.
+
+```ruby
+BCDD::Result.configuration do |config|
+  config.addon.enable!(:continue)
+
+  config.constant_alias.enable!('Result')
+
+  config.pattern_matching.disable!(:nil_as_valid_value_checking)
+
+  config.feature.disable!(:expectations) if ::Rails.env.production?
+end
+```
+
+Use `disable!` to disable a feature and `enable!` to enable it.
+
+Let's see what each configuration in the example above does:
+
+#### `config.addon.enable!(:continue)`
+
+This configuration enables the `Continue()` method for `BCDD::Result` and `BCDD::Result::Context`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
+
+#### `config.constant_alias.enable!('Result')`
+
+This configuration make `Result` a constant alias for `BCDD::Result`. Link to [documentation](#bcddresult-versus-result).
+
+#### `config.pattern_matching.disable!(:nil_as_valid_value_checking)`
+
+This configuration disables the `nil_as_valid_value_checking` for `BCDD::Result` and `BCDD::Result::Context`. Link to [documentation](#pattern-matching-support).
+
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### `config.feature.disable!(:expectations)`
+
+This configuration turns off the expectations for `BCDD::Result` and `BCDD::Result::Context`. The expectations are helpful in development and test environments, but they can be disabled in production environments for performance gain.
+
+PS: I'm using `::Rails.env.production?` to check the environment, but you can use any logic you want.
+
+### `BCDD::Result.config`
+
+The `BCDD::Result.config` allows you to access the current configuration. It is useful when you want to check the current configuration.
+
+**BCDD::Result.config.addon**
+
+```ruby
+BCDD::Result.config.addon.enabled?(:continue)
+
+BCDD::Result.config.addon.options
+# {
+#   :continue=>{
+#     :enabled=>false,
+#     :affects=>[
+#       "BCDD::Result",
+#       "BCDD::Result::Context",
+#       "BCDD::Result::Expectations",
+#       "BCDD::Result::Context::Expectations"
+#     ]
+#   }
+# }
+```
+
+**BCDD::Result.config.constant_alias**
+
+```ruby
+BCDD::Result.config.constant_alias.enabled?('Result')
+
+BCDD::Result.config.constant_alias.options
+# {
+#   "Result"=>{
+#     :enabled=>false,
+#     :affects=>[
+#       "Object"
+#     ]
+#   }
+# }
+```
+
+**BCDD::Result.config.pattern_matching**
+
+```ruby
+BCDD::Result.config.pattern_matching.enabled?(:nil_as_valid_value_checking)
+
+BCDD::Result.config.pattern_matching.options
+# {
+#   :nil_as_valid_value_checking=>{
+#     :enabled=>false,
+#     :affects=>[
+#       "BCDD::Result::Expectations,
+#       "BCDD::Result::Context::Expectations"
+#     ]
+#   }
+# }
+```
+
+**BCDD::Result.config.feature**
+
+```ruby
+BCDD::Result.config.feature.enabled?(:expectations)
+
+BCDD::Result.config.feature.options
+# {
+#   :expectations=>{
+#     :enabled=>true,
+#     :affects=>[
+#       "BCDD::Result::Expectations,
+#       "BCDD::Result::Context::Expectations"
+#     ]
+#   }
+# }
+```
 
 ## About
 

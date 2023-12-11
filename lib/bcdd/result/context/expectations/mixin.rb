@@ -2,21 +2,9 @@
 
 class BCDD::Result::Context
   module Expectations::Mixin
-    METHODS = <<~RUBY
-      def Success(...)
-        _Result::Success(...)
-      end
+    Factory = BCDD::Result::Expectations::Mixin::Factory
 
-      def Failure(...)
-        _Result::Failure(...)
-      end
-
-      private
-
-      def _Result
-        @_Result ||= Result.with(subject: self)
-      end
-    RUBY
+    METHODS = BCDD::Result::Expectations::Mixin::METHODS
 
     module Addons
       module Continuable
@@ -25,10 +13,10 @@ class BCDD::Result::Context
         end
       end
 
-      OPTIONS = { Continue: Continuable }.freeze
+      OPTIONS = { continue: Continuable }.freeze
 
-      def self.options(names)
-        Array(names).filter_map { |name| OPTIONS[name] }
+      def self.options(config_flags)
+        ::BCDD::Result::Config::Options.addon(map: config_flags, from: OPTIONS)
       end
     end
   end

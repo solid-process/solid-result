@@ -11,6 +11,9 @@ class BCDD::Result
   attr_reader data: BCDD::Result::Data
   attr_reader subject: untyped
 
+  def self.config: -> BCDD::Result::Config
+  def self.configuration: { (BCDD::Result::Config) -> void } -> BCDD::Result::Config
+
   def initialize: (
     type: Symbol,
     value: untyped,
@@ -94,6 +97,10 @@ end
 
 class BCDD::Result
   module Mixin
+    module Factory
+      def self.module!: -> Module
+    end
+
     module Methods
       def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
 
@@ -111,13 +118,15 @@ class BCDD::Result
 
       OPTIONS: Hash[Symbol, Module]
 
-      def self.options: (Array[Symbol]) -> Array[Module]
+      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
     end
-
-    def self.module!: -> Module
   end
 
-  def self.mixin: (?with: Array[Symbol]) -> Module
+  def self.mixin: (?config: Hash[Symbol, Hash[Symbol, bool]]) -> Module
+
+  def self.mixin_module: -> singleton(BCDD::Result::Mixin)
+
+  def self.result_factory: -> singleton(BCDD::Result)
 end
 
 class BCDD::Result
@@ -225,16 +234,14 @@ module BCDD::Result::Contract
     BCDD::Result::Contract::Evaluator
   ) -> BCDD::Result::Contract::TypeChecker
 
-  ToEnsure: ^(Hash[Symbol, untyped] | Array[Symbol])
-    -> BCDD::Result::Contract::Evaluator
+  ToEnsure: ^(Hash[Symbol, untyped] | Array[Symbol], Hash[Symbol, Hash[Symbol, bool]])
+    -> BCDD::Result::Contract::Interface
 
   def self.new: (
     success: Hash[Symbol, untyped] | Array[Symbol],
-    failure: Hash[Symbol, untyped] | Array[Symbol]
+    failure: Hash[Symbol, untyped] | Array[Symbol],
+    config: Hash[Symbol, Hash[Symbol, bool]]
   ) -> BCDD::Result::Contract::Evaluator
-
-  def self.nil_as_valid_value_checking!: (?enabled: bool) -> void
-  def self.nil_as_valid_value_checking?: -> bool
 end
 
 module BCDD::Result::Contract
@@ -309,7 +316,14 @@ module BCDD::Result::Contract
   class ForTypesAndValues
     include Interface
 
-    def initialize: (Hash[Symbol, untyped]) -> void
+    def initialize: (
+      Hash[Symbol, untyped],
+      Hash[Symbol, Hash[Symbol, bool]]
+    ) -> void
+
+    private
+
+    def nil_as_valid_value_checking?: -> bool
   end
 end
 
@@ -334,16 +348,35 @@ end
 
 class BCDD::Result::Expectations
   def self.mixin: (
-    ?with: Symbol,
+    ?config: Hash[Symbol, Hash[Symbol, bool]],
     ?success: Hash[Symbol, untyped] | Array[Symbol],
     ?failure: Hash[Symbol, untyped] | Array[Symbol]
   ) -> Module
+
+  def self.mixin!: (
+    ?config: Hash[Symbol, Hash[Symbol, bool]],
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol]
+  ) -> Module
+
+  def self.mixin_module: -> singleton(BCDD::Result::Expectations::Mixin)
+
+  def self.result_factory_without_expectations: -> singleton(BCDD::Result)
+
+  def self.new: (
+    ?subject: untyped,
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol],
+    ?contract: BCDD::Result::Contract::Evaluator,
+    ?config: Hash[Symbol, Hash[Symbol, bool]]
+  ) -> (BCDD::Result::Expectations | untyped)
 
   def initialize: (
     ?subject: untyped,
     ?success: Hash[Symbol, untyped] | Array[Symbol],
     ?failure: Hash[Symbol, untyped] | Array[Symbol],
-    ?contract: BCDD::Result::Contract::Evaluator
+    ?contract: BCDD::Result::Contract::Evaluator,
+    ?config: Hash[Symbol, Hash[Symbol, bool]]
   ) -> void
 
   def Success: (Symbol, ?untyped) -> BCDD::Result::Success
@@ -358,6 +391,10 @@ class BCDD::Result::Expectations
 end
 
 module BCDD::Result::Expectations::Mixin
+  module Factory
+    def self.module!: -> Module
+  end
+
   METHODS: String
 
   module Addons
@@ -367,10 +404,8 @@ module BCDD::Result::Expectations::Mixin
 
     OPTIONS: Hash[Symbol, Module]
 
-    def self.options: (Symbol) -> Array[Module]
+    def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
   end
-
-  def self.module!: -> Module
 end
 
 class BCDD::Result::Context < BCDD::Result
@@ -419,6 +454,8 @@ end
 
 class BCDD::Result::Context
   module Mixin
+    Factory: singleton(BCDD::Result::Mixin::Factory)
+
     module Methods
       def Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
 
@@ -436,40 +473,27 @@ class BCDD::Result::Context
 
       OPTIONS: Hash[Symbol, Module]
 
-      def self.options: (Array[Symbol]) -> Array[Module]
+      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
     end
   end
 
-  def self.mixin: (?with: Array[Symbol]) -> Module
+  def self.mixin_module: -> singleton(BCDD::Result::Context::Mixin)
+
+  def self.result_factory: -> singleton(BCDD::Result::Context)
 end
 
-class BCDD::Result::Context::Expectations
-  def self.mixin: (
-    ?with: Symbol,
-    ?success: Hash[Symbol, untyped] | Array[Symbol],
-    ?failure: Hash[Symbol, untyped] | Array[Symbol]
-  ) -> Module
+class BCDD::Result::Context::Expectations < BCDD::Result::Expectations
+  def self.mixin_module: -> singleton(BCDD::Result::Context::Expectations::Mixin)
 
-  def initialize: (
-    ?subject: untyped,
-    ?success: Hash[Symbol, untyped] | Array[Symbol],
-    ?failure: Hash[Symbol, untyped] | Array[Symbol],
-    ?contract: BCDD::Result::Contract::Evaluator
-  ) -> void
+  def self.result_factory_without_expectations: -> singleton(BCDD::Result)
 
   def Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
   def Failure: (Symbol, **untyped) -> BCDD::Result::Context::Failure
-
-  def with: (subject: untyped) -> BCDD::Result::Context::Expectations
-
-  private
-
-  attr_reader subject: untyped
-  attr_reader contract: BCDD::Result::Contract::Evaluator
 end
 
 module BCDD::Result::Context::Expectations::Mixin
   METHODS: String
+  Factory: singleton(BCDD::Result::Expectations::Mixin::Factory)
 
   module Addons
     module Continuable
@@ -478,6 +502,90 @@ module BCDD::Result::Context::Expectations::Mixin
 
     OPTIONS: Hash[Symbol, Module]
 
-    def self.options: (Symbol) -> Array[Module]
+    def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
   end
+end
+
+class BCDD::Result::Config
+  include Singleton
+
+  ADDON: Hash[Symbol, Hash[Symbol, untyped]]
+  FEATURE: Hash[Symbol, Hash[Symbol, untyped]]
+  PATTERN_MATCHING: Hash[Symbol, Hash[Symbol, untyped]]
+
+  attr_reader addon: BCDD::Result::Config::Switcher
+  attr_reader feature: BCDD::Result::Config::Switcher
+  attr_reader constant_alias: BCDD::Result::Config::Switcher
+  attr_reader pattern_matching: BCDD::Result::Config::Switcher
+
+  def self.instance: -> BCDD::Result::Config
+
+  def initialize: -> void
+
+  def freeze: -> BCDD::Result::Config
+  def options: -> Hash[Symbol, BCDD::Result::Config::Switcher]
+  def to_h: -> Hash[Symbol, Hash[Symbol | String, bool]]
+end
+
+class BCDD::Result::Config::Switcher
+  private attr_reader _affects: Hash[Symbol | String, Array[String]]
+  private attr_reader _options: Hash[Symbol | String, bool]
+  private attr_reader listener: Proc
+
+  def initialize: (
+    options: Hash[Symbol | String, Hash[Symbol, untyped]],
+    ?listener: Proc
+  ) -> void
+
+  def freeze: -> BCDD::Result::Config::Switcher
+
+  def to_h: -> Hash[Symbol | String, bool]
+
+  def options: -> Hash[Symbol | String, Hash[Symbol, untyped]]
+
+  def enabled?: (Symbol | String) -> bool
+
+  def enable!: (*(Symbol | String)) -> Hash[Symbol | String, Hash[Symbol, untyped]]
+
+  def disable!: (*(Symbol | String)) -> Hash[Symbol | String, Hash[Symbol, untyped]]
+
+  private
+
+  def set_many: (Array[Symbol | String], to: bool) -> Hash[Symbol | String, Hash[Symbol, untyped]]
+
+  def set_one: (Symbol | String, bool) -> void
+
+  def require_option!: (Array[Symbol | String]) -> void
+
+  def validate_option!: (Symbol | String) -> void
+
+  def available_options_message: -> String
+end
+
+module BCDD::Result::Config::ConstantAlias
+  RESULT: String
+
+  OPTIONS: Hash[String, Hash[Symbol, untyped]]
+  MAPPING: Hash[String, Hash[Symbol, untyped]]
+  Listener: Proc
+
+  def self.switcher: -> BCDD::Result::Config::Switcher
+end
+
+module BCDD::Result::Config::Options
+  def self.with_defaults: (
+    Hash[Symbol, Hash[Symbol, bool]],
+    Symbol
+  ) -> Hash[Symbol, bool]
+
+  def self.filter_map: (
+    Hash[Symbol, Hash[Symbol, bool]],
+    config: Symbol,
+    from: Hash[Symbol, untyped]
+  ) -> Array[untyped]
+
+  def self.addon: (
+    map: Hash[Symbol, Hash[Symbol, bool]],
+    from: Hash[Symbol, Module]
+  ) -> Array[Module]
 end

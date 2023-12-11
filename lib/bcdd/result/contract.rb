@@ -19,24 +19,14 @@ module BCDD::Result::Contract
     TypeChecker.new(data.type, expectations: contract)
   end
 
-  ToEnsure = ->(spec) do
+  ToEnsure = ->(spec, config) do
     return Disabled if spec.nil?
 
-    spec.is_a?(::Hash) ? ForTypesAndValues.new(spec) : ForTypes.new(Array(spec))
+    spec.is_a?(::Hash) ? ForTypesAndValues.new(spec, config) : ForTypes.new(Array(spec))
   end
 
-  def self.new(success:, failure:)
-    Evaluator.new(ToEnsure[success], ToEnsure[failure])
-  end
-
-  @nil_as_valid_value_checking = false
-
-  def self.nil_as_valid_value_checking!(enabled: true)
-    @nil_as_valid_value_checking = enabled
-  end
-
-  def self.nil_as_valid_value_checking?
-    @nil_as_valid_value_checking
+  def self.new(success:, failure:, config:)
+    Evaluator.new(ToEnsure[success, config], ToEnsure[failure, config])
   end
 
   private_constant :ToEnsure

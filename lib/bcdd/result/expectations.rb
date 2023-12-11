@@ -4,22 +4,46 @@ class BCDD::Result
   class Expectations
     require_relative 'expectations/mixin'
 
-    def self.mixin(success: nil, failure: nil, with: nil)
-      addons = Mixin::Addons.options(with)
+    def self.mixin(**options)
+      return mixin!(**options) if Config.instance.feature.enabled?(:expectations)
 
-      mod = Mixin.module!
-      mod.const_set(:Result, new(success: success, failure: failure).freeze)
-      mod.module_eval(Mixin::METHODS)
+      result_factory_without_expectations.mixin(**options.slice(:config))
+    end
+
+    def self.mixin!(success: nil, failure: nil, config: nil)
+      addons = mixin_module::Addons.options(config)
+
+      mod = mixin_module::Factory.module!
+      mod.const_set(:Result, new(success: success, failure: failure, config: config).freeze)
+      mod.module_eval(mixin_module::METHODS)
       mod.send(:include, *addons) unless addons.empty?
       mod
     end
 
-    def initialize(subject: nil, success: nil, failure: nil, contract: nil)
+    def self.mixin_module
+      Mixin
+    end
+
+    def self.result_factory_without_expectations
+      ::BCDD::Result
+    end
+
+    def self.new(...)
+      return result_factory_without_expectations unless Config.instance.feature.enabled?(:expectations)
+
+      instance = allocate
+      instance.send(:initialize, ...)
+      instance
+    end
+
+    private_class_method :mixin!, :mixin_module, :result_factory_without_expectations
+
+    def initialize(subject: nil, success: nil, failure: nil, contract: nil, config: nil)
       @subject = subject
 
       @contract = contract if contract.is_a?(Contract::Evaluator)
 
-      @contract ||= Contract.new(success: success, failure: failure).freeze
+      @contract ||= Contract.new(success: success, failure: failure, config: config).freeze
     end
 
     def Success(type, value = nil)

@@ -1,4 +1,121 @@
+- [\[Unreleased\]](#unreleased)
+  - [Added](#added)
+  - [Changed](#changed)
+  - [Removed](#removed)
+- [\[0.7.0\] - 2023-10-27](#070---2023-10-27)
+  - [Added](#added-1)
+  - [Changed](#changed-1)
+- [\[0.6.0\] - 2023-10-11](#060---2023-10-11)
+  - [Added](#added-2)
+  - [Changed](#changed-2)
+- [\[0.5.0\] - 2023-10-09](#050---2023-10-09)
+  - [Added](#added-3)
+- [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
+  - [Added](#added-4)
+  - [Changed](#changed-3)
+  - [Removed](#removed-1)
+- [\[0.3.0\] - 2023-09-26](#030---2023-09-26)
+  - [Added](#added-5)
+- [\[0.2.0\] - 2023-09-26](#020---2023-09-26)
+  - [Added](#added-6)
+  - [Removed](#removed-2)
+- [\[0.1.0\] - 2023-09-25](#010---2023-09-25)
+  - [Added](#added-7)
+
 ## [Unreleased]
+
+### Added
+
+- Add `BCDD::Result.config`
+  - **Feature**
+    ```ruby
+    BCDD::Result.config.feature.options
+    BCDD::Result.config.feature.enabled?(:expectations)
+    BCDD::Result.config.feature.enable!(:expectations)
+    BCDD::Result.config.feature.disable!(:expectations)
+    ```
+  - **Default Add-ons**
+    ```ruby
+    BCDD::Result.config.addon.options
+    BCDD::Result.config.addon.enabled?(:continue)
+    BCDD::Result.config.addon.enable!(:continue)
+    BCDD::Result.config.addon.disable!(:continue)
+    ```
+  - **Pattern matching**
+    ```ruby
+    BCDD::Result.config.pattern_matching.options
+    BCDD::Result.config.pattern_matching.enabled?(:nil_as_valid_value_checking)
+    BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
+    BCDD::Result.config.pattern_matching.disable!(:nil_as_valid_value_checking)
+    ```
+  - **Constant Aliases**
+    ```ruby
+    BCDD::Result.config.constant_alias.options
+    BCDD::Result.config.constant_alias.enabled?('Result')
+    BCDD::Result.config.constant_alias.enable!('Result')
+    BCDD::Result.config.constant_alias.disable!('Result')
+    ```
+
+- Add `BCDD::Result::configuration`. It freezes the configuration, disallowing methods that promote changes but allowing the query ones. You can use this feature to ensure integrity in your configuration.
+  ```ruby
+  BCDD::Result.configuration do |config|
+    config.addon.enable!(:continue)
+
+    config.constant_alias.enable!('Result')
+
+    config.pattern_matching.disable!(:nil_as_valid_value_checking)
+
+    config.feature.disable!(:expectations) if ::Rails.env.production?
+  end
+
+  BCDD::Result.config.addon.enabled?(:continue)         # true
+  BCDD::Result.config.constant_alias.enabled?('Result') # true
+
+  BCDD::Result.config.addon.disable!(:continue)         # raises FrozenError
+  BCDD::Result.config.constant_alias.disable!('Result') # raises FrozenError
+  ```
+
+- Allow the pattern matching feature to be turned on/off through the `BCDD::Result::Expectations.mixin`. Now, it can be used without enabling it for the whole project.
+  ```ruby
+  extend BCDD::Result::Expectations.mixin(
+    config: {
+      addon:            { continue: false },
+      pattern_matching: { nil_as_valid_value_checking: true },
+    },
+    success: {
+      numbers: ->(value) { value => [Numeric, Numeric] },
+      division_completed: Numeric
+    },
+    failure: {
+      invalid_arg: String,
+      division_by_zero: String
+    }
+  )
+  ```
+
+### Changed
+
+- **(BREAKING)** Replace `BCDD::Result::Contract.nil_as_valid_value_checking!` with `BCDD::Result::Config.pattern_matching.enable!(:nil_as_valid_value_checking)`.
+
+- **(BREAKING)** Replace `BCDD::Result::Contract.nil_as_valid_value_checking?` with `BCDD::Result::Config.pattern_matching.enabled?(:nil_as_valid_value_checking)`.
+
+- **(BREAKING)** Replace `mixin(with:)` with `mixin(config:)` keyword argument.
+
+- **(BREAKING)** Change the addons definition.
+  - **From**
+  ```ruby
+  BCDD::Result.mixin(with: :Continue)
+  BCDD::Result.mixin(with: [:Continue])
+  ```
+  - **To**
+  ```ruby
+  BCDD::Result.mixin(config: { addon: { continue: true } })
+  ```
+  - These examples are valid to all kinds of mixins (`BCDD::Result.mixin`, `BCDD::Result::Context.mixin`, `BCDD::Result::Expectations.mixin`, `BCDD::Result::Context::Expectations.mixin`)
+
+### Removed
+
+- **(BREAKING)** Remove the `lib/result` file. Now you can define `Result` as an alias for `BCDD::Result` using `BCDD::Result::Config.constant_alias.enable!('Result')`.
 
 ## [0.7.0] - 2023-10-27
 

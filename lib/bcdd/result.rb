@@ -3,6 +3,7 @@
 require_relative 'result/version'
 require_relative 'result/error'
 require_relative 'result/data'
+require_relative 'result/config'
 require_relative 'result/handler'
 require_relative 'result/failure'
 require_relative 'result/success'
@@ -19,6 +20,16 @@ class BCDD::Result
   protected :subject
 
   private :unknown, :unknown=, :type_checker
+
+  def self.config
+    Config.instance
+  end
+
+  def self.configuration
+    yield(config)
+
+    config.freeze
+  end
 
   def initialize(type:, value:, subject: nil, expectations: nil)
     data = Data.new(name, type, value)
