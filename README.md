@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center" id="-bcddresult">🔀 BCDD::Result</h1>
-  <p align="center"><i>Empower Ruby apps with a pragmatic use of Railway Oriented Programming.</i></p>
+  <p align="center"><i>Empower Ruby apps with pragmatic use of Result monad, Railway Oriented Programming, and B/CDD.</i></p>
   <p align="center">
     <img src="https://img.shields.io/badge/ruby->%3D%202.7.0-ruby.svg?colorA=99004d&colorB=cc0066" alt="Ruby">
     <a href="https://rubygems.org/gems/bcdd-result"><img src="https://badge.fury.io/rb/bcdd-result.svg" alt="bcdd-result gem version" height="18"></a>
@@ -69,6 +69,12 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
       - [Module example (Singleton Methods)](#module-example-singleton-methods-1)
     - [`BCDD::Result::Context::Expectations`](#bcddresultcontextexpectations)
     - [Mixin add-ons](#mixin-add-ons)
+  - [`BCDD::Result.configuration`](#bcddresultconfiguration)
+    - [`config.addon.enable!(:continue)`](#configaddonenablecontinue)
+    - [`config.constant_alias.enable!('Result')`](#configconstant_aliasenableresult)
+    - [`config.pattern_matching.disable!(:nil_as_valid_value_checking)`](#configpattern_matchingdisablenil_as_valid_value_checking)
+    - [`config.feature.disable!(:expectations)`](#configfeaturedisableexpectations)
+  - [`BCDD::Result.config`](#bcddresultconfig)
 - [About](#about)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -1308,21 +1314,14 @@ The value checking has support for handling pattern-matching errors, and the cle
 
 How does this operator work? They raise an error when the pattern does not match but returns nil when it matches.
 
-Because of this, you will need to enable `nil` as a valid value checking. You can do it by calling the `BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)` method.
-
-**Attention:**
-
-If you decide to enable this, you will do it at the beginning of your code or in an initializer. And remember, this will affect all kinds of result expectations (`BCDD::Result::Expectations` and `BCDD::Result::Context::Expectations`). So, it is recommended to use it only when you are using pattern matching for **ALL** the result's value validations.
+Because of this, you will need to enable `nil` as a valid value checking. You can do it through the `BCDD::Result.configuration` or by allowing it directly on the mixin config.
 
 ```ruby
-#
-# Put this line in an initializer or at the beginning of your code.
-# It is required if you decide to use pattern matching to validate all of your result's values.
-#
-BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
-
 module Divide
   extend BCDD::Result::Expectations.mixin(
+    config: {
+      pattern_matching: { nil_as_valid_value_checking: true }
+    },
     success: {
       division_completed: ->(value) { value => (Integer | Float) }
     },
@@ -1608,14 +1607,11 @@ The `BCDD::Result::Context::Expectations` is a `BCDD::Result::Expectations` with
 This is an example using the mixin mode, but the standalone mode is also supported.
 
 ```ruby
-#
-# Put this line in an initializer or at the beginning of your code.
-# It is required if you decide to use pattern matching to validate all of your result's values.
-#
-BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
-
 class Divide
   include BCDD::Result::Context::Expectations.mixin(
+    config: {
+      pattern_matching: { nil_as_valid_value_checking: true }
+    },
     success: {
       division_completed: ->(value) { value => { number: Numeric } }
     },
@@ -1664,17 +1660,14 @@ The `BCDD::Result::Context.mixin(config: { addon: { continue: true } })` or `BCD
 Let's use a mix of `BCDD::Result::Context` features to see in action with this add-on:
 
 ```ruby
-#
-# Put this line in an initializer or at the beginning of your code.
-# It is required if you decide to use pattern matching to validate all of your result's values.
-#
-BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
-
 module Divide
   require 'logger'
 
   extend self, BCDD::Result::Context::Expectations.mixin(
-    config: { addon: { continue: true } },
+    config: {
+      addon:            { continue: true },
+      pattern_matching: { nil_as_valid_value_checking: true }
+    },
     success: {
       division_completed: ->(value) { value => { number: Numeric } }
     },
@@ -1729,7 +1722,118 @@ Divide.call(14, 0)
 #<BCDD::Result::Context::Failure type=:division_by_zero value={:message=>"arg2 must not be zero"}>
 ```
 
+### `BCDD::Result.configuration`
+
+The `BCDD::Result.configuration` allows you to configure default behaviors for `BCDD::Result` and `BCDD::Result::Context` through a configuration block. After using it, the configuration is frozen, ensuring the expected behaviors for your application.
+
+```ruby
+BCDD::Result.configuration do |config|
+  config.addon.enable!(:continue)
+
+  config.constant_alias.enable!('Result')
+
+  config.pattern_matching.disable!(:nil_as_valid_value_checking)
+
+  config.feature.disable!(:expectations) if ::Rails.env.production?
+end
+```
+
+Use `disable!` to disable a feature and `enable!` to enable it.
+
+Let's see what each configuration in the example above does:
+
+#### `config.addon.enable!(:continue)`
+
+This configuration enables the `Continue()` method for `BCDD::Result` and `BCDD::Result::Context`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
+
+#### `config.constant_alias.enable!('Result')`
+
+This configuration make `Result` a constant alias for `BCDD::Result`. Link to [documentation](#bcddresult-versus-result).
+
+#### `config.pattern_matching.disable!(:nil_as_valid_value_checking)`
+
+This configuration disables the `nil_as_valid_value_checking` for `BCDD::Result` and `BCDD::Result::Context`. Link to [documentation](#pattern-matching-support).
+
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### `config.feature.disable!(:expectations)`
+
+This configuration turns off the expectations for `BCDD::Result` and `BCDD::Result::Context`. The expectations are helpful in development and test environments, but they can be disabled in production environments for performance gain.
+
+PS: I'm using `::Rails.env.production?` to check the environment, but you can use any logic you want.
+
+### `BCDD::Result.config`
+
+The `BCDD::Result.config` allows you to access the current configuration. It is useful when you want to check the current configuration.
+
+**BCDD::Result.config.addon**
+
+```ruby
+BCDD::Result.config.addon.enabled?(:continue)
+
+BCDD::Result.config.addon.options
+# {
+#   :continue=>{
+#     :enabled=>false,
+#     :affects=>[
+#       "BCDD::Result",
+#       "BCDD::Result::Context",
+#       "BCDD::Result::Expectations",
+#       "BCDD::Result::Context::Expectations"
+#     ]
+#   }
+# }
+```
+
+**BCDD::Result.config.constant_alias**
+
+```ruby
+BCDD::Result.config.constant_alias.enabled?('Result')
+
+BCDD::Result.config.constant_alias.options
+# {
+#   "Result"=>{
+#     :enabled=>false,
+#     :affects=>[
+#       "Object"
+#     ]
+#   }
+# }
+```
+
+**BCDD::Result.config.pattern_matching**
+
+```ruby
+BCDD::Result.config.pattern_matching.enabled?(:nil_as_valid_value_checking)
+
+BCDD::Result.config.pattern_matching.options
+# {
+#   :nil_as_valid_value_checking=>{
+#     :enabled=>false,
+#     :affects=>[
+#       "BCDD::Result::Expectations,
+#       "BCDD::Result::Context::Expectations"
+#     ]
+#   }
+# }
+```
+
+**BCDD::Result.config.feature**
+
+```ruby
+BCDD::Result.config.feature.enabled?(:expectations)
+
+BCDD::Result.config.feature.options
+# {
+#   :expectations=>{
+#     :enabled=>true,
+#     :affects=>[
+#       "BCDD::Result::Expectations,
+#       "BCDD::Result::Context::Expectations"
+#     ]
+#   }
+# }
+```
 
 ## About
 
