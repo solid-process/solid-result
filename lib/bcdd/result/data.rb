@@ -2,26 +2,26 @@
 
 class BCDD::Result
   class Data
-    attr_reader :name, :type, :value
+    attr_reader :kind, :type, :value
 
-    def initialize(name, type, value)
-      @name = name
+    def initialize(kind, type, value)
+      @kind = kind
       @type = type.to_sym
       @value = value
     end
 
     def to_h
-      { name: name, type: type, value: value }
+      { kind: kind, type: type, value: value }
     end
 
     def to_a
-      [name, type, value]
+      [kind, type, value]
     end
 
     def inspect
       format(
-        '#<%<class_name>s name=%<name>p type=%<type>p value=%<value>p>',
-        class_name: self.class.name, name: name, type: type, value: value
+        '#<%<class_name>s kind=%<kind>p type=%<type>p value=%<value>p>',
+        class_name: self.class.name, kind: kind, type: type, value: value
       )
     end
 

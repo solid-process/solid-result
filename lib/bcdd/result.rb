@@ -32,11 +32,11 @@ class BCDD::Result
   end
 
   def initialize(type:, value:, subject: nil, expectations: nil, halted: nil)
-    data = Data.new(name, type, value)
+    data = Data.new(kind, type, value)
 
     @type_checker = Contract.evaluate(data, expectations)
     @subject = subject
-    @halted = halted || name == :failure
+    @halted = halted || kind == :failure
     @data = data
 
     self.unknown = true
@@ -121,7 +121,7 @@ class BCDD::Result
   end
 
   def deconstruct_keys(_keys)
-    { name => { type => value } }
+    { kind => { type => value } }
   end
 
   alias eql? ==
@@ -129,7 +129,7 @@ class BCDD::Result
 
   private
 
-  def name
+  def kind
     :unknown
   end
 

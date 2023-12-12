@@ -53,7 +53,7 @@ class BCDD::Result
 
   private
 
-  def name: -> Symbol
+  def kind: -> Symbol
   def known: (Proc) -> untyped
   def call_subject_method: (Symbol, untyped) -> BCDD::Result
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result
@@ -68,7 +68,8 @@ class BCDD::Result
       def value: -> untyped
 
       private
-      def name: -> Symbol
+
+      def kind: -> Symbol
       def type_checker: -> BCDD::Result::Contract::TypeChecker
     end
 
@@ -88,7 +89,8 @@ class BCDD::Result
       def value: -> untyped
 
       private
-      def name: -> Symbol
+
+      def kind: -> Symbol
       def type_checker: -> BCDD::Result::Contract::TypeChecker
     end
 
@@ -138,7 +140,7 @@ end
 
 class BCDD::Result
   class Data
-    attr_reader name: Symbol
+    attr_reader kind: Symbol
     attr_reader type: Symbol
     attr_reader value: untyped
     attr_reader to_h: Hash[Symbol, untyped]

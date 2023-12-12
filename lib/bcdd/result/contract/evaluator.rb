@@ -35,7 +35,7 @@ class BCDD::Result
     private
 
     def for(data)
-      case data.name
+      case data.kind
       when :unknown then Contract::Disabled
       when :success then success
       else failure

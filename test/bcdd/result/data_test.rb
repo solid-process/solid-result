@@ -4,12 +4,12 @@ require 'test_helper'
 
 class BCDD::Result
   class DataTest < Minitest::Test
-    test '#name' do
+    test '#kind' do
       success = Success.new(type: :ok, value: 1)
       failure = Failure.new(type: :err, value: 0)
 
-      assert_equal :success, success.data.name
-      assert_equal :failure, failure.data.name
+      assert_equal :success, success.data.kind
+      assert_equal :failure, failure.data.kind
     end
 
     test '#type' do
@@ -48,16 +48,16 @@ class BCDD::Result
       success = Success.new(type: :ok, value: 1)
       failure = Failure.new(type: :err, value: 0)
 
-      assert_equal({ name: :success, type: :ok, value: 1 }, success.data.to_h)
-      assert_equal({ name: :failure, type: :err, value: 0 }, failure.data.to_h)
+      assert_equal({ kind: :success, type: :ok, value: 1 }, success.data.to_h)
+      assert_equal({ kind: :failure, type: :err, value: 0 }, failure.data.to_h)
     end
 
     test '#to_hash' do
       success = Success.new(type: :ok, value: 1)
       failure = Failure.new(type: :err, value: 0)
 
-      assert_equal({ name: :success, type: :ok, value: 1 }, success.data.to_hash)
-      assert_equal({ name: :failure, type: :err, value: 0 }, failure.data.to_hash)
+      assert_equal({ kind: :success, type: :ok, value: 1 }, success.data.to_hash)
+      assert_equal({ kind: :failure, type: :err, value: 0 }, failure.data.to_hash)
     end
 
     test '#inspect' do
@@ -65,12 +65,12 @@ class BCDD::Result
       failure = Failure.new(type: :err, value: 0)
 
       assert_equal(
-        '#<BCDD::Result::Data name=:success type=:ok value=1>',
+        '#<BCDD::Result::Data kind=:success type=:ok value=1>',
         success.data.inspect
       )
 
       assert_equal(
-        '#<BCDD::Result::Data name=:failure type=:err value=0>',
+        '#<BCDD::Result::Data kind=:failure type=:err value=0>',
         failure.data.inspect
       )
     end

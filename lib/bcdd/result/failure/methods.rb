@@ -15,7 +15,7 @@ module BCDD::Result::Failure::Methods
 
   private
 
-  def name
+  def kind
     :failure
   end
 end
