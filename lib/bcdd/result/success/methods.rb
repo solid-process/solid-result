@@ -15,7 +15,7 @@ module BCDD::Result::Success::Methods
 
   private
 
-  def name
+  def kind
     :success
   end
 end

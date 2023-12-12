@@ -483,7 +483,7 @@ divide(100, 0).value_or { 0 } # 0
 
 #### `result.data`
 
-The `BCDD::Result#data` exposes the result attributes (name, type, value) directly and as a hash (`to_h`/`to_hash`) and array (`to_a`/`to_ary`).
+The `BCDD::Result#data` exposes the result attributes (kind, type, value) directly and as a hash (`to_h`/`to_hash`) and array (`to_a`/`to_ary`).
 
 This is helpful if you need to access the result attributes generically or want to use Ruby features like splat (`*`) and double splat (`**`) operators.
 
@@ -492,25 +492,25 @@ See the examples below to understand how to use it.
 ```ruby
 result = BCDD::Result::Success(:ok, 1)
 
-success_data = result.data # #<BCDD::Result::Data name=:success type=:ok value=1>
+success_data = result.data # #<BCDD::Result::Data kind=:success type=:ok value=1>
 
-success_data.name  # :success
+success_data.kind  # :success
 success_data.type  # :ok
 success_data.value # 1
 
-success_data.to_h  # {:name=>:success, :type=>:ok, :value=>1}
+success_data.to_h  # {:kind=>:success, :type=>:ok, :value=>1}
 success_data.to_a  # [:success, :ok, 1]
 
-name, type, value = success_data
+kind, type, value = success_data
 
-[name, type, value] # [:success, :ok, 1]
+[kind, type, value] # [:success, :ok, 1]
 
-def print_to_ary(name, type, value)
-  puts [name, type, value].inspect
+def print_to_ary(kind, type, value)
+  puts [kind, type, value].inspect
 end
 
-def print_to_hash(name:, type:, value:)
-  puts [name, type, value].inspect
+def print_to_hash(kind:, type:, value:)
+  puts [kind, type, value].inspect
 end
 
 print_to_ary(*success_data)   # [:success, :ok, 1]

@@ -42,6 +42,8 @@
 
 - **(BREAKING)** Change the `:continue` addon to halt the step chain on the first `Success()` result. So, if you want to advance to the next step, you must use `Continue(value)` instead of `Success(type, value)`. Otherwise, the step chain will be halted. (Implementation of the following proposal: https://github.com/B-CDD/result/issues/14)
 
+- **(BREAKING)** Rename `BCDD::Result::Data#name` to `BCDD::Result::Data#kind`. The new word is more appropriate as it represents a result's kind (success or failure).
+
 ## [0.8.0] - 2023-12-11
 
 ### Added
