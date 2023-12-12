@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center" id="-bcddresult">🔀 BCDD::Result</h1>
-  <p align="center"><i>Empower Ruby apps with pragmatic use of Result monad, Railway Oriented Programming, and B/CDD.</i></p>
+  <p align="center"><i>Empower Ruby apps with pragmatic use of Result pattern (monad), Railway Oriented Programming, and B/CDD.</i></p>
   <p align="center">
     <img src="https://img.shields.io/badge/ruby->%3D%202.7.0-ruby.svg?colorA=99004d&colorB=cc0066" alt="Ruby">
     <a href="https://rubygems.org/gems/bcdd-result"><img src="https://badge.fury.io/rb/bcdd-result.svg" alt="bcdd-result gem version" height="18"></a>
@@ -917,7 +917,9 @@ The `BCDD::Result.mixin` also accepts the `config:` argument. It is a hash that 
 
 **continue**
 
-This addon will create the `Continue(value)` method, which will know how to produce a `Success(:continued, value)`. It is useful when you want to perform a sequence of operations but want to avoid returning a specific result for each step.
+This addon will create the `Continue(value)` method and change the `Success()` behavior to halt the step chain.
+
+So, if you want to advance to the next step, you must use `Continue(value)` instead of `Success(type, value)`. Otherwise, the step chain will be halted.
 
 ```ruby
 module Divide
@@ -1350,7 +1352,9 @@ The `BCDD::Result::Expectations.mixin` also accepts the `config:` argument. It i
 
 **Continue**
 
-It is similar to `BCDD::Result.mixin(config: { addon: { continue: true } })`, the key difference is that the `Continue(value)` will be ignored by the expectations. This is extremely useful when you want to use `Continue(value)` to chain operations, but you don't want to declare N success types in the expectations.
+It is similar to `BCDD::Result.mixin(config: { addon: { continue: true } })`. The key difference is that the expectations will ignore the `Continue(value)`.
+
+Based on this, use the `Success()` to produce a terminal result and `Continue()` to produce a result that will be used in the next step.
 
 ```ruby
 class Divide
@@ -1655,7 +1659,9 @@ The `BCDD::Result::Context.mixin` and `BCDD::Result::Context::Expectations.mixin
 
 **Continue**
 
-The `BCDD::Result::Context.mixin(config: { addon: { continue: true } })` or `BCDD::Result::Context::Expectations.mixin(config: { addon: { continue: true } })` adds a `Continue(**input)` that will be ignored by the expectations. This is extremely useful when you want to use `Continue()` to chain operations, but you don't want to declare N success types in the expectations.
+The `BCDD::Result::Context.mixin(config: { addon: { continue: true } })` or `BCDD::Result::Context::Expectations.mixin(config: { addon: { continue: true } })` creates the `Continue(value)` method and change the `Success()` behavior to halt the step chain.
+
+So, if you want to advance to the next step, you must use `Continue(**value)` instead of `Success(type, **value)`. Otherwise, the step chain will be halted.
 
 Let's use a mix of `BCDD::Result::Context` features to see in action with this add-on:
 
@@ -1744,7 +1750,7 @@ Let's see what each configuration in the example above does:
 
 #### `config.addon.enable!(:continue)`
 
-This configuration enables the `Continue()` method for `BCDD::Result` and `BCDD::Result::Context`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
+This configuration enables the `Continue()` method for `BCDD::Result`, `BCDD::Result::Context`, `BCDD::Result::Expectation`, and `BCDD::Result::Context::Expectation`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
 
 #### `config.constant_alias.enable!('Result')`
 

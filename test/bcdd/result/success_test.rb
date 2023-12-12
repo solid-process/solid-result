@@ -12,6 +12,12 @@ class BCDD::Result
       assert Success < BCDD::Result::Success::Methods
     end
 
+    test '#halted?' do
+      result = Success.new(type: :ok, value: nil)
+
+      refute_predicate result, :halted?
+    end
+
     test '#success? without receiving a type/argument' do
       result = Success.new(type: :good, value: nil)
 

@@ -13,18 +13,26 @@ class BCDD::Result
 
     module Methods
       def Success(type, value = nil)
-        Success.new(type: type, value: value, subject: self)
+        _ResultAs(Success, type, value)
       end
 
       def Failure(type, value = nil)
-        Failure.new(type: type, value: value, subject: self)
+        _ResultAs(Failure, type, value)
+      end
+
+      private def _ResultAs(kind_class, type, value, halted: nil)
+        kind_class.new(type: type, value: value, subject: self, halted: halted)
       end
     end
 
     module Addons
       module Continuable
+        def Success(type, value = nil)
+          _ResultAs(Success, type, value, halted: true)
+        end
+
         private def Continue(value)
-          Success(:continued, value)
+          _ResultAs(Success, :continued, value)
         end
       end
 
@@ -42,7 +50,7 @@ class BCDD::Result
     mod = mixin_module::Factory.module!
     mod.send(:include, mixin_module::Methods)
     mod.const_set(:Result, result_factory)
-    mod.send(:include, *addons) unless addons.empty?
+    mod.send(:include, *addons.values) unless addons.empty?
     mod
   end
 

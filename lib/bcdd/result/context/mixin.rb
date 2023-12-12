@@ -6,18 +6,26 @@ class BCDD::Result::Context
 
     module Methods
       def Success(type, **value)
-        Success.new(type: type, value: value, subject: self)
+        _ResultAs(Success, type, value)
       end
 
       def Failure(type, **value)
-        Failure.new(type: type, value: value, subject: self)
+        _ResultAs(Failure, type, value)
+      end
+
+      private def _ResultAs(kind_class, type, value, halted: nil)
+        kind_class.new(type: type, value: value, subject: self, halted: halted)
       end
     end
 
     module Addons
       module Continuable
+        def Success(type, **value)
+          _ResultAs(Success, type, value, halted: true)
+        end
+
         private def Continue(**value)
-          Success.new(type: :continued, value: value, subject: self)
+          _ResultAs(Success, :continued, value)
         end
       end
 

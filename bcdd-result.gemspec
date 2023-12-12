@@ -8,9 +8,11 @@ Gem::Specification.new do |spec|
   spec.authors = ['Rodrigo Serradura']
   spec.email = ['rodrigo.serradura@gmail.com']
 
-  spec.summary = 'Empower Ruby apps with pragmatic use of Result monad, Railway Oriented Programming, and B/CDD.'
-
-  spec.description = 'Empower Ruby apps with pragmatic use of Result monad, Railway Oriented Programming, and B/CDD.'
+  'Empower Ruby apps with pragmatic use of Result pattern (monad), Railway Oriented Programming, and B/CDD.'
+    .then do |summary|
+      spec.summary     = summary
+      spec.description = summary
+    end
 
   spec.homepage = 'https://github.com/b-cdd/result'
   spec.license = 'MIT'

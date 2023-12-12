@@ -15,7 +15,7 @@ require_relative 'result/context'
 class BCDD::Result
   attr_accessor :unknown
 
-  attr_reader :subject, :data, :type_checker
+  attr_reader :subject, :data, :type_checker, :halted
 
   protected :subject
 
@@ -31,14 +31,19 @@ class BCDD::Result
     config.freeze
   end
 
-  def initialize(type:, value:, subject: nil, expectations: nil)
+  def initialize(type:, value:, subject: nil, expectations: nil, halted: nil)
     data = Data.new(name, type, value)
 
     @type_checker = Contract.evaluate(data, expectations)
     @subject = subject
+    @halted = halted || name == :failure
     @data = data
 
     self.unknown = true
+  end
+
+  def halted?
+    halted
   end
 
   def type
@@ -80,7 +85,7 @@ class BCDD::Result
   end
 
   def and_then(method_name = nil, context = nil)
-    return self if failure?
+    return self if halted?
 
     method_name && block_given? and raise ::ArgumentError, 'method_name and block are mutually exclusive'
 

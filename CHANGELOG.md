@@ -1,29 +1,39 @@
 - [\[Unreleased\]](#unreleased)
-- [\[0.8.0\] - 2023-12-11](#080---2023-12-11)
   - [Added](#added)
   - [Changed](#changed)
-  - [Removed](#removed)
-- [\[0.7.0\] - 2023-10-27](#070---2023-10-27)
+- [\[0.8.0\] - 2023-12-11](#080---2023-12-11)
   - [Added](#added-1)
   - [Changed](#changed-1)
-- [\[0.6.0\] - 2023-10-11](#060---2023-10-11)
+  - [Removed](#removed)
+- [\[0.7.0\] - 2023-10-27](#070---2023-10-27)
   - [Added](#added-2)
   - [Changed](#changed-2)
-- [\[0.5.0\] - 2023-10-09](#050---2023-10-09)
+- [\[0.6.0\] - 2023-10-11](#060---2023-10-11)
   - [Added](#added-3)
-- [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
-  - [Added](#added-4)
   - [Changed](#changed-3)
+- [\[0.5.0\] - 2023-10-09](#050---2023-10-09)
+  - [Added](#added-4)
+- [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
+  - [Added](#added-5)
+  - [Changed](#changed-4)
   - [Removed](#removed-1)
 - [\[0.3.0\] - 2023-09-26](#030---2023-09-26)
-  - [Added](#added-5)
-- [\[0.2.0\] - 2023-09-26](#020---2023-09-26)
   - [Added](#added-6)
+- [\[0.2.0\] - 2023-09-26](#020---2023-09-26)
+  - [Added](#added-7)
   - [Removed](#removed-2)
 - [\[0.1.0\] - 2023-09-25](#010---2023-09-25)
-  - [Added](#added-7)
+  - [Added](#added-8)
 
 ## [Unreleased]
+
+### Added
+
+- Add `BCDD::Result#halted?` to check if the result is halted. Failure results are halted by default, but you can halt a successful result by enabling the `:continue` addon.
+
+### Changed
+
+- **(BREAKING)** Change the `:continue` addon to halt the step chain on the first `Success()` result. So, if you want to advance to the next step, you must use `Continue(value)` instead of `Success(type, value)`. Otherwise, the step chain will be halted. (Implementation of the following proposal: https://github.com/B-CDD/result/issues/14)
 
 ## [0.8.0] - 2023-12-11
 

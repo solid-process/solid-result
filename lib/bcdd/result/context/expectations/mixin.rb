@@ -4,7 +4,7 @@ class BCDD::Result::Context
   module Expectations::Mixin
     Factory = BCDD::Result::Expectations::Mixin::Factory
 
-    METHODS = BCDD::Result::Expectations::Mixin::METHODS
+    Methods = BCDD::Result::Expectations::Mixin::Methods
 
     module Addons
       module Continuable
