@@ -581,10 +581,8 @@ class BCDD::Result::Config::Switcher
 end
 
 module BCDD::Result::Config::ConstantAlias
-  RESULT: String
-
-  OPTIONS: Hash[String, Hash[Symbol, untyped]]
   MAPPING: Hash[String, Hash[Symbol, untyped]]
+  OPTIONS: Hash[String, Hash[Symbol, untyped]]
   Listener: Proc
 
   def self.switcher: -> BCDD::Result::Config::Switcher

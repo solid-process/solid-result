@@ -10,7 +10,11 @@ class BCDD::Result::Config
       assert_instance_of(Switcher, config)
 
       assert_equal(
-        { 'Result' => { enabled: false, affects: ['Object'] } },
+        {
+          'Result' => { enabled: false, affects: ['Object'] },
+          'Context' => { enabled: false, affects: ['Object'] },
+          'BCDD::Context' => { enabled: false, affects: ['BCDD'] }
+        },
         config.options
       )
     end
