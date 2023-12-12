@@ -29,6 +29,13 @@
 
 ### Added
 
+- Add new `BCDD::Result.config.constant_alias` options. `Context` and `BCDD::Context` are now available as aliases for `BCDD::Result::Context`.
+  ```ruby
+  BCDD::Result.config.constant_alias.enable!('Context')
+
+  BCDD::Result.config.constant_alias.enable!('BCDD::Context')
+  ```
+
 - Add `BCDD::Result#halted?` to check if the result is halted. Failure results are halted by default, but you can halt a successful result by enabling the `:continue` addon.
 
 ### Changed
