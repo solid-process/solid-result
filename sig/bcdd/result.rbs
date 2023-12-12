@@ -10,6 +10,7 @@ class BCDD::Result
 
   attr_reader data: BCDD::Result::Data
   attr_reader subject: untyped
+  attr_reader halted: bool
 
   def self.config: -> BCDD::Result::Config
   def self.configuration: { (BCDD::Result::Config) -> void } -> BCDD::Result::Config
@@ -18,12 +19,14 @@ class BCDD::Result
     type: Symbol,
     value: untyped,
     ?subject: untyped,
-    ?expectations: BCDD::Result::Contract::Evaluator
+    ?expectations: BCDD::Result::Contract::Evaluator,
+    ?halted: bool
   ) -> void
 
   def type: -> Symbol
   def value: -> untyped
 
+  def halted?: -> bool
   def success?: (?Symbol type) -> bool
   def failure?: (?Symbol type) -> bool
 
@@ -105,6 +108,10 @@ class BCDD::Result
       def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
 
       def Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
+
+      private
+
+      def _ResultAs: (singleton(BCDD::Result), Symbol, untyped, ?halted: bool) -> untyped
     end
 
     module Addons
@@ -118,7 +125,7 @@ class BCDD::Result
 
       OPTIONS: Hash[Symbol, Module]
 
-      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
+      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
     end
   end
 
@@ -365,18 +372,16 @@ class BCDD::Result::Expectations
 
   def self.new: (
     ?subject: untyped,
-    ?success: Hash[Symbol, untyped] | Array[Symbol],
-    ?failure: Hash[Symbol, untyped] | Array[Symbol],
     ?contract: BCDD::Result::Contract::Evaluator,
-    ?config: Hash[Symbol, Hash[Symbol, bool]]
+    ?halted: bool,
+    **untyped
   ) -> (BCDD::Result::Expectations | untyped)
 
   def initialize: (
     ?subject: untyped,
-    ?success: Hash[Symbol, untyped] | Array[Symbol],
-    ?failure: Hash[Symbol, untyped] | Array[Symbol],
     ?contract: BCDD::Result::Contract::Evaluator,
-    ?config: Hash[Symbol, Hash[Symbol, bool]]
+    ?halted: bool,
+    **untyped
   ) -> void
 
   def Success: (Symbol, ?untyped) -> BCDD::Result::Success
@@ -386,8 +391,11 @@ class BCDD::Result::Expectations
 
   private
 
+  def _ResultAs: (singleton(BCDD::Result), Symbol, untyped) -> untyped
+
   attr_reader subject: untyped
   attr_reader contract: BCDD::Result::Contract::Evaluator
+  attr_reader halted: bool
 end
 
 module BCDD::Result::Expectations::Mixin
@@ -395,7 +403,12 @@ module BCDD::Result::Expectations::Mixin
     def self.module!: -> Module
   end
 
-  METHODS: String
+  module Methods
+    BASE: String
+    FACTORY: String
+
+    def self.to_eval: (Hash[Symbol, untyped]) -> String
+  end
 
   module Addons
     module Continuable
@@ -404,7 +417,7 @@ module BCDD::Result::Expectations::Mixin
 
     OPTIONS: Hash[Symbol, Module]
 
-    def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
+    def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
   end
 end
 
@@ -419,7 +432,8 @@ class BCDD::Result::Context < BCDD::Result
     type: Symbol,
     value: untyped,
     ?subject: untyped,
-    ?expectations: BCDD::Result::Contract::Evaluator
+    ?expectations: BCDD::Result::Contract::Evaluator,
+    ?halted: bool
   ) -> void
 
   def and_then: (?Symbol, **untyped) ?{ (Hash[Symbol, untyped]) -> untyped } -> BCDD::Result::Context
@@ -460,6 +474,10 @@ class BCDD::Result::Context
       def Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
 
       def Failure: (Symbol, **untyped) -> BCDD::Result::Context::Failure
+
+      private
+
+      def _ResultAs: (singleton(BCDD::Result::Context), Symbol, untyped, ?halted: bool) -> untyped
     end
 
     module Addons
@@ -473,7 +491,7 @@ class BCDD::Result::Context
 
       OPTIONS: Hash[Symbol, Module]
 
-      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
+      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
     end
   end
 
@@ -492,7 +510,7 @@ class BCDD::Result::Context::Expectations < BCDD::Result::Expectations
 end
 
 module BCDD::Result::Context::Expectations::Mixin
-  METHODS: String
+  Methods: singleton(BCDD::Result::Expectations::Mixin::Methods)
   Factory: singleton(BCDD::Result::Expectations::Mixin::Factory)
 
   module Addons
@@ -502,7 +520,7 @@ module BCDD::Result::Context::Expectations::Mixin
 
     OPTIONS: Hash[Symbol, Module]
 
-    def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Array[Module]
+    def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
   end
 end
 
@@ -578,14 +596,14 @@ module BCDD::Result::Config::Options
     Symbol
   ) -> Hash[Symbol, bool]
 
-  def self.filter_map: (
+  def self.select: (
     Hash[Symbol, Hash[Symbol, bool]],
     config: Symbol,
     from: Hash[Symbol, untyped]
-  ) -> Array[untyped]
+  ) -> Hash[Symbol, untyped]
 
   def self.addon: (
     map: Hash[Symbol, Hash[Symbol, bool]],
     from: Hash[Symbol, Module]
-  ) -> Array[Module]
+  ) -> Hash[Symbol, Module]
 end
