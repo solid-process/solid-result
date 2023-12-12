@@ -3,15 +3,17 @@
 class BCDD::Result
   class Config
     module ConstantAlias
-      RESULT = 'Result'
-
-      OPTIONS = {
-        RESULT => { default: false, affects: %w[Object] }
-      }.transform_values!(&:freeze).freeze
-
       MAPPING = {
-        RESULT => { target: ::Object, name: :Result, value: ::BCDD::Result }
+        'Result' => { target: ::Object, name: :Result, value: ::BCDD::Result },
+        'Context' => { target: ::Object, name: :Context, value: ::BCDD::Result::Context },
+        'BCDD::Context' => { target: ::BCDD, name: :Context, value: ::BCDD::Result::Context }
       }.transform_values!(&:freeze).freeze
+
+      OPTIONS = MAPPING.to_h do |option_name, mapping|
+        affects = mapping.fetch(:target).name.freeze
+
+        [option_name, { default: false, affects: [affects].freeze }]
+      end.freeze
 
       Listener = ->(option_name, boolean) do
         mapping = MAPPING.fetch(option_name)
