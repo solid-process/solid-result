@@ -58,6 +58,7 @@ Metrics/BlockLength:
 
 Metrics/ClassLength:
   Exclude:
+    - lib/bcdd/result.rb
     - test/**/*.rb
 
 Minitest/MultipleAssertions:
