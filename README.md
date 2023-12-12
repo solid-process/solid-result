@@ -63,6 +63,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`BCDD::Result::Expectations.mixin` add-ons](#bcddresultexpectationsmixin-add-ons)
   - [`BCDD::Result::Context`](#bcddresultcontext)
     - [Defining successes and failures](#defining-successes-and-failures)
+    - [Constant aliases](#constant-aliases)
     - [`BCDD::Result::Context.mixin`](#bcddresultcontextmixin)
       - [Class example (Instance Methods)](#class-example-instance-methods-1)
       - [`and_expose`](#and_expose)
@@ -71,7 +72,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [Mixin add-ons](#mixin-add-ons)
   - [`BCDD::Result.configuration`](#bcddresultconfiguration)
     - [`config.addon.enable!(:continue)`](#configaddonenablecontinue)
-    - [`config.constant_alias.enable!('Result')`](#configconstant_aliasenableresult)
+    - [`config.constant_alias.enable!('Result', 'BCDD::Context')`](#configconstant_aliasenableresult-bcddcontext)
     - [`config.pattern_matching.disable!(:nil_as_valid_value_checking)`](#configpattern_matchingdisablenil_as_valid_value_checking)
     - [`config.feature.disable!(:expectations)`](#configfeaturedisableexpectations)
   - [`BCDD::Result.config`](#bcddresultconfig)
@@ -1439,6 +1440,22 @@ BCDD::Result::Context::Success(:ok, **{ message: 'hashes can be converted to key
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
+#### Constant aliases
+
+You can configure `Context` or `BCDD::Context` as an alias for `BCDD::Result::Context`. This is helpful to define a standard way to avoid the full constant name/path in your code.
+
+```ruby
+BCDD::Result.configuration do |config|
+  config.context_alias.enable!('BCDD::Context')
+
+  # or
+
+  config.context_alias.enable!('Context')
+end
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
 #### `BCDD::Result::Context.mixin`
 
 As in the `BCDD::Result`, you can use the `BCDD::Result::Context.mixin` to add the `Success()` and `Failure()` methods to your classes/modules.
@@ -1736,11 +1753,11 @@ The `BCDD::Result.configuration` allows you to configure default behaviors for `
 BCDD::Result.configuration do |config|
   config.addon.enable!(:continue)
 
-  config.constant_alias.enable!('Result')
+  config.constant_alias.enable!('Result', 'BCDD::Context')
 
   config.pattern_matching.disable!(:nil_as_valid_value_checking)
 
-  config.feature.disable!(:expectations) if ::Rails.env.production?
+  # config.feature.disable!(:expectations) if ::Rails.env.production?
 end
 ```
 
@@ -1752,9 +1769,13 @@ Let's see what each configuration in the example above does:
 
 This configuration enables the `Continue()` method for `BCDD::Result`, `BCDD::Result::Context`, `BCDD::Result::Expectation`, and `BCDD::Result::Context::Expectation`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
 
-#### `config.constant_alias.enable!('Result')`
+#### `config.constant_alias.enable!('Result', 'BCDD::Context')`
 
-This configuration make `Result` a constant alias for `BCDD::Result`. Link to [documentation](#bcddresult-versus-result).
+This configuration make `Result` a constant alias for `BCDD::Result`, and `BCDD::Context` a constant alias for `BCDD::Result::Context`.
+
+Link to documentations:
+- [Result alias](#bcddresult-versus-result)
+- [Context aliases](#constant-aliases)
 
 #### `config.pattern_matching.disable!(:nil_as_valid_value_checking)`
 
@@ -1795,15 +1816,14 @@ BCDD::Result.config.addon.options
 
 ```ruby
 BCDD::Result.config.constant_alias.enabled?('Result')
+BCDD::Result.config.constant_alias.enabled?('Context')
+BCDD::Result.config.constant_alias.enabled?('BCDD::Context')
 
 BCDD::Result.config.constant_alias.options
 # {
-#   "Result"=>{
-#     :enabled=>false,
-#     :affects=>[
-#       "Object"
-#     ]
-#   }
+#   "Result"=>{:enabled=>false, :affects=>["Object"]},
+#   "Context"=>{:enabled=>false, :affects=>["Object"]},
+#   "BCDD::Context"=>{:enabled=>false, :affects=>["BCDD"]}
 # }
 ```
 
