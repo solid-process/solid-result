@@ -40,7 +40,7 @@ class BCDD::Result
       -1
     end
 
-    def call_subject_method(method_name, context)
+    def call_and_then_subject_method(method_name, context)
       method = subject.method(method_name)
 
       acc.merge!(value.merge(context))
@@ -53,6 +53,12 @@ class BCDD::Result
         end
 
       ensure_result_object(result, origin: :method)
+    end
+
+    def call_and_then_block(block)
+      acc.merge!(value)
+
+      call_and_then_block!(block, acc)
     end
 
     def ensure_result_object(result, origin:)

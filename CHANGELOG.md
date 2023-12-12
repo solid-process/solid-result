@@ -1,22 +1,24 @@
 - [\[Unreleased\]](#unreleased)
+  - [Changed](#changed)
+  - [Fixed](#fixed)
 - [\[0.9.0\] - 2023-12-12](#090---2023-12-12)
   - [Added](#added)
-  - [Changed](#changed)
+  - [Changed](#changed-1)
 - [\[0.8.0\] - 2023-12-11](#080---2023-12-11)
   - [Added](#added-1)
-  - [Changed](#changed-1)
+  - [Changed](#changed-2)
   - [Removed](#removed)
 - [\[0.7.0\] - 2023-10-27](#070---2023-10-27)
   - [Added](#added-2)
-  - [Changed](#changed-2)
+  - [Changed](#changed-3)
 - [\[0.6.0\] - 2023-10-11](#060---2023-10-11)
   - [Added](#added-3)
-  - [Changed](#changed-3)
+  - [Changed](#changed-4)
 - [\[0.5.0\] - 2023-10-09](#050---2023-10-09)
   - [Added](#added-4)
 - [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
   - [Added](#added-5)
-  - [Changed](#changed-4)
+  - [Changed](#changed-5)
   - [Removed](#removed-1)
 - [\[0.3.0\] - 2023-09-26](#030---2023-09-26)
   - [Added](#added-6)
@@ -27,6 +29,14 @@
   - [Added](#added-8)
 
 ## [Unreleased]
+
+### Changed
+
+- **(BREAKING)** Make `BCDD::Result::Context::Success#and_expose()` to produce a halted success by default. You can turn this off by passing `halted: false`.
+
+### Fixed
+
+- Make `BCDD::Result::Context#and_then(&block)` accumulate the result value.
 
 ## [0.9.0] - 2023-12-12
 

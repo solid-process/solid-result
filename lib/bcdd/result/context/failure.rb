@@ -3,7 +3,7 @@
 class BCDD::Result::Context::Failure < BCDD::Result::Context
   include BCDD::Result::Failure::Methods
 
-  def and_expose(_type, _keys)
+  def and_expose(_type, _keys, **_options)
     self
   end
 end

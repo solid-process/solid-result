@@ -55,7 +55,9 @@ class BCDD::Result
 
   def kind: -> Symbol
   def known: (Proc) -> untyped
-  def call_subject_method: (Symbol, untyped) -> BCDD::Result
+  def call_and_then_subject_method: (Symbol, untyped) -> BCDD::Result
+  def call_and_then_block: (untyped) -> BCDD::Result
+  def call_and_then_block!: (untyped, untyped) -> BCDD::Result
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result
 end
 
@@ -442,7 +444,7 @@ class BCDD::Result::Context < BCDD::Result
 
   private
 
-  def call_subject_method: (Symbol, Hash[Symbol, untyped]) -> BCDD::Result::Context
+  def call_and_then_subject_method: (Symbol, Hash[Symbol, untyped]) -> BCDD::Result::Context
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result::Context
 
   def raise_unexpected_outcome_error: (BCDD::Result::Context | untyped, Symbol) -> void
@@ -452,7 +454,7 @@ class BCDD::Result::Context
   class Success < BCDD::Result::Context
     include BCDD::Result::Success::Methods
 
-    def and_expose: (Symbol, Array[Symbol]) -> BCDD::Result::Context::Success
+    def and_expose: (Symbol, Array[Symbol], halted: bool) -> BCDD::Result::Context::Success
   end
 
   def self.Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
@@ -462,7 +464,7 @@ class BCDD::Result::Context
   class Failure < BCDD::Result::Context
     include BCDD::Result::Failure::Methods
 
-    def and_expose: (Symbol, Array[Symbol]) -> BCDD::Result::Context::Failure
+    def and_expose: (Symbol, Array[Symbol], **untyped) -> BCDD::Result::Context::Failure
   end
 
   def self.Failure: (Symbol, **untyped) -> BCDD::Result::Context::Failure
