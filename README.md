@@ -1569,6 +1569,8 @@ Divide.new.call(10, 5)
 #<BCDD::Result::Context::Success type=:ok value={:number=>2, :number1=>10, :number2=>5}>
 ```
 
+> PS: The `#and_expose` produces a halted success by default. This means the next step will not be executed even if you call `#and_then` after `#and_expose`. To change this behavior, you can pass `halted: false` to `#and_expose`.
+
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ##### Module example (Singleton Methods)
