@@ -55,4 +55,102 @@ class BCDD::Result::AndThenWithSubjectContinueSingletonTest < Minitest::Test
     assert_equal :division_by_zero, failure3.type
     assert_equal 'arg2 must not be zero', failure3.value
   end
+
+  module FirstSuccessHaltsTheStepChainAndThenBlock
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
+
+    def call
+      Success(:first)
+        .and_then { Continue(:second) }
+        .and_then { Continue(:third) }
+    end
+  end
+
+  module SecondSuccessHaltsTheStepChainAndThenBlock
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
+
+    def call
+      Continue(:first)
+        .and_then { Success(:second) }
+        .and_then { Continue(:third) }
+    end
+  end
+
+  module ThirdSuccessHaltsTheStepChainAndThenBlock
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
+
+    def call
+      Continue(:first)
+        .and_then { Continue(:second) }
+        .and_then { Success(:third) }
+    end
+  end
+
+  test 'the step chain halting (and_then block)' do
+    result1 = FirstSuccessHaltsTheStepChainAndThenBlock.call
+    result2 = SecondSuccessHaltsTheStepChainAndThenBlock.call
+    result3 = ThirdSuccessHaltsTheStepChainAndThenBlock.call
+
+    assert(result1.success?(:first) && result1.halted?)
+    assert(result2.success?(:second) && result2.halted?)
+    assert(result3.success?(:third) && result3.halted?)
+  end
+
+  module FirstSuccessHaltsTheStepChainAndThenMethod
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
+
+    def call
+      first_success
+        .and_then(:second_success)
+        .and_then(:third_success)
+    end
+
+    private
+
+    def first_success;  Success(:first); end
+    def second_success; Continue(:second); end
+    def third_success;  Continue(:third); end
+  end
+
+  module SecondSuccessHaltsTheStepChainAndThenMethod
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
+
+    def call
+      first_success
+        .and_then(:second_success)
+        .and_then(:third_success)
+    end
+
+    private
+
+    def first_success;  Continue(:first); end
+    def second_success; Success(:second); end
+    def third_success;  Continue(:third); end
+  end
+
+  module ThirdSuccessHaltsTheStepChainAndThenMethod
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
+
+    def call
+      first_success
+        .and_then(:second_success)
+        .and_then(:third_success)
+    end
+
+    private
+
+    def first_success;  Continue(:first); end
+    def second_success; Continue(:second); end
+    def third_success;  Success(:third); end
+  end
+
+  test 'the step chain halting (and_then calling a method)' do
+    result1 = FirstSuccessHaltsTheStepChainAndThenMethod.call
+    result2 = SecondSuccessHaltsTheStepChainAndThenMethod.call
+    result3 = ThirdSuccessHaltsTheStepChainAndThenMethod.call
+
+    assert(result1.success?(:first) && result1.halted?)
+    assert(result2.success?(:second) && result2.halted?)
+    assert(result3.success?(:third) && result3.halted?)
+  end
 end

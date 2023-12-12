@@ -15,8 +15,8 @@ class BCDD::Result
 
       mod = mixin_module::Factory.module!
       mod.const_set(:Result, new(success: success, failure: failure, config: config).freeze)
-      mod.module_eval(mixin_module::METHODS)
-      mod.send(:include, *addons) unless addons.empty?
+      mod.module_eval(mixin_module::Methods.to_eval(addons), __FILE__, __LINE__ + 1)
+      mod.send(:include, *addons.values) unless addons.empty?
       mod
     end
 
@@ -38,28 +38,38 @@ class BCDD::Result
 
     private_class_method :mixin!, :mixin_module, :result_factory_without_expectations
 
-    def initialize(subject: nil, success: nil, failure: nil, contract: nil, config: nil)
+    def initialize(subject: nil, contract: nil, halted: nil, **options)
+      @halted = halted
+
       @subject = subject
 
       @contract = contract if contract.is_a?(Contract::Evaluator)
 
-      @contract ||= Contract.new(success: success, failure: failure, config: config).freeze
+      @contract ||= Contract.new(
+        success: options[:success],
+        failure: options[:failure],
+        config: options[:config]
+      ).freeze
     end
 
     def Success(type, value = nil)
-      Success.new(type: type, value: value, subject: subject, expectations: contract)
+      _ResultAs(Success, type, value)
     end
 
     def Failure(type, value = nil)
-      Failure.new(type: type, value: value, subject: subject, expectations: contract)
+      _ResultAs(Failure, type, value)
     end
 
-    def with(subject:)
-      self.class.new(subject: subject, contract: contract)
+    def with(subject:, halted: nil)
+      self.class.new(subject: subject, halted: halted, contract: contract)
     end
 
     private
 
-    attr_reader :subject, :contract
+    def _ResultAs(kind_class, type, value)
+      kind_class.new(type: type, value: value, subject: subject, expectations: contract, halted: halted)
+    end
+
+    attr_reader :subject, :halted, :contract
   end
 end

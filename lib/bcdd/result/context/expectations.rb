@@ -15,11 +15,11 @@ class BCDD::Result::Context
     private_class_method :mixin!, :mixin_module, :result_factory_without_expectations
 
     def Success(type, **value)
-      Success.new(type: type, value: value, subject: subject, expectations: contract)
+      _ResultAs(Success, type, value)
     end
 
     def Failure(type, **value)
-      Failure.new(type: type, value: value, subject: subject, expectations: contract)
+      _ResultAs(Failure, type, value)
     end
   end
 end

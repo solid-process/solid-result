@@ -11,21 +11,29 @@ class BCDD::Result
       end
     end
 
-    METHODS = <<~RUBY
-      def Success(...)
-        _Result.Success(...)
-      end
+    module Methods
+      BASE = <<~RUBY
+        def Success(...)
+          _Result.Success(...)
+        end
 
-      def Failure(...)
-        _Result.Failure(...)
-      end
+        def Failure(...)
+          _Result.Failure(...)
+        end
+      RUBY
 
-      private
+      FACTORY = <<~RUBY
+        private def _Result
+          @_Result ||= Result.with(subject: self, halted: %<halted>s)
+        end
+      RUBY
 
-      def _Result
-        @_Result ||= Result.with(subject: self)
+      def self.to_eval(addons)
+        halted = addons.key?(:continue) ? 'true' : 'nil'
+
+        "#{BASE}\n#{format(FACTORY, halted: halted)}"
       end
-    RUBY
+    end
 
     module Addons
       module Continuable

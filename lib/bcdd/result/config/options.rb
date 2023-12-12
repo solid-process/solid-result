@@ -13,13 +13,14 @@ class BCDD::Result
         default_flags.merge(config_flags).slice(*default_flags.keys)
       end
 
-      def self.filter_map(all_flags, config:, from:)
+      def self.select(all_flags, config:, from:)
         with_defaults(all_flags, config)
-          .filter_map { |name, truthy| from[name] if truthy }
+          .filter_map { |name, truthy| [name, from[name]] if truthy }
+          .to_h
       end
 
       def self.addon(map:, from:)
-        filter_map(map, config: :addon, from: from)
+        select(map, config: :addon, from: from)
       end
     end
   end
