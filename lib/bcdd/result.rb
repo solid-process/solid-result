@@ -84,16 +84,12 @@ class BCDD::Result
     tap { yield(value, type) if unknown }
   end
 
-  def and_then(method_name = nil, context = nil)
+  def and_then(method_name = nil, context = nil, &block)
     return self if halted?
 
-    method_name && block_given? and raise ::ArgumentError, 'method_name and block are mutually exclusive'
+    method_name && block and raise ::ArgumentError, 'method_name and block are mutually exclusive'
 
-    return call_subject_method(method_name, context) if method_name
-
-    result = yield(value)
-
-    ensure_result_object(result, origin: :block)
+    method_name ? call_and_then_subject_method(method_name, context) : call_and_then_block(block)
   end
 
   def handle
@@ -139,7 +135,7 @@ class BCDD::Result
     block.call(value, type)
   end
 
-  def call_subject_method(method_name, context)
+  def call_and_then_subject_method(method_name, context)
     method = subject.method(method_name)
 
     result =
@@ -151,6 +147,16 @@ class BCDD::Result
       end
 
     ensure_result_object(result, origin: :method)
+  end
+
+  def call_and_then_block(block)
+    call_and_then_block!(block, value)
+  end
+
+  def call_and_then_block!(block, value)
+    result = block.call(value)
+
+    ensure_result_object(result, origin: :block)
   end
 
   def ensure_result_object(result, origin:)
