@@ -983,7 +983,7 @@ module Divide
 end
 ```
 
-In the code above, we define a constant `Divide::Expected`. And because of this (it is a constant), we can use it inside and outside the module.
+In the code above, we define a constant `Divide::Result`. And because of this (it is a constant), we can use it inside and outside the module.
 
 Look what happens if you try to create a result without one of the expected types.
 
@@ -1223,7 +1223,7 @@ Divide.call(4, 2)
 
 #### Value checking - Result Creation
 
-The `Result::Expectations` supports types of validations. The first is the type checking only, and the second is the type and value checking.
+The `Result::Expectations` supports two types of validations. The first is the type checking only, and the second is the type and value checking.
 
 To define expectations for your result's values, you must declare a Hash with the type as the key and the value as the value. A value validator is any object that responds to `#===` (case equality operator).
 
@@ -1575,7 +1575,7 @@ Divide.new.call(10, 5)
 
 ##### Module example (Singleton Methods)
 
-Yes, the `BCDD::Result::Context.mixin` can produce singleton methods. Look for an example using a module (but it could be a class, too).
+`BCDD::Result::Context.mixin` can also produce singleton methods. Below is an example using a module (but it could be a class, too).
 
 ```ruby
 module Divide
@@ -1660,7 +1660,7 @@ Divide.new.call(10, 5)
 
 As in the `BCDD::Result::Expectations.mixin`, the `BCDD::Result::Context::Expectations.mixin` will add a Result constant in the target class. It can generate success/failure results, which ensure the mixin expectations.
 
-Let's see this using previous example:
+Let's see this using the previous example:
 
 ```ruby
 Divide::Result::Success(:division_completed, number: 2)
@@ -1793,7 +1793,7 @@ PS: I'm using `::Rails.env.production?` to check the environment, but you can us
 
 ### `BCDD::Result.config`
 
-The `BCDD::Result.config` allows you to access the current configuration. It is useful when you want to check the current configuration.
+The `BCDD::Result.config` allows you to access the current configuration.
 
 **BCDD::Result.config.addon**
 
