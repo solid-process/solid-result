@@ -13,14 +13,14 @@ class BCDD::Result
         return if started
 
         self.started = true
-        self.records = []
         self.root_id = id
+        self.records = []
       end
 
       def reset!
         self.started = nil
-        self.records = nil
         self.root_id = nil
+        self.records = []
       end
 
       def root_id?(id)

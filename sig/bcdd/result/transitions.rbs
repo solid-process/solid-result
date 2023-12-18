@@ -1,0 +1,24 @@
+class BCDD::Result
+  module Transitions
+    class Tracking
+      attr_accessor started: (nil | bool)
+      attr_accessor records: (Array[Hash[Symbol, untyped]])
+      attr_accessor root_id: (nil | String)
+
+      def start!: (id: String) -> void
+      def reset!: () -> void
+
+      def root_id?: (String) -> bool
+
+      def add: (BCDD::Result) -> void
+    end
+
+    def self.tracking: () -> Tracking
+
+    def self.track: (BCDD::Result) -> void
+
+    def self.start: (id: String) -> void
+
+    def self.finish: (id: String, result: BCDD::Result) -> void
+  end
+end
