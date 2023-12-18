@@ -1,0 +1,37 @@
+class BCDD::Result
+  module Mixin
+    module Factory
+      def self.module!: -> Module
+    end
+
+    module Methods
+      def Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
+
+      def Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
+
+      private
+
+      def _ResultAs: (singleton(BCDD::Result), Symbol, untyped, ?halted: bool) -> untyped
+    end
+
+    module Addons
+      module Continuable
+        include BCDD::Result::Mixin::Methods
+
+        private
+
+        def Continue: (untyped) -> BCDD::Result::Success
+      end
+
+      OPTIONS: Hash[Symbol, Module]
+
+      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
+    end
+  end
+
+  def self.mixin: (?config: Hash[Symbol, Hash[Symbol, bool]]) -> Module
+
+  def self.mixin_module: -> singleton(BCDD::Result::Mixin)
+
+  def self.result_factory: -> singleton(BCDD::Result)
+end

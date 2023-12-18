@@ -1,0 +1,81 @@
+class BCDD::Result::Config
+  include Singleton
+
+  ADDON: Hash[Symbol, Hash[Symbol, untyped]]
+  FEATURE: Hash[Symbol, Hash[Symbol, untyped]]
+  PATTERN_MATCHING: Hash[Symbol, Hash[Symbol, untyped]]
+
+  attr_reader addon: BCDD::Result::Config::Switcher
+  attr_reader feature: BCDD::Result::Config::Switcher
+  attr_reader constant_alias: BCDD::Result::Config::Switcher
+  attr_reader pattern_matching: BCDD::Result::Config::Switcher
+
+  def self.instance: -> BCDD::Result::Config
+
+  def initialize: -> void
+
+  def freeze: -> BCDD::Result::Config
+  def options: -> Hash[Symbol, BCDD::Result::Config::Switcher]
+  def to_h: -> Hash[Symbol, Hash[Symbol | String, bool]]
+end
+
+class BCDD::Result::Config::Switcher
+  private attr_reader _affects: Hash[Symbol | String, Array[String]]
+  private attr_reader _options: Hash[Symbol | String, bool]
+  private attr_reader listener: Proc
+
+  def initialize: (
+    options: Hash[Symbol | String, Hash[Symbol, untyped]],
+    ?listener: Proc
+  ) -> void
+
+  def freeze: -> BCDD::Result::Config::Switcher
+
+  def to_h: -> Hash[Symbol | String, bool]
+
+  def options: -> Hash[Symbol | String, Hash[Symbol, untyped]]
+
+  def enabled?: (Symbol | String) -> bool
+
+  def enable!: (*(Symbol | String)) -> Hash[Symbol | String, Hash[Symbol, untyped]]
+
+  def disable!: (*(Symbol | String)) -> Hash[Symbol | String, Hash[Symbol, untyped]]
+
+  private
+
+  def set_many: (Array[Symbol | String], to: bool) -> Hash[Symbol | String, Hash[Symbol, untyped]]
+
+  def set_one: (Symbol | String, bool) -> void
+
+  def require_option!: (Array[Symbol | String]) -> void
+
+  def validate_option!: (Symbol | String) -> void
+
+  def available_options_message: -> String
+end
+
+module BCDD::Result::Config::ConstantAlias
+  MAPPING: Hash[String, Hash[Symbol, untyped]]
+  OPTIONS: Hash[String, Hash[Symbol, untyped]]
+  Listener: Proc
+
+  def self.switcher: -> BCDD::Result::Config::Switcher
+end
+
+module BCDD::Result::Config::Options
+  def self.with_defaults: (
+    Hash[Symbol, Hash[Symbol, bool]],
+    Symbol
+  ) -> Hash[Symbol, bool]
+
+  def self.select: (
+    Hash[Symbol, Hash[Symbol, bool]],
+    config: Symbol,
+    from: Hash[Symbol, untyped]
+  ) -> Hash[Symbol, untyped]
+
+  def self.addon: (
+    map: Hash[Symbol, Hash[Symbol, bool]],
+    from: Hash[Symbol, Module]
+  ) -> Hash[Symbol, Module]
+end

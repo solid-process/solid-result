@@ -1,0 +1,67 @@
+class BCDD::Result::Expectations
+  def self.mixin: (
+    ?config: Hash[Symbol, Hash[Symbol, bool]],
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol]
+  ) -> Module
+
+  def self.mixin!: (
+    ?config: Hash[Symbol, Hash[Symbol, bool]],
+    ?success: Hash[Symbol, untyped] | Array[Symbol],
+    ?failure: Hash[Symbol, untyped] | Array[Symbol]
+  ) -> Module
+
+  def self.mixin_module: -> singleton(BCDD::Result::Expectations::Mixin)
+
+  def self.result_factory_without_expectations: -> singleton(BCDD::Result)
+
+  def self.new: (
+    ?subject: untyped,
+    ?contract: BCDD::Result::Contract::Evaluator,
+    ?halted: bool,
+    **untyped
+  ) -> (BCDD::Result::Expectations | untyped)
+
+  def initialize: (
+    ?subject: untyped,
+    ?contract: BCDD::Result::Contract::Evaluator,
+    ?halted: bool,
+    **untyped
+  ) -> void
+
+  def Success: (Symbol, ?untyped) -> BCDD::Result::Success
+  def Failure: (Symbol, ?untyped) -> BCDD::Result::Failure
+
+  def with: (subject: untyped) -> BCDD::Result::Expectations
+
+  private
+
+  def _ResultAs: (singleton(BCDD::Result), Symbol, untyped) -> untyped
+
+  attr_reader subject: untyped
+  attr_reader contract: BCDD::Result::Contract::Evaluator
+  attr_reader halted: bool
+end
+
+module BCDD::Result::Expectations::Mixin
+  module Factory
+    def self.module!: -> Module
+  end
+
+  module Methods
+    BASE: String
+    FACTORY: String
+
+    def self.to_eval: (Hash[Symbol, untyped]) -> String
+  end
+
+  module Addons
+    module Continuable
+      private def Continue: (untyped) -> BCDD::Result::Success
+    end
+
+    OPTIONS: Hash[Symbol, Module]
+
+    def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
+  end
+end
