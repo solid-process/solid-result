@@ -43,10 +43,9 @@ class BCDD::Result
     @data = data
 
     self.unknown = true
-
     self.transitions = EMPTY_ARRAY
 
-    Transitions.monitor.track(self) if Transitions.monitor.started?
+    Transitions.track(self)
   end
 
   def halted?
