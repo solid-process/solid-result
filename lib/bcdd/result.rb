@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'result/version'
+require_relative 'result/transitions'
 require_relative 'result/error'
 require_relative 'result/data'
 require_relative 'result/handler'
@@ -13,13 +14,13 @@ require_relative 'result/context'
 require_relative 'result/config'
 
 class BCDD::Result
-  attr_accessor :unknown
+  attr_accessor :unknown, :transitions
 
   attr_reader :subject, :data, :type_checker, :halted
 
   protected :subject
 
-  private :unknown, :unknown=, :type_checker
+  private :unknown, :unknown=, :type_checker, :transitions=
 
   def self.config
     Config.instance
@@ -31,6 +32,8 @@ class BCDD::Result
     config.freeze
   end
 
+  EMPTY_ARRAY = [].freeze
+
   def initialize(type:, value:, subject: nil, expectations: nil, halted: nil)
     data = Data.new(kind, type, value)
 
@@ -40,6 +43,10 @@ class BCDD::Result
     @data = data
 
     self.unknown = true
+
+    self.transitions = EMPTY_ARRAY
+
+    Transitions.monitor.track(self) if Transitions.monitor.started?
   end
 
   def halted?

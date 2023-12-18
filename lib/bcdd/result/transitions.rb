@@ -44,4 +44,26 @@ class BCDD::Result
       Thread.current[:bcdd_result_transitions_monitor] ||= Monitor.new
     end
   end
+
+  # rubocop:disable Metrics/MethodLength
+  def self.transitions(id: SecureRandom.uuid)
+    Transitions.monitor.start!(id: id)
+
+    result = yield
+
+    unless result.is_a?(::BCDD::Result)
+      Transitions.monitor.reset!
+
+      raise Error::UnexpectedOutcome.build(outcome: result, origin: :transitions)
+    end
+
+    if Transitions.monitor.root_id?(id)
+      result.send(:transitions=, Transitions.monitor.tracked)
+
+      Transitions.monitor.reset!
+    end
+
+    result
+  end
+  # rubocop:enable Metrics/MethodLength
 end
