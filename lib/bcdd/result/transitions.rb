@@ -32,10 +32,6 @@ class BCDD::Result
       end
     end
 
-    def self.tracking
-      Thread.current[:bcdd_result_transitions_tracking] ||= Tracking.new
-    end
-
     def self.track(result)
       tracking.add(result) if tracking.started
     end
@@ -45,17 +41,25 @@ class BCDD::Result
     end
 
     def self.finish(id:, result:)
-      unless result.is_a?(::BCDD::Result)
-        tracking.reset!
-
-        raise Error::UnexpectedOutcome.build(outcome: result, origin: :transitions)
-      end
+      result.is_a?(::BCDD::Result) or raise Error::UnexpectedOutcome.build(outcome: result, origin: :transitions)
 
       return unless tracking.root_id?(id)
 
       result.send(:transitions=, tracking.records)
 
+      reset!
+    end
+
+    def self.reset!
       tracking.reset!
+    end
+
+    def self.tracking
+      Thread.current[:bcdd_result_transitions_tracking] ||= Tracking.new
+    end
+
+    class << self
+      private :tracking
     end
   end
 
@@ -67,5 +71,9 @@ class BCDD::Result
     Transitions.finish(id: id, result: result)
 
     result
+  rescue ::Exception => e
+    Transitions.reset!
+
+    raise e
   end
 end

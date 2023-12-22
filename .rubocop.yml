@@ -9,6 +9,10 @@ AllCops:
   NewCops: enable
   TargetRubyVersion: 2.7
 
+Lint/RescueException:
+  Exclude:
+    - lib/bcdd/result/transitions.rb
+
 Layout/LineLength:
   Max: 120
 

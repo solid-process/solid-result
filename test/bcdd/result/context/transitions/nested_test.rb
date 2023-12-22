@@ -85,5 +85,29 @@ class BCDD::Result
       assert_equal(8, result3.transitions.size)
       assert_equal(10, result4.transitions.size)
     end
+
+    test 'the standard error handling' do
+      assert_raises(ZeroDivisionError) do
+        BCDD::Result.transitions { 2 / 0 }
+      end
+
+      result1 = SumDivisionsByTwo.new.call(30, 20, '10')
+      result2 = SumDivisionsByTwo.new.call(30, 20, 10)
+
+      assert_equal(8, result1.transitions.size)
+      assert_equal(10, result2.transitions.size)
+    end
+
+    test 'an exception error handling' do
+      assert_raises(NotImplementedError) do
+        BCDD::Result.transitions { raise NotImplementedError }
+      end
+
+      result1 = SumDivisionsByTwo.new.call(30, 20, 10)
+      result2 = SumDivisionsByTwo.new.call(30, 20, '10')
+
+      assert_equal(10, result1.transitions.size)
+      assert_equal(8, result2.transitions.size)
+    end
   end
 end

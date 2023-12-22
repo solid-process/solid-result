@@ -13,12 +13,14 @@ class BCDD::Result
       def add: (BCDD::Result) -> void
     end
 
-    def self.tracking: () -> Tracking
-
     def self.track: (BCDD::Result) -> void
 
     def self.start: (id: String) -> void
 
+    def self.reset!: () -> void
+
     def self.finish: (id: String, result: BCDD::Result) -> void
+
+    def self.tracking: () -> Tracking
   end
 end
