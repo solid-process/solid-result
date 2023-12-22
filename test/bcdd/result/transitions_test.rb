@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class BCDD::Result::TransitionsErrorsTest < Minitest::Test
+class BCDD::Result::TransitionsTest < Minitest::Test
   test 'the unexpected outcome error' do
     err = assert_raises(BCDD::Result::Error::UnexpectedOutcome) do
       BCDD::Result.transitions { 1 }
