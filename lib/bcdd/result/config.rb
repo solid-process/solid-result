@@ -4,40 +4,22 @@ require 'singleton'
 
 require_relative 'config/options'
 require_relative 'config/switcher'
-require_relative 'config/constant_alias'
+require_relative 'config/switchers/addons'
+require_relative 'config/switchers/constant_aliases'
+require_relative 'config/switchers/features'
+require_relative 'config/switchers/pattern_matching'
 
 class BCDD::Result
   class Config
     include Singleton
 
-    ADDON = {
-      continue: {
-        default: false,
-        affects: %w[BCDD::Result BCDD::Result::Context BCDD::Result::Expectations BCDD::Result::Context::Expectations]
-      }
-    }.transform_values!(&:freeze).freeze
-
-    FEATURE = {
-      expectations: {
-        default: true,
-        affects: %w[BCDD::Result::Expectations BCDD::Result::Context::Expectations]
-      }
-    }.transform_values!(&:freeze).freeze
-
-    PATTERN_MATCHING = {
-      nil_as_valid_value_checking: {
-        default: false,
-        affects: %w[BCDD::Result::Expectations BCDD::Result::Context::Expectations]
-      }
-    }.transform_values!(&:freeze).freeze
-
     attr_reader :addon, :feature, :constant_alias, :pattern_matching
 
     def initialize
-      @addon = Switcher.new(options: ADDON)
-      @feature = Switcher.new(options: FEATURE)
-      @constant_alias = ConstantAlias.switcher
-      @pattern_matching = Switcher.new(options: PATTERN_MATCHING)
+      @addon = Addons.switcher
+      @feature = Features.switcher
+      @constant_alias = ConstantAliases.switcher
+      @pattern_matching = PatternMatching.switcher
     end
 
     def freeze
@@ -65,7 +47,5 @@ class BCDD::Result
     def inspect
       "#<#{self.class.name} options=#{options.keys.sort.inspect}>"
     end
-
-    private_constant :ADDON, :FEATURE, :PATTERN_MATCHING
   end
 end
