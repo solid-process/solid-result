@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class BCDD::Result::TransitionsNestedTest < Minitest::Test
+class BCDD::Result::TransitionsWithSubjectInstanceNestedTest < Minitest::Test
   class Division
     include BCDD::Result.mixin
 
