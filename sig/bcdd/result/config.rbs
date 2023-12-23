@@ -19,6 +19,24 @@ class BCDD::Result::Config
   def to_h: -> Hash[Symbol, Hash[Symbol | String, bool]]
 end
 
+module BCDD::Result::Config::Options
+  def self.with_defaults: (
+    Hash[Symbol, Hash[Symbol, bool]],
+    Symbol
+  ) -> Hash[Symbol, bool]
+
+  def self.select: (
+    Hash[Symbol, Hash[Symbol, bool]],
+    config: Symbol,
+    from: Hash[Symbol, untyped]
+  ) -> Hash[Symbol, untyped]
+
+  def self.addon: (
+    map: Hash[Symbol, Hash[Symbol, bool]],
+    from: Hash[Symbol, Module]
+  ) -> Hash[Symbol, Module]
+end
+
 class BCDD::Result::Config::Switcher
   private attr_reader _affects: Hash[Symbol | String, Array[String]]
   private attr_reader _options: Hash[Symbol | String, bool]
@@ -54,7 +72,13 @@ class BCDD::Result::Config::Switcher
   def available_options_message: -> String
 end
 
-module BCDD::Result::Config::ConstantAlias
+module BCDD::Result::Config::Addons
+  OPTIONS: Hash[String, Hash[Symbol, untyped]]
+
+  def self.switcher: -> BCDD::Result::Config::Switcher
+end
+
+module BCDD::Result::Config::ConstantAliases
   MAPPING: Hash[String, Hash[Symbol, untyped]]
   OPTIONS: Hash[String, Hash[Symbol, untyped]]
   Listener: Proc
@@ -62,20 +86,15 @@ module BCDD::Result::Config::ConstantAlias
   def self.switcher: -> BCDD::Result::Config::Switcher
 end
 
-module BCDD::Result::Config::Options
-  def self.with_defaults: (
-    Hash[Symbol, Hash[Symbol, bool]],
-    Symbol
-  ) -> Hash[Symbol, bool]
+module BCDD::Result::Config::Features
+  OPTIONS: Hash[String, Hash[Symbol, untyped]]
+  Listener: Proc
 
-  def self.select: (
-    Hash[Symbol, Hash[Symbol, bool]],
-    config: Symbol,
-    from: Hash[Symbol, untyped]
-  ) -> Hash[Symbol, untyped]
+  def self.switcher: -> BCDD::Result::Config::Switcher
+end
 
-  def self.addon: (
-    map: Hash[Symbol, Hash[Symbol, bool]],
-    from: Hash[Symbol, Module]
-  ) -> Hash[Symbol, Module]
+module BCDD::Result::Config::PatternMatching
+  OPTIONS: Hash[String, Hash[Symbol, untyped]]
+
+  def self.switcher: -> BCDD::Result::Config::Switcher
 end

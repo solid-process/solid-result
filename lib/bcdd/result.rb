@@ -45,7 +45,7 @@ class BCDD::Result
     self.unknown = true
     self.transitions = EMPTY_ARRAY
 
-    Transitions.track(self)
+    Transitions.tracking.record(self)
   end
 
   def halted?

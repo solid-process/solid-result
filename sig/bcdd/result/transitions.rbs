@@ -1,26 +1,35 @@
 class BCDD::Result
   module Transitions
-    class Tracking
-      attr_accessor started: (nil | bool)
-      attr_accessor records: (Array[Hash[Symbol, untyped]])
-      attr_accessor root_id: (nil | String)
+    module Tracking
+      class Enabled
+        private attr_accessor started: (nil | bool)
+        private attr_accessor records: (Array[Hash[Symbol, untyped]])
+        private attr_accessor root_id: (nil | String)
 
-      def start!: (id: String) -> void
-      def reset!: () -> void
+        def start: (id: String) -> void
+        def finish: (id: String, result: BCDD::Result) -> void
+        def reset!: () -> void
+        def record: (BCDD::Result) -> void
 
-      def root_id?: (String) -> bool
+        private
 
-      def add: (BCDD::Result) -> void
+        def root_id?: (String) -> bool
+
+        def add: (BCDD::Result) -> void
+      end
+
+      module Disabled
+        def self.start: (id: String) -> void
+        def self.finish: (id: String, result: BCDD::Result) -> void
+        def self.reset!: () -> void
+        def self.record: (BCDD::Result) -> void
+      end
+
+      def self.instance: () -> (Enabled | singleton(Disabled))
     end
 
-    def self.track: (BCDD::Result) -> void
+    THREAD_VAR_NAME: Symbol
 
-    def self.start: (id: String) -> void
-
-    def self.reset!: () -> void
-
-    def self.finish: (id: String, result: BCDD::Result) -> void
-
-    def self.tracking: () -> Tracking
+    def self.tracking: () -> (Tracking::Enabled | singleton(Tracking::Disabled))
   end
 end

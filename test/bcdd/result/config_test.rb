@@ -48,7 +48,7 @@ class BCDD::Result::Config
       config_values = BCDD::Result.config.to_h
 
       assert_equal({ continue: false }, config_values[:addon])
-      assert_equal({ expectations: true }, config_values[:feature])
+      assert_equal({ expectations: true, transitions: true }, config_values[:feature])
       assert_equal({ nil_as_valid_value_checking: false }, config_values[:pattern_matching])
       assert_equal({ 'Result' => false, 'Context' => false, 'BCDD::Context' => false }, config_values[:constant_alias])
 
