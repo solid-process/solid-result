@@ -4,25 +4,32 @@ class BCDD::Result
       class Enabled
         private attr_accessor started: (nil | bool)
         private attr_accessor records: (Array[Hash[Symbol, untyped]])
-        private attr_accessor root_id: (nil | String)
+        private attr_accessor root: (nil | Hash[Symbol, untyped])
+        private attr_accessor current: (nil | Hash[Symbol, untyped])
+        private attr_accessor current_and_then: Hash[Symbol, untyped]
 
-        def start: (id: String) -> void
+        def start: (id: String, name: String, desc: String) -> void
         def finish: (id: String, result: BCDD::Result) -> void
         def reset!: () -> void
         def record: (BCDD::Result) -> void
+        def record_and_then: ((untyped), untyped, untyped) { () -> BCDD::Result } -> BCDD::Result
 
         private
 
-        def root_id?: (String) -> bool
+        def add: (BCDD::Result, time: Time) -> void
+        def reset_records!: () -> void
 
-        def add: (BCDD::Result) -> void
+        EMPTY_HASH: Hash[Symbol, untyped]
+
+        def reset_current_and_then!: () -> void
       end
 
       module Disabled
-        def self.start: (id: String) -> void
+        def self.start: (id: String, name: String, desc: String) -> void
         def self.finish: (id: String, result: BCDD::Result) -> void
         def self.reset!: () -> void
         def self.record: (BCDD::Result) -> void
+        def self.record_and_then: ((untyped), untyped, untyped) { () -> BCDD::Result } -> BCDD::Result
       end
 
       def self.instance: () -> (Enabled | singleton(Disabled))

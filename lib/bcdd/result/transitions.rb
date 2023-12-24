@@ -13,8 +13,8 @@ class BCDD::Result
     end
   end
 
-  def self.transitions(id: SecureRandom.uuid)
-    Transitions.tracking.start(id: id)
+  def self.transitions(id: SecureRandom.uuid, name: nil, desc: nil)
+    Transitions.tracking.start(id: id, name: name, desc: desc)
 
     result = yield
 
