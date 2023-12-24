@@ -4,6 +4,8 @@ require 'test_helper'
 
 class BCDD::Result
   class Context::TransitionsEnabledWithSubjectInstanceRecursionTest < Minitest::Test
+    include BCDDResultTransitionAssertions
+
     class Fibonacci
       include BCDD::Result::Context.mixin
 
@@ -38,12 +40,12 @@ class BCDD::Result
       fibonacci1 = Fibonacci.new.call(1)
       fibonacci2 = Fibonacci.new.call(2)
 
-      assert_equal(1, failure1.transitions.size)
-      assert_equal(1, failure2.transitions.size)
+      assert_transitions(failure1, size: 1)
+      assert_transitions(failure2, size: 1)
 
-      assert_equal(2, fibonacci0.transitions.size)
-      assert_equal(2, fibonacci1.transitions.size)
-      assert_equal(6, fibonacci2.transitions.size)
+      assert_transitions(fibonacci0, size: 2)
+      assert_transitions(fibonacci1, size: 2)
+      assert_transitions(fibonacci2, size: 6)
     end
   end
 end

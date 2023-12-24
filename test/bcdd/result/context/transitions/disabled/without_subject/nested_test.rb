@@ -4,6 +4,8 @@ require 'test_helper'
 
 class BCDD::Result
   class Context::TransitionsDisabledWithoutSubjectInstanceNestedTest < Minitest::Test
+    include BCDDResultTransitionAssertions
+
     def setup
       BCDD::Result.config.feature.disable!(:transitions)
     end
@@ -31,7 +33,7 @@ class BCDD::Result
       end
 
       def validate_nonzero(num2:, **)
-        return Context::Failure(:division_by_zero, message: 'num2 must be different of zero') if num2.zero?
+        return Context::Failure(:division_by_zero, message: 'num2 cannot be zero') if num2.zero?
 
         Context::Success(:ok)
       end
@@ -69,10 +71,10 @@ class BCDD::Result
       result3 = SumDivisionsByTwo.call(30, 20, '10')
       result4 = SumDivisionsByTwo.call(30, 20, 10)
 
-      assert_equal(0, result1.transitions.size)
-      assert_equal(0, result2.transitions.size)
-      assert_equal(0, result3.transitions.size)
-      assert_equal(0, result4.transitions.size)
+      assert_empty_transitions(result1)
+      assert_empty_transitions(result2)
+      assert_empty_transitions(result3)
+      assert_empty_transitions(result4)
     end
 
     test 'nested transitions tracking in different threads' do
@@ -86,10 +88,10 @@ class BCDD::Result
       result3 = t3.value
       result4 = t4.value
 
-      assert_equal(0, result1.transitions.size)
-      assert_equal(0, result2.transitions.size)
-      assert_equal(0, result3.transitions.size)
-      assert_equal(0, result4.transitions.size)
+      assert_empty_transitions(result1)
+      assert_empty_transitions(result2)
+      assert_empty_transitions(result3)
+      assert_empty_transitions(result4)
     end
 
     test 'the standard error handling' do
@@ -100,8 +102,8 @@ class BCDD::Result
       result1 = SumDivisionsByTwo.call(30, 20, '10')
       result2 = SumDivisionsByTwo.call(30, 20, 10)
 
-      assert_equal(0, result1.transitions.size)
-      assert_equal(0, result2.transitions.size)
+      assert_empty_transitions(result1)
+      assert_empty_transitions(result2)
     end
 
     test 'an exception error handling' do
@@ -112,8 +114,8 @@ class BCDD::Result
       result1 = SumDivisionsByTwo.call(30, 20, 10)
       result2 = SumDivisionsByTwo.call(30, 20, '10')
 
-      assert_equal(0, result1.transitions.size)
-      assert_equal(0, result2.transitions.size)
+      assert_empty_transitions(result1)
+      assert_empty_transitions(result2)
     end
   end
 end

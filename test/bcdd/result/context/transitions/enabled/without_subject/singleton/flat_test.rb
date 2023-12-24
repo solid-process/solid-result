@@ -4,6 +4,8 @@ require 'test_helper'
 
 class BCDD::Result
   class Context::TransitionsEnabledWithoutSubjectSingletonFlatTest < Minitest::Test
+    include BCDDResultTransitionAssertions
+
     module Division
       extend self
 
@@ -25,7 +27,7 @@ class BCDD::Result
       end
 
       def validate_nonzero(num2:, **)
-        return Context::Failure(:division_by_zero, message: 'num2 must be different of zero') if num2.zero?
+        return Context::Failure(:division_by_zero, message: 'num2 cannot be zero') if num2.zero?
 
         Context::Success(:ok)
       end
@@ -41,10 +43,10 @@ class BCDD::Result
       result3 = Division.call(4, 0)
       result4 = Division.call(4, 2)
 
-      assert_equal(1, result1.transitions.size)
-      assert_equal(1, result2.transitions.size)
-      assert_equal(2, result3.transitions.size)
-      assert_equal(3, result4.transitions.size)
+      assert_transitions(result1, size: 1)
+      assert_transitions(result2, size: 1)
+      assert_transitions(result3, size: 2)
+      assert_transitions(result4, size: 3)
     end
 
     test 'the tracking without nesting in different threads' do
@@ -58,10 +60,10 @@ class BCDD::Result
       result3 = t3.value
       result4 = t4.value
 
-      assert_equal(1, result1.transitions.size)
-      assert_equal(1, result2.transitions.size)
-      assert_equal(2, result3.transitions.size)
-      assert_equal(3, result4.transitions.size)
+      assert_transitions(result1, size: 1)
+      assert_transitions(result2, size: 1)
+      assert_transitions(result3, size: 2)
+      assert_transitions(result4, size: 3)
     end
 
     test 'the standard error handling' do
@@ -72,8 +74,8 @@ class BCDD::Result
       result1 = Division.call(4, 0)
       result2 = Division.call(4, 2)
 
-      assert_equal(2, result1.transitions.size)
-      assert_equal(3, result2.transitions.size)
+      assert_transitions(result1, size: 2)
+      assert_transitions(result2, size: 3)
     end
 
     test 'an exception handling' do
@@ -84,8 +86,8 @@ class BCDD::Result
       result1 = Division.call(4, 2)
       result2 = Division.call(4, 0)
 
-      assert_equal(3, result1.transitions.size)
-      assert_equal(2, result2.transitions.size)
+      assert_transitions(result1, size: 3)
+      assert_transitions(result2, size: 2)
     end
   end
 end

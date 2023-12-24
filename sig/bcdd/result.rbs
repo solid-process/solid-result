@@ -1,14 +1,12 @@
 class BCDD::Result
-  EMPTY_ARRAY: Array[untyped]
-
   private attr_accessor unknown: bool
-  private attr_writer transitions: Array[Hash[Symbol, untyped]]
+  private attr_writer transitions: Hash[Symbol, untyped]
   private attr_reader type_checker: BCDD::Result::Contract::TypeChecker
 
   attr_reader data: BCDD::Result::Data
   attr_reader subject: untyped
   attr_reader halted: bool
-  attr_reader transitions: Array[Hash[Symbol, untyped]]
+  attr_reader transitions: Hash[Symbol, untyped]
 
   def self.config: -> BCDD::Result::Config
   def self.configuration: { (BCDD::Result::Config) -> void } -> BCDD::Result::Config

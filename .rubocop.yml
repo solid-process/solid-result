@@ -74,6 +74,10 @@ Minitest/AssertEmptyLiteral:
 Minitest/AssertOperator:
   Enabled: false
 
+Minitest/AssertWithExpectedArgument:
+  Exclude:
+    - test/test_helper.rb
+
 Naming/FileName:
   Exclude:
     - lib/bcdd-result.rb

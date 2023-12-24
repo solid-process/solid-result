@@ -1,77 +1,88 @@
 # frozen_string_literal: true
 
-class BCDD::Result
-  module Transitions::Tracking
-    class Enabled
-      attr_accessor :started, :records, :root, :current, :current_and_then
+module BCDD::Result::Transitions
+  class Tracking::Enabled
+    attr_accessor :root, :parent, :current, :parents, :records, :current_and_then
 
-      private :started, :started=, :records, :records=, :root, :root=
-      private :current, :current=, :current_and_then, :current_and_then=
+    private :root, :root=, :parent, :parent=, :current, :current=
+    private :parents, :parents=, :records, :records=, :current_and_then, :current_and_then=
 
-      def start(id:, name:, desc:)
-        self.current = { id: id, name: name, desc: desc }
+    def start(id:, name:, desc:)
+      root.frozen? and return root_start(id, name, desc)
 
-        return if started
+      self.parent = current if parent[:id] != current[:id]
+      self.current = { id: id, name: name, desc: desc }
 
-        self.root = current
-        self.started = true
+      parents[id] = parent
+    end
 
-        reset_records!
-        reset_current_and_then!
-      end
+    def finish(id:, result:)
+      self.current = parents[id]
+      self.parent = parents.fetch(current[:id])
 
-      def finish(id:, result:)
-        return if root && root[:id] != id
+      return if root && root[:id] != id
 
-        result.send(:transitions=, records)
+      result.send(:transitions=, records: records, version: Tracking::VERSION)
 
-        reset!
-      end
+      reset!
+    end
 
-      def reset!
-        self.root = nil
-        self.current = nil
-        self.started = nil
+    def reset!
+      self.root = Tracking::EMPTY_HASH
+      self.parent = Tracking::EMPTY_HASH
+      self.current = Tracking::EMPTY_HASH
+      self.parents = Tracking::EMPTY_HASH
+      self.records = Tracking::EMPTY_ARRAY
 
-        reset_records!
-        reset_current_and_then!
-      end
+      reset_current_and_then!
+    end
 
-      def record(result)
-        return unless started
+    def record(result)
+      return if root.frozen?
 
-        add(result, time: ::Time.now.getutc)
+      track(result, time: ::Time.now.getutc)
+    end
 
-        reset_current_and_then!
-      end
+    def record_and_then(type_arg, arg, subject)
+      type = type_arg.instance_of?(::Method) ? :method : type_arg
 
-      def record_and_then(type_arg, arg, subject)
-        type = type_arg.instance_of?(::Method) ? :method : type_arg
+      self.current_and_then = { type: type, arg: arg, subject: subject }
 
-        self.current_and_then = { type: type, arg: arg, subject: subject }
+      current_and_then[:method_name] = type_arg.name if type == :method
 
-        current_and_then[:method_name] = type_arg.name if type == :method
+      result = yield
 
-        yield
-      end
+      reset_current_and_then!
 
-      private
+      result
+    end
 
-      def add(result, time:)
-        data = result.data.to_h
+    private
 
-        records << { root: root, current: current, result: data, and_then: current_and_then, time: time, version: 1 }
-      end
+    def root_start(id, name, desc)
+      self.current = { id: id, name: name, desc: desc }
+      self.parent = current
+      self.root = current
 
-      def reset_records!
-        self.records = []
-      end
+      self.parents = { current[:id] => current }
+      self.records = []
 
-      EMPTY_HASH = {}.freeze
+      reset_current_and_then!
+    end
 
-      def reset_current_and_then!
-        self.current_and_then = EMPTY_HASH
-      end
+    def track(result, time:)
+      result = result.data.to_h
+
+      and_then = current_and_then
+
+      record =
+        { root: root, parent: parent, current: current, result: result, and_then: and_then, time: time }
+
+      records << record
+    end
+
+    def reset_current_and_then!
+      self.current_and_then = Tracking::EMPTY_HASH
     end
   end
 end

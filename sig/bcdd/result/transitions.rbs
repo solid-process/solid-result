@@ -1,11 +1,18 @@
 class BCDD::Result
   module Transitions
     module Tracking
+      EMPTY_HASH: Hash[untyped, untyped]
+      EMPTY_ARRAY: Array[untyped]
+      VERSION: Integer
+      EMPTY: Hash[Symbol, untyped]
+
+
       class Enabled
-        private attr_accessor started: (nil | bool)
-        private attr_accessor records: (Array[Hash[Symbol, untyped]])
-        private attr_accessor root: (nil | Hash[Symbol, untyped])
-        private attr_accessor current: (nil | Hash[Symbol, untyped])
+        private attr_accessor root: Hash[Symbol, untyped]
+        private attr_accessor parent: Hash[Symbol, untyped]
+        private attr_accessor current: Hash[Symbol, untyped]
+        private attr_accessor parents: Hash[String, untyped]
+        private attr_accessor records: Array[Hash[Symbol, untyped]]
         private attr_accessor current_and_then: Hash[Symbol, untyped]
 
         def start: (id: String, name: String, desc: String) -> void
@@ -16,10 +23,9 @@ class BCDD::Result
 
         private
 
-        def add: (BCDD::Result, time: Time) -> void
-        def reset_records!: () -> void
+        def root_start: (String id, String name, String desc) -> void
 
-        EMPTY_HASH: Hash[Symbol, untyped]
+        def track: (BCDD::Result, time: Time) -> void
 
         def reset_current_and_then!: () -> void
       end

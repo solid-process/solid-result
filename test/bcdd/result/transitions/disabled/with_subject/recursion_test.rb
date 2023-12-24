@@ -3,6 +3,8 @@
 require 'test_helper'
 
 class BCDD::Result::TransitionsDisabledWithSubjectRecursionTest < Minitest::Test
+  include BCDDResultTransitionAssertions
+
   def setup
     BCDD::Result.config.feature.disable!(:transitions)
   end
@@ -43,11 +45,11 @@ class BCDD::Result::TransitionsDisabledWithSubjectRecursionTest < Minitest::Test
     fibonacci1 = Fibonacci.new.call(1)
     fibonacci2 = Fibonacci.new.call(2)
 
-    assert_equal(0, failure1.transitions.size)
-    assert_equal(0, failure2.transitions.size)
+    assert_empty_transitions(failure1)
+    assert_empty_transitions(failure2)
 
-    assert_equal(0, fibonacci0.transitions.size)
-    assert_equal(0, fibonacci1.transitions.size)
-    assert_equal(0, fibonacci2.transitions.size)
+    assert_empty_transitions(fibonacci0)
+    assert_empty_transitions(fibonacci1)
+    assert_empty_transitions(fibonacci2)
   end
 end

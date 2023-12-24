@@ -32,8 +32,6 @@ class BCDD::Result
     config.freeze
   end
 
-  EMPTY_ARRAY = [].freeze
-
   def initialize(type:, value:, subject: nil, expectations: nil, halted: nil)
     data = Data.new(kind, type, value)
 
@@ -43,7 +41,7 @@ class BCDD::Result
     @data = data
 
     self.unknown = true
-    self.transitions = EMPTY_ARRAY
+    self.transitions = Transitions::Tracking::EMPTY
 
     Transitions.tracking.record(self)
   end

@@ -4,6 +4,8 @@ require 'test_helper'
 
 class BCDD::Result
   class Context::TransitionsDisabledWithSubjectInstanceFlatTest < Minitest::Test
+    include BCDDResultTransitionAssertions
+
     def setup
       BCDD::Result.config.feature.disable!(:transitions)
     end
@@ -33,7 +35,7 @@ class BCDD::Result
       end
 
       def validate_nonzero(num2:, **)
-        return Failure(:division_by_zero, message: 'num2 must be different of zero') if num2.zero?
+        return Failure(:division_by_zero, message: 'num2 cannot be zero') if num2.zero?
 
         Success(:ok)
       end
@@ -49,10 +51,10 @@ class BCDD::Result
       result3 = Division.new.call(4, 0)
       result4 = Division.new.call(4, 2)
 
-      assert_equal(0, result1.transitions.size)
-      assert_equal(0, result2.transitions.size)
-      assert_equal(0, result3.transitions.size)
-      assert_equal(0, result4.transitions.size)
+      assert_empty_transitions(result1)
+      assert_empty_transitions(result2)
+      assert_empty_transitions(result3)
+      assert_empty_transitions(result4)
     end
 
     test 'the tracking without nesting in different threads' do
@@ -66,10 +68,10 @@ class BCDD::Result
       result3 = t3.value
       result4 = t4.value
 
-      assert_equal(0, result1.transitions.size)
-      assert_equal(0, result2.transitions.size)
-      assert_equal(0, result3.transitions.size)
-      assert_equal(0, result4.transitions.size)
+      assert_empty_transitions(result1)
+      assert_empty_transitions(result2)
+      assert_empty_transitions(result3)
+      assert_empty_transitions(result4)
     end
 
     test 'the standard error handling' do
@@ -80,8 +82,8 @@ class BCDD::Result
       result1 = Division.new.call(4, 0)
       result2 = Division.new.call(4, 2)
 
-      assert_equal(0, result1.transitions.size)
-      assert_equal(0, result2.transitions.size)
+      assert_empty_transitions(result1)
+      assert_empty_transitions(result2)
     end
 
     test 'an exception handling' do
@@ -92,8 +94,8 @@ class BCDD::Result
       result1 = Division.new.call(4, 2)
       result2 = Division.new.call(4, 0)
 
-      assert_equal(0, result1.transitions.size)
-      assert_equal(0, result2.transitions.size)
+      assert_empty_transitions(result1)
+      assert_empty_transitions(result2)
     end
   end
 end

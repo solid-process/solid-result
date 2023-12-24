@@ -6,6 +6,11 @@ class BCDD::Result
       require_relative 'tracking/enabled'
       require_relative 'tracking/disabled'
 
+      EMPTY_HASH = {}.freeze
+      EMPTY_ARRAY = [].freeze
+      VERSION = 1
+      EMPTY = { records: EMPTY_ARRAY, version: VERSION }.freeze
+
       def self.instance
         Config.instance.feature.enabled?(:transitions) ? Tracking::Enabled.new : Tracking::Disabled
       end
