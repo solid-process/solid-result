@@ -2,43 +2,38 @@
 
 module BCDD::Result::Transitions
   class Tracking::Enabled
-    attr_accessor :root, :parent, :current, :parents, :records, :current_and_then
+    attr_accessor :tree, :records, :root_started_at
 
-    private :root, :root=, :parent, :parent=, :current, :current=
-    private :parents, :parents=, :records, :records=, :current_and_then, :current_and_then=
+    private :tree, :tree=, :records, :records=, :root_started_at, :root_started_at=
 
-    def start(id:, name:, desc:)
-      root.frozen? and return root_start(id, name, desc)
+    def start(name:, desc:)
+      name_and_desc = [name, desc]
 
-      self.parent = current if parent[:id] != current[:id]
-      self.current = { id: id, name: name, desc: desc }
-
-      parents[id] = parent
+      tree.frozen? ? root_start(name_and_desc) : tree.insert!(name_and_desc)
     end
 
-    def finish(id:, result:)
-      self.current = parents[id]
-      self.parent = parents.fetch(current[:id])
+    def finish(result:)
+      node = tree.current
 
-      return if root && root[:id] != id
+      tree.move_up!
 
-      result.send(:transitions=, records: records, version: Tracking::VERSION)
+      return unless node.root?
+
+      duration = (now_in_milliseconds - root_started_at)
+
+      metadata = { duration: duration, tree_map: tree.nested_ids }
+
+      result.send(:transitions=, version: Tracking::VERSION, records: records, metadata: metadata)
 
       reset!
     end
 
     def reset!
-      self.root = Tracking::EMPTY_HASH
-      self.parent = Tracking::EMPTY_HASH
-      self.current = Tracking::EMPTY_HASH
-      self.parents = Tracking::EMPTY_HASH
-      self.records = Tracking::EMPTY_ARRAY
-
-      reset_current_and_then!
+      self.tree = Tracking::EMPTY_TREE
     end
 
     def record(result)
-      return if root.frozen?
+      return if tree.frozen?
 
       track(result, time: ::Time.now.getutc)
     end
@@ -46,43 +41,40 @@ module BCDD::Result::Transitions
     def record_and_then(type_arg, arg, subject)
       type = type_arg.instance_of?(::Method) ? :method : type_arg
 
-      self.current_and_then = { type: type, arg: arg, subject: subject }
+      unless tree.frozen?
+        current_and_then = { type: type, arg: arg, subject: subject }
+        current_and_then[:method_name] = type_arg.name if type == :method
 
-      current_and_then[:method_name] = type_arg.name if type == :method
+        tree.current.value[1] = current_and_then
+      end
 
-      result = yield
-
-      reset_current_and_then!
-
-      result
+      yield
     end
 
     private
 
-    def root_start(id, name, desc)
-      self.current = { id: id, name: name, desc: desc }
-      self.parent = current
-      self.root = current
+    TreeNodeValueNormalizer = ->(id, (nam, des)) { [{ id: id, name: nam, desc: des }, Tracking::EMPTY_HASH] }
 
-      self.parents = { current[:id] => current }
+    def root_start(name_and_desc)
+      self.root_started_at = now_in_milliseconds
+
       self.records = []
 
-      reset_current_and_then!
+      self.tree = Tree.new(name_and_desc, normalizer: TreeNodeValueNormalizer)
     end
 
     def track(result, time:)
       result = result.data.to_h
 
-      and_then = current_and_then
+      root, = tree.root_value
+      parent, = tree.parent_value
+      current, and_then = tree.current_value
 
-      record =
-        { root: root, parent: parent, current: current, result: result, and_then: and_then, time: time }
-
-      records << record
+      records << { root: root, parent: parent, current: current, result: result, and_then: and_then, time: time }
     end
 
-    def reset_current_and_then!
-      self.current_and_then = Tracking::EMPTY_HASH
+    def now_in_milliseconds
+      Process.clock_gettime(Process::CLOCK_MONOTONIC, :millisecond)
     end
   end
 end

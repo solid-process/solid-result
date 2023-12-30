@@ -181,11 +181,9 @@ class BCDD::Result::TransitionsEnabledWithSubjectInstanceFlatTest < Minitest::Te
     assert_equal(1, result5.transitions[:records].map { [_1.dig(:root, :id), _1.dig(:current, :id)] }.flatten.uniq.size)
 
     assert_equal(
-      5,
+      [0],
       [result1, result2, result3, result4, result5]
-        .map { |result| result.transitions[:records].map { _1.dig(:root, :id) }.uniq }
-        .uniq
-        .size
+        .map { |result| result.transitions[:records].map { _1.dig(:root, :id) }.uniq }.uniq.flatten
     )
 
     assert_equal(1, result1.transitions[:records].map { _1[:time] }.tap { assert_equal(_1.sort, _1) }.uniq.size)
@@ -197,9 +195,9 @@ class BCDD::Result::TransitionsEnabledWithSubjectInstanceFlatTest < Minitest::Te
 
   def assert_division_transition(result, index, options)
     scope = {
-      root: { id: Regexps::UUID, name: 'Division', desc: 'divide two numbers' },
-      parent: { id: Regexps::UUID, name: 'Division', desc: 'divide two numbers' },
-      current: { id: Regexps::UUID, name: 'Division', desc: 'divide two numbers' }
+      root: { id: Integer, name: 'Division', desc: 'divide two numbers' },
+      parent: { id: Integer, name: 'Division', desc: 'divide two numbers' },
+      current: { id: Integer, name: 'Division', desc: 'divide two numbers' }
     }
 
     assert_transition_record(result, index, scope.merge(options))

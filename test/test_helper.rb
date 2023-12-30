@@ -33,10 +33,6 @@ class Minitest::Test
   end
 end
 
-module Regexps
-  UUID = /\A[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\z/.freeze
-end
-
 module HashSchemaAssertions
   def assert_hash_schema!(spec, hash, ignore_keys: [])
     keys_to_compare = hash.keys - ignore_keys
@@ -103,10 +99,23 @@ module BCDDResultTransitionAssertions
 
   def assert_transitions(result, size:, version: 1)
     assert_instance_of(Hash, result.transitions)
-    assert_equal(%i[records version], result.transitions.keys.sort)
+    assert_equal(%i[metadata records version], result.transitions.keys.sort)
 
-    assert_equal(size, result.transitions[:records].size)
     assert_equal(version, result.transitions[:version])
+    assert_equal(size, result.transitions[:records].size)
+
+    assert_transitions_metadata(result)
+  end
+
+  def assert_transitions_metadata(result)
+    assert_instance_of(Hash, result.transitions[:metadata])
+
+    metadata = result.transitions[:metadata]
+
+    assert_equal(%i[duration tree_map], metadata.keys.sort)
+
+    assert_instance_of(Integer, metadata[:duration])
+    assert_instance_of(Array, metadata[:tree_map])
   end
 
   def assert_transition_record(result, index, options)

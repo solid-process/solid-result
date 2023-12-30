@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require 'securerandom'
-
 class BCDD::Result
   module Transitions
+    require_relative 'transitions/tree'
     require_relative 'transitions/tracking'
 
     THREAD_VAR_NAME = :bcdd_result_transitions_tracking
@@ -13,14 +12,14 @@ class BCDD::Result
     end
   end
 
-  def self.transitions(id: SecureRandom.uuid, name: nil, desc: nil)
-    Transitions.tracking.start(id: id, name: name, desc: desc)
+  def self.transitions(name: nil, desc: nil)
+    Transitions.tracking.start(name: name, desc: desc)
 
     result = yield
 
     result.is_a?(::BCDD::Result) or raise Error::UnexpectedOutcome.build(outcome: result, origin: :transitions)
 
-    Transitions.tracking.finish(id: id, result: result)
+    Transitions.tracking.finish(result: result)
 
     result
   rescue ::Exception => e

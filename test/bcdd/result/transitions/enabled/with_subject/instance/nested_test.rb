@@ -132,26 +132,26 @@ class BCDD::Result::TransitionsEnabledWithSubjectInstanceNestedTest < Minitest::
 
     root = last_transition.fetch(:current)
 
-    assert_hash_schema!({ id: Regexps::UUID, name: 'SumDivisionsByTwo', desc: nil }, root)
+    assert_hash_schema!({ id: Integer, name: 'SumDivisionsByTwo', desc: nil }, root)
 
     {
       root: root,
       parent: root,
-      current: { id: Regexps::UUID, name: 'Division', desc: nil },
+      current: { id: Integer, name: 'Division', desc: nil },
       result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric' }
     }.then { |spec| assert_transition_record(result, 0, spec) }
 
     {
       root: root,
       parent: root,
-      current: { id: Regexps::UUID, name: 'Division', desc: nil },
+      current: { id: Integer, name: 'Division', desc: nil },
       result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric' }
     }.then { |spec| assert_transition_record(result, 1, spec) }
 
     {
       root: root,
       parent: root,
-      current: { id: Regexps::UUID, name: 'Division', desc: nil },
+      current: { id: Integer, name: 'Division', desc: nil },
       result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric' }
     }.then { |spec| assert_transition_record(result, 2, spec) }
 
@@ -178,14 +178,14 @@ class BCDD::Result::TransitionsEnabledWithSubjectInstanceNestedTest < Minitest::
 
     root = last_transition.fetch(:current)
 
-    assert_hash_schema!({ id: Regexps::UUID, name: 'SumDivisionsByTwo', desc: nil }, root)
+    assert_hash_schema!({ id: Integer, name: 'SumDivisionsByTwo', desc: nil }, root)
 
     # 1st division transition
     #
     {
       root: root,
       parent: root,
-      current: { id: Regexps::UUID, name: 'Division', desc: nil },
+      current: { id: Integer, name: 'Division', desc: nil },
       result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric' }
     }.then { |spec| assert_transition_record(result, 0, spec) }
 
@@ -199,30 +199,28 @@ class BCDD::Result::TransitionsEnabledWithSubjectInstanceNestedTest < Minitest::
     {
       root: root,
       parent: root,
-      current: { id: Regexps::UUID, name: 'Division', desc: nil },
+      current: { id: Integer, name: 'Division', desc: nil },
       result: { kind: :success, type: :ok, value: [20, 2] }
     }.then { |spec| assert_transition_record(result, 1, spec) }
 
     {
       root: root,
-      parent: { id: Regexps::UUID, name: 'CheckForZeros', desc: nil },
-      current: { id: Regexps::UUID, name: 'DetectZero', desc: nil },
-      result: { kind: :failure, type: :not_zero, value: nil },
-      and_then: { type: :method, arg: 'useless_arg', subject: -> { _1.is_a?(Division) }, method_name: :divide }
+      parent: { id: Integer, name: 'CheckForZeros', desc: nil },
+      current: { id: Integer, name: 'DetectZero', desc: nil },
+      result: { kind: :failure, type: :not_zero, value: nil }
     }.then { |spec| assert_transition_record(result, 2, spec) }
 
     {
       root: root,
-      parent: { id: Regexps::UUID, name: 'Division', desc: nil },
-      current: { id: Regexps::UUID, name: 'CheckForZeros', desc: nil },
-      result: { kind: :failure, type: :no_zeros, value: nil },
-      and_then: { type: :method, arg: 'useless_arg', subject: -> { _1.is_a?(Division) }, method_name: :divide }
+      parent: { id: Integer, name: 'Division', desc: nil },
+      current: { id: Integer, name: 'CheckForZeros', desc: nil },
+      result: { kind: :failure, type: :no_zeros, value: nil }
     }.then { |spec| assert_transition_record(result, 3, spec) }
 
     {
       root: root,
       parent: root,
-      current: { id: Regexps::UUID, name: 'Division', desc: nil },
+      current: { id: Integer, name: 'Division', desc: nil },
       result: { kind: :success, type: :division_completed, value: 10 },
       and_then: { type: :method, arg: 'useless_arg', subject: -> { _1.is_a?(Division) }, method_name: :divide }
     }.then { |spec| assert_transition_record(result, 4, spec) }
@@ -237,30 +235,28 @@ class BCDD::Result::TransitionsEnabledWithSubjectInstanceNestedTest < Minitest::
     {
       root: root,
       parent: root,
-      current: { id: Regexps::UUID, name: 'Division', desc: nil },
+      current: { id: Integer, name: 'Division', desc: nil },
       result: { kind: :success, type: :ok, value: [0, 2] }
     }.then { |spec| assert_transition_record(result, 5, spec) }
 
     {
       root: root,
-      parent: { id: Regexps::UUID, name: 'CheckForZeros', desc: nil },
-      current: { id: Regexps::UUID, name: 'DetectZero', desc: nil },
-      result: { kind: :failure, type: :not_zero, value: nil },
-      and_then: { type: :method, arg: 'useless_arg', subject: -> { _1.is_a?(Division) }, method_name: :divide }
+      parent: { id: Integer, name: 'CheckForZeros', desc: nil },
+      current: { id: Integer, name: 'DetectZero', desc: nil },
+      result: { kind: :failure, type: :not_zero, value: nil }
     }.then { |spec| assert_transition_record(result, 6, spec) }
 
     {
       root: root,
-      parent: { id: Regexps::UUID, name: 'Division', desc: nil },
-      current: { id: Regexps::UUID, name: 'CheckForZeros', desc: nil },
-      result: { kind: :success, type: :num1_is_zero, value: nil },
-      and_then: { type: :method, arg: 'useless_arg', subject: -> { _1.is_a?(Division) }, method_name: :divide }
+      parent: { id: Integer, name: 'Division', desc: nil },
+      current: { id: Integer, name: 'CheckForZeros', desc: nil },
+      result: { kind: :success, type: :num1_is_zero, value: nil }
     }.then { |spec| assert_transition_record(result, 7, spec) }
 
     {
       root: root,
       parent: root,
-      current: { id: Regexps::UUID, name: 'Division', desc: nil },
+      current: { id: Integer, name: 'Division', desc: nil },
       result: { kind: :success, type: :division_completed, value: 0 },
       and_then: { type: :method, arg: 'useless_arg', subject: -> { _1.is_a?(Division) }, method_name: :divide }
     }.then { |spec| assert_transition_record(result, 8, spec) }

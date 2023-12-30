@@ -119,26 +119,26 @@ class BCDD::Result
 
       root = last_transition.fetch(:current)
 
-      assert_hash_schema!({ id: Regexps::UUID, name: nil, desc: nil }, root)
+      assert_hash_schema!({ id: Integer, name: nil, desc: nil }, root)
 
       {
         root: root,
         parent: root,
-        current: { id: Regexps::UUID, name: nil, desc: nil },
+        current: { id: Integer, name: nil, desc: nil },
         result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' } }
       }.then { |spec| assert_transition_record(result, 0, spec) }
 
       {
         root: root,
         parent: root,
-        current: { id: Regexps::UUID, name: nil, desc: nil },
+        current: { id: Integer, name: nil, desc: nil },
         result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' } }
       }.then { |spec| assert_transition_record(result, 1, spec) }
 
       {
         root: root,
         parent: root,
-        current: { id: Regexps::UUID, name: nil, desc: nil },
+        current: { id: Integer, name: nil, desc: nil },
         result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' } }
       }.then { |spec| assert_transition_record(result, 2, spec) }
 
@@ -165,14 +165,14 @@ class BCDD::Result
 
       root = last_transition.fetch(:current)
 
-      assert_hash_schema!({ id: Regexps::UUID, name: nil, desc: nil }, root)
+      assert_hash_schema!({ id: Integer, name: nil, desc: nil }, root)
 
       # 1st division transition
       #
       {
         root: root,
         parent: root,
-        current: { id: Regexps::UUID, name: nil, desc: nil },
+        current: { id: Integer, name: nil, desc: nil },
         result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' } }
       }.then { |spec| assert_transition_record(result, 0, spec) }
 
@@ -186,14 +186,14 @@ class BCDD::Result
       {
         root: root,
         parent: root,
-        current: { id: Regexps::UUID, name: nil, desc: nil },
+        current: { id: Integer, name: nil, desc: nil },
         result: { kind: :success, type: :continued, value: { num1: 20, num2: 2 } }
       }.then { |spec| assert_transition_record(result, 1, spec) }
 
       {
         root: root,
         parent: root,
-        current: { id: Regexps::UUID, name: nil, desc: nil },
+        current: { id: Integer, name: nil, desc: nil },
         result: { kind: :success, type: :continued, value: {} },
         and_then: { type: :method, arg: { useless_arg: true }, subject: Division, method_name: :validate_nonzero }
       }.then { |spec| assert_transition_record(result, 2, spec) }
@@ -201,7 +201,7 @@ class BCDD::Result
       {
         root: root,
         parent: root,
-        current: { id: Regexps::UUID, name: nil, desc: nil },
+        current: { id: Integer, name: nil, desc: nil },
         result: { kind: :success, type: :division_completed, value: { number: 10 } },
         and_then: { type: :method, arg: {}, subject: Division, method_name: :divide }
       }.then { |spec| assert_transition_record(result, 3, spec) }
@@ -216,14 +216,14 @@ class BCDD::Result
       {
         root: root,
         parent: root,
-        current: { id: Regexps::UUID, name: nil, desc: nil },
+        current: { id: Integer, name: nil, desc: nil },
         result: { kind: :success, type: :continued, value: { num1: 0, num2: 2 } }
       }.then { |spec| assert_transition_record(result, 4, spec) }
 
       {
         root: root,
         parent: root,
-        current: { id: Regexps::UUID, name: nil, desc: nil },
+        current: { id: Integer, name: nil, desc: nil },
         result: { kind: :success, type: :continued, value: {} },
         and_then: { type: :method, arg: { useless_arg: true }, subject: Division, method_name: :validate_nonzero }
       }.then { |spec| assert_transition_record(result, 5, spec) }
@@ -231,7 +231,7 @@ class BCDD::Result
       {
         root: root,
         parent: root,
-        current: { id: Regexps::UUID, name: nil, desc: nil },
+        current: { id: Integer, name: nil, desc: nil },
         result: { kind: :success, type: :division_completed, value: { number: 0 } },
         and_then: { type: :method, arg: {}, subject: Division, method_name: :divide }
       }.then { |spec| assert_transition_record(result, 6, spec) }
