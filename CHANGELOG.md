@@ -1,35 +1,42 @@
 - [\[Unreleased\]](#unreleased)
+  - [Added](#added)
 - [\[0.9.1\] - 2023-12-12](#091---2023-12-12)
   - [Changed](#changed)
   - [Fixed](#fixed)
 - [\[0.9.0\] - 2023-12-12](#090---2023-12-12)
-  - [Added](#added)
+  - [Added](#added-1)
   - [Changed](#changed-1)
 - [\[0.8.0\] - 2023-12-11](#080---2023-12-11)
-  - [Added](#added-1)
+  - [Added](#added-2)
   - [Changed](#changed-2)
   - [Removed](#removed)
 - [\[0.7.0\] - 2023-10-27](#070---2023-10-27)
-  - [Added](#added-2)
+  - [Added](#added-3)
   - [Changed](#changed-3)
 - [\[0.6.0\] - 2023-10-11](#060---2023-10-11)
-  - [Added](#added-3)
+  - [Added](#added-4)
   - [Changed](#changed-4)
 - [\[0.5.0\] - 2023-10-09](#050---2023-10-09)
-  - [Added](#added-4)
-- [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
   - [Added](#added-5)
+- [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
+  - [Added](#added-6)
   - [Changed](#changed-5)
   - [Removed](#removed-1)
 - [\[0.3.0\] - 2023-09-26](#030---2023-09-26)
-  - [Added](#added-6)
-- [\[0.2.0\] - 2023-09-26](#020---2023-09-26)
   - [Added](#added-7)
+- [\[0.2.0\] - 2023-09-26](#020---2023-09-26)
+  - [Added](#added-8)
   - [Removed](#removed-2)
 - [\[0.1.0\] - 2023-09-25](#010---2023-09-25)
-  - [Added](#added-8)
+  - [Added](#added-9)
 
 ## [Unreleased]
+
+### Added
+
+- Add `BCDD::Result.transitions(&block)` to track all transitions in the same or between different operations. When there is a nesting of transition blocks, this mechanism will be able to correlate parent and child blocks and present the duration of all operations in milliseconds.
+
+- Add `BCDD::Result.config.feature.disable!(:transitions)` and `BCDD::Result.config.feature.enable!(:transitions)` to turn on/off the `BCDD::Result.transitions` feature.
 
 ## [0.9.1] - 2023-12-12
 
