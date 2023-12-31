@@ -70,6 +70,8 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
       - [Module example (Singleton Methods)](#module-example-singleton-methods-1)
     - [`BCDD::Result::Context::Expectations`](#bcddresultcontextexpectations)
     - [Mixin add-ons](#mixin-add-ons)
+  - [`BCDD::Result.transitions`](#bcddresulttransitions)
+    - [Configuration](#configuration)
   - [`BCDD::Result.configuration`](#bcddresultconfiguration)
     - [`config.addon.enable!(:continue)`](#configaddonenablecontinue)
     - [`config.constant_alias.enable!('Result', 'BCDD::Context')`](#configconstant_aliasenableresult-bcddcontext)
@@ -1747,6 +1749,160 @@ Divide.call(14, 0)
 #<BCDD::Result::Context::Failure type=:division_by_zero value={:message=>"arg2 must not be zero"}>
 ```
 
+### `BCDD::Result.transitions`
+
+Use `BCDD::Result.transitions(&block)` to track all transitions in the same or between different operations. When there is a nesting of transition blocks, this mechanism will be able to correlate parent and child blocks and present the duration of all operations in milliseconds.
+
+When you wrap the creation of the result with `BCDD::Result.transitions`, the final result will expose all the transition records through the `BCDD::Result#transitions` method.
+
+```ruby
+class Division
+  include BCDD::Result.mixin(config: { addon: { continue: true } })
+
+  def call(arg1, arg2)
+    BCDD::Result.transitions(name: 'Division', desc: 'divide two numbers') do
+      require_numbers(arg1, arg2)
+        .and_then(:check_for_zeros)
+        .and_then(:divide)
+    end
+  end
+
+  private
+
+  ValidNumber = ->(arg) { arg.is_a?(Numeric) && arg != Float::NAN && arg != Float::INFINITY }
+
+  def require_numbers(arg1, arg2)
+    ValidNumber[arg1] or return Failure(:invalid_arg, 'arg1 must be a valid number')
+    ValidNumber[arg2] or return Failure(:invalid_arg, 'arg2 must be a valid number')
+
+    Continue([arg1, arg2])
+  end
+
+  def check_for_zeros(numbers)
+    num1, num2 = numbers
+
+    return Failure(:division_by_zero, 'num2 cannot be zero') if num2.zero?
+
+    num1.zero? ? Success(:division_completed, 0) : Continue(numbers)
+  end
+
+  def divide((num1, num2))
+    Success(:division_completed, num1 / num2)
+  end
+end
+
+module SumDivisionsByTwo
+  extend self, BCDD::Result.mixin
+
+  def call(*numbers)
+    BCDD::Result.transitions(name: 'SumDivisionsByTwo') do
+      divisions = numbers.map { |number| Division.new.call(number, 2) }
+
+      if divisions.any?(&:failure?)
+        Failure(:errors, divisions.select(&:failure?).map(&:value))
+      else
+        Success(:sum, divisions.sum(&:value))
+      end
+    end
+  end
+end
+```
+
+Let's see the result of the `SumDivisionsByTwo` call:
+
+```ruby
+result = SumDivisionsByTwo.call(20, 10)
+# => #<BCDD::Result::Success type=:sum value=15>
+
+result.transitions
+{
+  :version =>1,
+  :metadata => {
+    :duration => 0,                       # milliseconds
+    :tree_map => [0, [[1, []], [2, []]]], # represents the tree of transitions using the id of each transition block
+  },
+  :records => [
+    {
+      :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current => {:id=>1, :name=>"Division", :desc=>"divide two numbers"},
+      :result => {:kind=>:success, :type=>:continued, :value=>[20, 2]},
+      :and_then => {},
+      :time => 2023-12-31 22:19:33.281619 UTC
+    },
+    {
+      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
+      :result=>{:kind=>:success, :type=>:continued, :value=>[20, 2]},
+      :and_then=>{:type=>:method, :arg=>nil, :subject=>#<Division:0x0000000103e5f7c8>, :method_name=>:check_for_zeros},
+      :time=>2023-12-31 22:19:33.281693 UTC
+    },
+    {
+      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
+      :result=>{:kind=>:success, :type=>:division_completed, :value=>10},
+      :and_then=>{:type=>:method, :arg=>nil, :subject=>#<Division:0x0000000103e5f7c8>, :method_name=>:divide},
+      :time=>2023-12-31 22:19:33.281715 UTC
+    },
+    {
+      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
+      :result=>{:kind=>:success, :type=>:continued, :value=>[10, 2]},
+      :and_then=>{},
+      :time=>2023-12-31 22:19:33.281747 UTC
+    },
+    {
+      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
+      :result=>{:kind=>:success, :type=>:continued, :value=>[10, 2]},
+      :and_then=>{:type=>:method, :arg=>nil, :subject=>#<Division:0x0000000103e5f1b0>, :method_name=>:check_for_zeros},
+      :time=>2023-12-31 22:19:33.281755 UTC
+    },
+    {
+      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
+      :result=>{:kind=>:success, :type=>:division_completed, :value=>5},
+      :and_then=>{:type=>:method, :arg=>nil, :subject=>#<Division:0x0000000103e5f1b0>, :method_name=>:divide},
+      :time=>2023-12-31 22:19:33.281763 UTC
+    },
+    {
+      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :result=>{:kind=>:success, :type=>:sum, :value=>15},
+      :and_then=>{},
+      :time=>2023-12-31 22:19:33.281784 UTC
+    }
+  ]
+}
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### Configuration
+
+You can use `BCDD::Result.config.feature.disable!(:transitions)` and `BCDD::Result.config.feature.enable!(:transitions)` to turn on/off the `BCDD::Result.transitions` feature.
+
+```ruby
+BCDD::Result.configuration do |config|
+  config.feature.disable!(:transitions)
+end
+
+result = SumDivisionsByTwo.call(20, 10)
+# => #<BCDD::Result::Success type=:sum value=15>
+
+result.transitions
+
+{:version=>1, :records=>[], :metadata=>{:duration=>0, :tree_map=>[]}}
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
 ### `BCDD::Result.configuration`
 
 The `BCDD::Result.configuration` allows you to configure default behaviors for `BCDD::Result` and `BCDD::Result::Context` through a configuration block. After using it, the configuration is frozen, ensuring the expected behaviors for your application.
@@ -1858,6 +2014,13 @@ BCDD::Result.config.feature.options
 #     :affects=>[
 #       "BCDD::Result::Expectations,
 #       "BCDD::Result::Context::Expectations"
+#     ]
+#   },
+#   :transitions=>{
+#     :enabled=>true,
+#     :affects=>[
+#       "BCDD::Result",
+#       "BCDD::Result::Context"
 #     ]
 #   }
 # }

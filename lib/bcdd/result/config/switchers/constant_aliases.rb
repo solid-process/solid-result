@@ -2,7 +2,7 @@
 
 class BCDD::Result
   class Config
-    module ConstantAlias
+    module ConstantAliases
       MAPPING = {
         'Result' => { target: ::Object, name: :Result, value: ::BCDD::Result },
         'Context' => { target: ::Object, name: :Context, value: ::BCDD::Result::Context },
@@ -15,14 +15,14 @@ class BCDD::Result
         [option_name, { default: false, affects: [affects].freeze }]
       end.freeze
 
-      Listener = ->(option_name, boolean) do
+      Listener = ->(option_name, bool) do
         mapping = MAPPING.fetch(option_name)
 
         target, name, value = mapping.fetch_values(:target, :name, :value)
 
         defined = target.const_defined?(name, false)
 
-        boolean ? defined || target.const_set(name, value) : defined && target.send(:remove_const, name)
+        bool ? defined || target.const_set(name, value) : defined && target.send(:remove_const, name)
       end
 
       def self.switcher
@@ -30,6 +30,6 @@ class BCDD::Result
       end
     end
 
-    private_constant :ConstantAlias
+    private_constant :ConstantAliases
   end
 end

@@ -1,10 +1,12 @@
 class BCDD::Result
   private attr_accessor unknown: bool
+  private attr_writer transitions: Hash[Symbol, untyped]
   private attr_reader type_checker: BCDD::Result::Contract::TypeChecker
 
   attr_reader data: BCDD::Result::Data
   attr_reader subject: untyped
   attr_reader halted: bool
+  attr_reader transitions: Hash[Symbol, untyped]
 
   def self.config: -> BCDD::Result::Config
   def self.configuration: { (BCDD::Result::Config) -> void } -> BCDD::Result::Config
@@ -50,8 +52,9 @@ class BCDD::Result
   def kind: -> Symbol
   def known: (Proc) -> untyped
   def call_and_then_subject_method: (Symbol, untyped) -> BCDD::Result
+  def call_and_then_subject_method!: (untyped, untyped) -> BCDD::Result
   def call_and_then_block: (untyped) -> BCDD::Result
-  def call_and_then_block!: (untyped, untyped) -> BCDD::Result
+  def call_and_then_block!: (untyped) -> BCDD::Result
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result
 end
 

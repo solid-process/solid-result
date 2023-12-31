@@ -9,6 +9,10 @@ AllCops:
   NewCops: enable
   TargetRubyVersion: 2.7
 
+Lint/RescueException:
+  Exclude:
+    - lib/bcdd/result/transitions.rb
+
 Layout/LineLength:
   Max: 120
 
@@ -69,6 +73,10 @@ Minitest/AssertEmptyLiteral:
 
 Minitest/AssertOperator:
   Enabled: false
+
+Minitest/AssertWithExpectedArgument:
+  Exclude:
+    - test/test_helper.rb
 
 Naming/FileName:
   Exclude:

@@ -13,10 +13,11 @@ class BCDD::Result::Config
         {
           expectations: {
             enabled: true,
-            affects: [
-              'BCDD::Result::Expectations',
-              'BCDD::Result::Context::Expectations'
-            ]
+            affects: ['BCDD::Result::Expectations', 'BCDD::Result::Context::Expectations']
+          },
+          transitions: {
+            enabled: true,
+            affects: ['BCDD::Result', 'BCDD::Result::Context']
           }
         },
         config.options

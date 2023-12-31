@@ -1,0 +1,89 @@
+class BCDD::Result
+  module Transitions
+    class Tree
+      class Node
+        attr_reader id: Integer
+        attr_reader value: untyped
+        attr_reader parent: (Node | nil)
+        attr_reader normalizer: ^(Integer, Array[untyped]) -> untyped
+        attr_reader children: Array[Node]
+
+        def initialize: (
+          untyped value,
+          parent: (Node | nil),
+          id: Integer,
+          normalizer: ^(Integer, Array[untyped]) -> untyped
+        ) -> void
+
+        def insert: (untyped, id: Integer) -> Node
+
+        def root?: () -> bool
+        def leaf?: () -> bool
+        def node?: () -> bool
+        def inspect: () -> String
+      end
+
+      attr_reader size: Integer
+      attr_reader root: Node
+      attr_reader current: Node
+
+      def initialize: (untyped, ?normalizer: ^(Integer, Array[untyped]) -> untyped) -> void
+      def root_value: () -> untyped
+      def parent_value: () -> untyped
+      def current_value: () -> untyped
+      def insert: (untyped) -> Node
+      def insert!: (untyped) -> Node
+      def move_up!: (?Integer level) -> Tree
+      def move_down!: (?Integer level) -> Tree
+      def move_to_root!: () -> Tree
+
+      NestedIds: ^(Node) -> Array[untyped]
+
+      def nested_ids: () -> Array[untyped]
+    end
+
+    module Tracking
+      EMPTY_ARRAY: Array[untyped]
+      EMPTY_HASH: Hash[untyped, untyped]
+      EMPTY_TREE: Transitions::Tree
+      VERSION: Integer
+      EMPTY: Hash[Symbol, untyped]
+
+      class Enabled
+        private attr_accessor tree: Transitions::Tree
+        private attr_accessor records: Array[Hash[Symbol, untyped]]
+        private attr_accessor root_started_at: Integer
+
+        def start: (name: String, desc: String) -> void
+        def finish: (result: BCDD::Result) -> void
+        def reset!: () -> void
+        def record: (BCDD::Result) -> void
+        def record_and_then: ((untyped), untyped, untyped) { () -> BCDD::Result } -> BCDD::Result
+
+        private
+
+        TreeNodeValueNormalizer: ^(Integer, Array[untyped]) -> untyped
+
+        def root_start: (Array[untyped]) -> void
+
+        def track: (BCDD::Result, time: Time) -> void
+
+        def now_in_milliseconds: () -> Integer
+      end
+
+      module Disabled
+        def self.start: (name: String, desc: String) -> void
+        def self.finish: (result: BCDD::Result) -> void
+        def self.reset!: () -> void
+        def self.record: (BCDD::Result) -> void
+        def self.record_and_then: ((untyped), untyped, untyped) { () -> BCDD::Result } -> BCDD::Result
+      end
+
+      def self.instance: () -> (Enabled | singleton(Disabled))
+    end
+
+    THREAD_VAR_NAME: Symbol
+
+    def self.tracking: () -> (Tracking::Enabled | singleton(Tracking::Disabled))
+  end
+end

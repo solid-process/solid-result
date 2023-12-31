@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'result/version'
+require_relative 'result/transitions'
 require_relative 'result/error'
 require_relative 'result/data'
 require_relative 'result/handler'
@@ -13,13 +14,13 @@ require_relative 'result/context'
 require_relative 'result/config'
 
 class BCDD::Result
-  attr_accessor :unknown
+  attr_accessor :unknown, :transitions
 
   attr_reader :subject, :data, :type_checker, :halted
 
   protected :subject
 
-  private :unknown, :unknown=, :type_checker
+  private :unknown, :unknown=, :type_checker, :transitions=
 
   def self.config
     Config.instance
@@ -40,6 +41,9 @@ class BCDD::Result
     @data = data
 
     self.unknown = true
+    self.transitions = Transitions::Tracking::EMPTY
+
+    Transitions.tracking.record(self)
   end
 
   def halted?
@@ -135,28 +139,35 @@ class BCDD::Result
     block.call(value, type)
   end
 
-  def call_and_then_subject_method(method_name, context)
+  def call_and_then_subject_method(method_name, context_data)
     method = subject.method(method_name)
 
-    result =
-      case method.arity
-      when 0 then subject.send(method_name)
-      when 1 then subject.send(method_name, value)
-      when 2 then subject.send(method_name, value, context)
-      else raise Error::InvalidSubjectMethodArity.build(subject: subject, method: method, max_arity: 2)
-      end
+    Transitions.tracking.record_and_then(method, context_data, subject) do
+      result = call_and_then_subject_method!(method, context_data)
 
-    ensure_result_object(result, origin: :method)
+      ensure_result_object(result, origin: :method)
+    end
+  end
+
+  def call_and_then_subject_method!(method, context_data)
+    case method.arity
+    when 0 then subject.send(method.name)
+    when 1 then subject.send(method.name, value)
+    when 2 then subject.send(method.name, value, context_data)
+    else raise Error::InvalidSubjectMethodArity.build(subject: subject, method: method, max_arity: 2)
+    end
   end
 
   def call_and_then_block(block)
-    call_and_then_block!(block, value)
+    Transitions.tracking.record_and_then(:block, nil, subject) do
+      result = call_and_then_block!(block)
+
+      ensure_result_object(result, origin: :block)
+    end
   end
 
-  def call_and_then_block!(block, value)
-    result = block.call(value)
-
-    ensure_result_object(result, origin: :block)
+  def call_and_then_block!(block)
+    block.call(value)
   end
 
   def ensure_result_object(result, origin:)

@@ -40,25 +40,20 @@ class BCDD::Result
       -1
     end
 
-    def call_and_then_subject_method(method_name, context)
-      method = subject.method(method_name)
+    def call_and_then_subject_method!(method, context_data)
+      acc.merge!(value.merge(context_data))
 
-      acc.merge!(value.merge(context))
-
-      result =
-        case SubjectMethodArity[method]
-        when 0 then subject.send(method_name)
-        when 1 then subject.send(method_name, **acc)
-        else raise Error::InvalidSubjectMethodArity.build(subject: subject, method: method, max_arity: 1)
-        end
-
-      ensure_result_object(result, origin: :method)
+      case SubjectMethodArity[method]
+      when 0 then subject.send(method.name)
+      when 1 then subject.send(method.name, **acc)
+      else raise Error::InvalidSubjectMethodArity.build(subject: subject, method: method, max_arity: 1)
+      end
     end
 
-    def call_and_then_block(block)
+    def call_and_then_block!(block)
       acc.merge!(value)
 
-      call_and_then_block!(block, acc)
+      block.call(acc)
     end
 
     def ensure_result_object(result, origin:)
