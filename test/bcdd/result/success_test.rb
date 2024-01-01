@@ -12,10 +12,10 @@ class BCDD::Result
       assert Success < BCDD::Result::Success::Methods
     end
 
-    test '#halted?' do
+    test '#terminal?' do
       result = Success.new(type: :ok, value: nil)
 
-      refute_predicate result, :halted?
+      refute_predicate result, :terminal?
     end
 
     test '#success? without receiving a type/argument' do

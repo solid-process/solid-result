@@ -11,7 +11,7 @@ class BCDD::Result
 
       private
 
-      def _ResultAs: (singleton(BCDD::Result), Symbol, untyped, ?halted: bool) -> untyped
+      def _ResultAs: (singleton(BCDD::Result), Symbol, untyped, ?terminal: bool) -> untyped
     end
 
     module Addons

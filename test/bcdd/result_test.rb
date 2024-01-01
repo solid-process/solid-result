@@ -46,10 +46,10 @@ module BCDD
       assert_raises(BCDD::Result::Error::NotImplemented) { result.failure?(:err) }
     end
 
-    test '#halted?' do
+    test '#terminal?' do
       result = Result.new(type: :err, value: 0)
 
-      refute_predicate(result, :halted?)
+      refute_predicate(result, :terminal?)
     end
 
     test '#value_or' do

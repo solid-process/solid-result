@@ -32,7 +32,7 @@ class BCDD::RailwayOrientedProgrammingResultMixinSingletonTest < Minitest::Test
     end
   end
 
-  test 'result halting/chaining with a module (singleton methods)' do
+  test 'terminal results with a module (singleton methods)' do
     success = Divide.call(10, 2)
 
     failure1 = Divide.call('10', 0)

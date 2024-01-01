@@ -920,9 +920,9 @@ The `BCDD::Result.mixin` also accepts the `config:` argument. It is a hash that 
 
 **continue**
 
-This addon will create the `Continue(value)` method and change the `Success()` behavior to halt the step chain.
+This addon will create the `Continue(value)` method and change the `Success()` behavior to terminate the step chain.
 
-So, if you want to advance to the next step, you must use `Continue(value)` instead of `Success(type, value)`. Otherwise, the step chain will be halted.
+So, if you want to advance to the next step, you must use `Continue(value)` instead of `Success(type, value)`. Otherwise, the step chain will be terminated.
 
 ```ruby
 module Divide
@@ -1571,7 +1571,7 @@ Divide.new.call(10, 5)
 #<BCDD::Result::Context::Success type=:ok value={:number=>2, :number1=>10, :number2=>5}>
 ```
 
-> PS: The `#and_expose` produces a halted success by default. This means the next step will not be executed even if you call `#and_then` after `#and_expose`. To change this behavior, you can pass `halted: false` to `#and_expose`.
+> PS: The `#and_expose` produces a terminal success by default. This means the next step will not be executed even if you call `#and_then` after `#and_expose`. To change this behavior, you can pass `terminal: false` to `#and_expose`.
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
@@ -1680,9 +1680,9 @@ The `BCDD::Result::Context.mixin` and `BCDD::Result::Context::Expectations.mixin
 
 **Continue**
 
-The `BCDD::Result::Context.mixin(config: { addon: { continue: true } })` or `BCDD::Result::Context::Expectations.mixin(config: { addon: { continue: true } })` creates the `Continue(value)` method and change the `Success()` behavior to halt the step chain.
+The `BCDD::Result::Context.mixin(config: { addon: { continue: true } })` or `BCDD::Result::Context::Expectations.mixin(config: { addon: { continue: true } })` creates the `Continue(value)` method and change the `Success()` behavior to terminate the step chain.
 
-So, if you want to advance to the next step, you must use `Continue(**value)` instead of `Success(type, **value)`. Otherwise, the step chain will be halted.
+So, if you want to advance to the next step, you must use `Continue(**value)` instead of `Success(type, **value)`. Otherwise, the step chain will be terminated.
 
 Let's use a mix of `BCDD::Result::Context` features to see in action with this add-on:
 

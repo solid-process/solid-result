@@ -24,14 +24,14 @@ class BCDD::Result
 
       FACTORY = <<~RUBY
         private def _Result
-          @_Result ||= Result.with(subject: self, halted: %<halted>s)
+          @_Result ||= Result.with(subject: self, terminal: %<terminal>s)
         end
       RUBY
 
       def self.to_eval(addons)
-        halted = addons.key?(:continue) ? 'true' : 'nil'
+        terminal = addons.key?(:continue) ? 'true' : 'nil'
 
-        "#{BASE}\n#{format(FACTORY, halted: halted)}"
+        "#{BASE}\n#{format(FACTORY, terminal: terminal)}"
       end
     end
 

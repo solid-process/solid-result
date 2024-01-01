@@ -5,7 +5,7 @@ class BCDD::Result
 
   attr_reader data: BCDD::Result::Data
   attr_reader subject: untyped
-  attr_reader halted: bool
+  attr_reader terminal: bool
   attr_reader transitions: Hash[Symbol, untyped]
 
   def self.config: -> BCDD::Result::Config
@@ -16,13 +16,13 @@ class BCDD::Result
     value: untyped,
     ?subject: untyped,
     ?expectations: BCDD::Result::Contract::Evaluator,
-    ?halted: bool
+    ?terminal: bool
   ) -> void
 
   def type: -> Symbol
   def value: -> untyped
 
-  def halted?: -> bool
+  def terminal?: -> bool
   def success?: (?Symbol type) -> bool
   def failure?: (?Symbol type) -> bool
 

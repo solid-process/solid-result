@@ -16,7 +16,7 @@ require_relative 'result/config'
 class BCDD::Result
   attr_accessor :unknown, :transitions
 
-  attr_reader :subject, :data, :type_checker, :halted
+  attr_reader :subject, :data, :type_checker, :terminal
 
   protected :subject
 
@@ -32,12 +32,12 @@ class BCDD::Result
     config.freeze
   end
 
-  def initialize(type:, value:, subject: nil, expectations: nil, halted: nil)
+  def initialize(type:, value:, subject: nil, expectations: nil, terminal: nil)
     data = Data.new(kind, type, value)
 
     @type_checker = Contract.evaluate(data, expectations)
     @subject = subject
-    @halted = halted || kind == :failure
+    @terminal = terminal || kind == :failure
     @data = data
 
     self.unknown = true
@@ -46,8 +46,8 @@ class BCDD::Result
     Transitions.tracking.record(self)
   end
 
-  def halted?
-    halted
+  def terminal?
+    terminal
   end
 
   def type
@@ -89,7 +89,7 @@ class BCDD::Result
   end
 
   def and_then(method_name = nil, context = nil, &block)
-    return self if halted?
+    return self if terminal?
 
     method_name && block and raise ::ArgumentError, 'method_name and block are mutually exclusive'
 
