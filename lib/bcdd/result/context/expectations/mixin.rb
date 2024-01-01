@@ -7,13 +7,13 @@ class BCDD::Result::Context
     Methods = BCDD::Result::Expectations::Mixin::Methods
 
     module Addons
-      module Continuable
+      module Continue
         private def Continue(**value)
           Success.new(type: :continued, value: value, subject: self)
         end
       end
 
-      OPTIONS = { continue: Continuable }.freeze
+      OPTIONS = { continue: Continue }.freeze
 
       def self.options(config_flags)
         ::BCDD::Result::Config::Options.addon(map: config_flags, from: OPTIONS)

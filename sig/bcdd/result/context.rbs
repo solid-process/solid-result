@@ -58,7 +58,7 @@ class BCDD::Result::Context
     end
 
     module Addons
-      module Continuable
+      module Continue
         include BCDD::Result::Context::Mixin::Methods
 
         private
@@ -91,7 +91,7 @@ module BCDD::Result::Context::Expectations::Mixin
   Factory: singleton(BCDD::Result::Expectations::Mixin::Factory)
 
   module Addons
-    module Continuable
+    module Continue
       private def Continue: (**untyped) -> BCDD::Result::Context::Success
     end
 

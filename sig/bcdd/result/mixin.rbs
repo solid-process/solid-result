@@ -15,7 +15,7 @@ class BCDD::Result
     end
 
     module Addons
-      module Continuable
+      module Continue
         include BCDD::Result::Mixin::Methods
 
         private
