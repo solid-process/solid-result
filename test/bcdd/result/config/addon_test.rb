@@ -18,7 +18,8 @@ class BCDD::Result::Config
 
       assert_equal(
         {
-          continue: { enabled: false, affects: AFFECTS }
+          continue: { enabled: false, affects: AFFECTS },
+          given: { enabled: true, affects: AFFECTS }
         },
         config.options
       )

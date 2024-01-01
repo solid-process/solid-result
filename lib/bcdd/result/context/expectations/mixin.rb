@@ -13,7 +13,15 @@ class BCDD::Result::Context
         end
       end
 
-      OPTIONS = { continue: Continue }.freeze
+      module Given
+        private def Given(*values)
+          value = values.map(&:to_h).reduce({}) { |acc, val| acc.merge(val) }
+
+          Success.new(type: :given, value: value, subject: self)
+        end
+      end
+
+      OPTIONS = { continue: Continue, given: Given }.freeze
 
       def self.options(config_flags)
         ::BCDD::Result::Config::Options.addon(map: config_flags, from: OPTIONS)

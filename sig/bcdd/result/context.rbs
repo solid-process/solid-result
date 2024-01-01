@@ -66,6 +66,14 @@ class BCDD::Result::Context
         def Continue: (**untyped) -> BCDD::Result::Context::Success
       end
 
+      module Given
+        include BCDD::Result::Context::Mixin::Methods
+
+        private
+
+        def Given: (*untyped) -> BCDD::Result::Context::Success
+      end
+
       OPTIONS: Hash[Symbol, Module]
 
       def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
@@ -93,6 +101,10 @@ module BCDD::Result::Context::Expectations::Mixin
   module Addons
     module Continue
       private def Continue: (**untyped) -> BCDD::Result::Context::Success
+    end
+
+    module Given
+      private def Given: (*untyped) -> BCDD::Result::Context::Success
     end
 
     OPTIONS: Hash[Symbol, Module]

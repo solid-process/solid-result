@@ -5,14 +5,8 @@ require 'test_helper'
 class BCDD::Result::TransitionsEnabledWithSubjectSingletonNestedTest < Minitest::Test
   include BCDDResultTransitionAssertions
 
-  module Giveable
-    def Given(value)
-      _ResultAs(BCDD::Result::Success, :initial_input, value)
-    end
-  end
-
   module CheckForZeros
-    extend self, Giveable, BCDD::Result.mixin(config: { addon: { continue: true } })
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
     def call(numbers)
       BCDD::Result.transitions(name: 'CheckForZeros') do
@@ -33,7 +27,7 @@ class BCDD::Result::TransitionsEnabledWithSubjectSingletonNestedTest < Minitest:
   end
 
   module Division
-    extend self, Giveable, BCDD::Result.mixin(config: { addon: { continue: true } })
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
     def call(num1, num2)
       BCDD::Result.transitions(name: 'Division') do
@@ -67,7 +61,7 @@ class BCDD::Result::TransitionsEnabledWithSubjectSingletonNestedTest < Minitest:
   end
 
   module SumDivisionsByTwo
-    extend self, Giveable, BCDD::Result.mixin(config: { addon: { continue: true } })
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
     def call(*numbers)
       BCDD::Result.transitions(name: 'SumDivisionsByTwo') do
@@ -105,20 +99,48 @@ class BCDD::Result::TransitionsEnabledWithSubjectSingletonNestedTest < Minitest:
     assert_transitions(result3, size: 21)
     assert_transitions(result4, size: 27)
 
+    {
+      root: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      parent: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      current: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      result: { kind: :success, type: :given, value: %w[30 20 10] }
+    }.then { |spec| assert_transition_record(result1, 0, spec) }
+
     assert_equal(
       [0, [[1, []], [2, []], [3, []]]],
       result1.transitions[:metadata][:tree_map]
     )
+
+    {
+      root: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      parent: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      current: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      result: { kind: :success, type: :given, value: [30, '20', '10'] }
+    }.then { |spec| assert_transition_record(result2, 0, spec) }
 
     assert_equal(
       [0, [[1, [[2, []]]], [3, []], [4, []]]],
       result2.transitions[:metadata][:tree_map]
     )
 
+    {
+      root: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      parent: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      current: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      result: { kind: :success, type: :given, value: [30, 20, '10'] }
+    }.then { |spec| assert_transition_record(result3, 0, spec) }
+
     assert_equal(
       [0, [[1, [[2, []]]], [3, [[4, []]]], [5, []]]],
       result3.transitions[:metadata][:tree_map]
     )
+
+    {
+      root: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      parent: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      current: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
+      result: { kind: :success, type: :given, value: [30, 20, 10] }
+    }.then { |spec| assert_transition_record(result4, 0, spec) }
 
     assert_equal(
       [0, [[1, [[2, []]]], [3, [[4, []]]], [5, [[6, []]]]]],

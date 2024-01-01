@@ -23,6 +23,14 @@ class BCDD::Result
         def Continue: (untyped) -> BCDD::Result::Success
       end
 
+      module Given
+        include BCDD::Result::Mixin::Methods
+
+        private
+
+        def Given: (untyped) -> BCDD::Result::Success
+      end
+
       OPTIONS: Hash[Symbol, Module]
 
       def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]

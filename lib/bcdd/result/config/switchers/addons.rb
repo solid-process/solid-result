@@ -11,7 +11,8 @@ class BCDD::Result
       ].freeze
 
       OPTIONS = {
-        continue: { default: false, affects: AFFECTS }
+        continue: { default: false, affects: AFFECTS },
+        given: { default: true, affects: AFFECTS }
       }.transform_values!(&:freeze).freeze
 
       def self.switcher
