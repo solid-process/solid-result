@@ -4,6 +4,13 @@ require 'test_helper'
 
 class BCDD::Result::Config
   class AddonTest < Minitest::Test
+    AFFECTS = [
+      'BCDD::Result.mixin',
+      'BCDD::Result::Context.mixin',
+      'BCDD::Result::Expectations.mixin',
+      'BCDD::Result::Context::Expectations.mixin'
+    ].freeze
+
     test 'the switcher' do
       config = BCDD::Result.config.addon
 
@@ -11,15 +18,7 @@ class BCDD::Result::Config
 
       assert_equal(
         {
-          continue: {
-            enabled: false,
-            affects: [
-              'BCDD::Result',
-              'BCDD::Result::Context',
-              'BCDD::Result::Expectations',
-              'BCDD::Result::Context::Expectations'
-            ]
-          }
+          continue: { enabled: false, affects: AFFECTS }
         },
         config.options
       )

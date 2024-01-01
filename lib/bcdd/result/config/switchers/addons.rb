@@ -3,11 +3,15 @@
 class BCDD::Result
   class Config
     module Addons
+      AFFECTS = %w[
+        BCDD::Result.mixin
+        BCDD::Result::Context.mixin
+        BCDD::Result::Expectations.mixin
+        BCDD::Result::Context::Expectations.mixin
+      ].freeze
+
       OPTIONS = {
-        continue: {
-          default: false,
-          affects: %w[BCDD::Result BCDD::Result::Context BCDD::Result::Expectations BCDD::Result::Context::Expectations]
-        }
+        continue: { default: false, affects: AFFECTS }
       }.transform_values!(&:freeze).freeze
 
       def self.switcher
