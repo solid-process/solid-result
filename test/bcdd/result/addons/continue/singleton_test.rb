@@ -2,9 +2,9 @@
 
 require 'test_helper'
 
-class BCDD::Result::AndThenWithSubjectContinueInstanceTest < Minitest::Test
-  class Divide
-    include BCDD::Result.mixin(config: { addon: { continue: true } })
+class BCDD::Result::AddonsContinueSingletonTest < Minitest::Test
+  module Divide
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
     def call(arg1, arg2)
       validate_numbers(arg1, arg2)
@@ -33,11 +33,11 @@ class BCDD::Result::AndThenWithSubjectContinueInstanceTest < Minitest::Test
   end
 
   test 'method chaining using Continue' do
-    success = Divide.new.call(10, 2)
+    success = Divide.call(10, 2)
 
-    failure1 = Divide.new.call('10', 0)
-    failure2 = Divide.new.call(10, '2')
-    failure3 = Divide.new.call(10, 0)
+    failure1 = Divide.call('10', 0)
+    failure2 = Divide.call(10, '2')
+    failure3 = Divide.call(10, 0)
 
     assert_predicate success, :success?
     assert_equal :division_completed, success.type
@@ -56,8 +56,8 @@ class BCDD::Result::AndThenWithSubjectContinueInstanceTest < Minitest::Test
     assert_equal 'arg2 must not be zero', failure3.value
   end
 
-  class FirstSuccessToTerminateTheStepChainAndThenBlock
-    include BCDD::Result.mixin(config: { addon: { continue: true } })
+  module FirstSuccessToTerminateTheStepChainAndThenBlock
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
     def call
       Success(:first)
@@ -66,8 +66,8 @@ class BCDD::Result::AndThenWithSubjectContinueInstanceTest < Minitest::Test
     end
   end
 
-  class SecondSuccessToTerminateTheStepChainAndThenBlock
-    include BCDD::Result.mixin(config: { addon: { continue: true } })
+  module SecondSuccessToTerminateTheStepChainAndThenBlock
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
     def call
       Continue(:first)
@@ -76,8 +76,8 @@ class BCDD::Result::AndThenWithSubjectContinueInstanceTest < Minitest::Test
     end
   end
 
-  class ThirdSuccessToTerminateTheStepChainAndThenBlock
-    include BCDD::Result.mixin(config: { addon: { continue: true } })
+  module ThirdSuccessToTerminateTheStepChainAndThenBlock
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
     def call
       Continue(:first)
@@ -87,17 +87,17 @@ class BCDD::Result::AndThenWithSubjectContinueInstanceTest < Minitest::Test
   end
 
   test 'the step chain termination (and_then block)' do
-    result1 = FirstSuccessToTerminateTheStepChainAndThenBlock.new.call
-    result2 = SecondSuccessToTerminateTheStepChainAndThenBlock.new.call
-    result3 = ThirdSuccessToTerminateTheStepChainAndThenBlock.new.call
+    result1 = FirstSuccessToTerminateTheStepChainAndThenBlock.call
+    result2 = SecondSuccessToTerminateTheStepChainAndThenBlock.call
+    result3 = ThirdSuccessToTerminateTheStepChainAndThenBlock.call
 
     assert(result1.success?(:first) && result1.terminal?)
     assert(result2.success?(:second) && result2.terminal?)
     assert(result3.success?(:third) && result3.terminal?)
   end
 
-  class FirstSuccessToTerminateTheStepChainAndThenMethod
-    include BCDD::Result.mixin(config: { addon: { continue: true } })
+  module FirstSuccessToTerminateTheStepChainAndThenMethod
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
     def call
       first_success
@@ -112,8 +112,8 @@ class BCDD::Result::AndThenWithSubjectContinueInstanceTest < Minitest::Test
     def third_success;  Continue(:third); end
   end
 
-  class SecondSuccessToTerminateTheStepChainAndThenMethod
-    include BCDD::Result.mixin(config: { addon: { continue: true } })
+  module SecondSuccessToTerminateTheStepChainAndThenMethod
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
     def call
       first_success
@@ -128,8 +128,8 @@ class BCDD::Result::AndThenWithSubjectContinueInstanceTest < Minitest::Test
     def third_success;  Continue(:third); end
   end
 
-  class ThirdSuccessToTerminateTheStepChainAndThenMethod
-    include BCDD::Result.mixin(config: { addon: { continue: true } })
+  module ThirdSuccessToTerminateTheStepChainAndThenMethod
+    extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
     def call
       first_success
@@ -145,9 +145,9 @@ class BCDD::Result::AndThenWithSubjectContinueInstanceTest < Minitest::Test
   end
 
   test 'the step chain termination (and_then calling a method)' do
-    result1 = FirstSuccessToTerminateTheStepChainAndThenMethod.new.call
-    result2 = SecondSuccessToTerminateTheStepChainAndThenMethod.new.call
-    result3 = ThirdSuccessToTerminateTheStepChainAndThenMethod.new.call
+    result1 = FirstSuccessToTerminateTheStepChainAndThenMethod.call
+    result2 = SecondSuccessToTerminateTheStepChainAndThenMethod.call
+    result3 = ThirdSuccessToTerminateTheStepChainAndThenMethod.call
 
     assert(result1.success?(:first) && result1.terminal?)
     assert(result2.success?(:second) && result2.terminal?)

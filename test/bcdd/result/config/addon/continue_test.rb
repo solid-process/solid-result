@@ -5,46 +5,132 @@ require 'test_helper'
 class BCDD::Result::Config
   class AddonContinueTest < Minitest::Test
     test 'the side effects' do
-      class1 = Class.new do
+      BCDD::Result.config.addon.disable!(:continue)
+
+      class1a = Class.new do
         include BCDD::Result.mixin
 
         def call
-          Continue('the method Continue does not exist as the config is disabled')
+          Continue("this method won't exist as the default config is disabled")
         end
       end
 
-      error1 = assert_raises(NoMethodError) { class1.new.call }
+      class2a = Class.new do
+        include BCDD::Result::Expectations.mixin
 
-      assert_match(/undefined method.+Continue/, error1.message)
+        def call
+          Continue("this method won't exist as the default config is disabled")
+        end
+      end
+
+      class3a = Class.new do
+        include BCDD::Result::Context.mixin
+
+        def call
+          Continue(msg: "this method won't exist as the default config is disabled")
+        end
+      end
+
+      class4a = Class.new do
+        include BCDD::Result::Context::Expectations.mixin
+
+        def call
+          Continue(msg: "this method won't exist as the default config is disabled")
+        end
+      end
+
+      error1a = assert_raises(NoMethodError) { class1a.new.call }
+      error2a = assert_raises(NoMethodError) { class2a.new.call }
+      error3a = assert_raises(NoMethodError) { class3a.new.call }
+      error4a = assert_raises(NoMethodError) { class4a.new.call }
+
+      assert_match(/undefined method.+Continue/, error1a.message)
+      assert_match(/undefined method.+Continue/, error2a.message)
+      assert_match(/undefined method.+Continue/, error3a.message)
+      assert_match(/undefined method.+Continue/, error4a.message)
 
       BCDD::Result.config.addon.enable!(:continue)
 
-      class2 = Class.new do
+      class1b = Class.new do
         include BCDD::Result.mixin
 
         def call
-          Continue('the method Continue now exists as the config is enabled by default')
+          Continue('this method will exist as the config is enabled by default')
         end
       end
 
-      assert_equal(
-        'the method Continue now exists as the config is enabled by default',
-        class2.new.call.value
-      )
+      class2b = Class.new do
+        include BCDD::Result::Expectations.mixin
+
+        def call
+          Continue('this method will exist as the config is enabled by default')
+        end
+      end
+
+      class3b = Class.new do
+        include BCDD::Result::Context.mixin
+
+        def call
+          Continue(msg: 'this method will exist as the config is enabled by default')
+        end
+      end
+
+      class4b = Class.new do
+        include BCDD::Result::Context::Expectations.mixin
+
+        def call
+          Continue(msg: 'this method will exist as the config is enabled by default')
+        end
+      end
+
+      assert_equal('this method will exist as the config is enabled by default', class1b.new.call.value)
+      assert_equal('this method will exist as the config is enabled by default', class2b.new.call.value)
+      assert_equal('this method will exist as the config is enabled by default', class3b.new.call.value[:msg])
+      assert_equal('this method will exist as the config is enabled by default', class4b.new.call.value[:msg])
     ensure
       BCDD::Result.config.addon.disable!(:continue)
 
-      class3 = Class.new do
+      class1c = Class.new do
         include BCDD::Result.mixin
 
         def call
-          Continue('the error is raised again as the config is disabled by default')
+          Continue("this method won't exist as the default config is disabled")
         end
       end
 
-      error2 = assert_raises(NoMethodError) { class3.new.call }
+      class2c = Class.new do
+        include BCDD::Result::Expectations.mixin
 
-      assert_match(/undefined method.+Continue/, error2.message)
+        def call
+          Continue("this method won't exist as the default config is disabled")
+        end
+      end
+
+      class3c = Class.new do
+        include BCDD::Result::Context.mixin
+
+        def call
+          Continue(msg: "this method won't exist as the default config is disabled")
+        end
+      end
+
+      class4c = Class.new do
+        include BCDD::Result::Context::Expectations.mixin
+
+        def call
+          Continue(msg: "this method won't exist as the default config is disabled")
+        end
+      end
+
+      error1c = assert_raises(NoMethodError) { class1c.new.call }
+      error2c = assert_raises(NoMethodError) { class2c.new.call }
+      error3c = assert_raises(NoMethodError) { class3c.new.call }
+      error4c = assert_raises(NoMethodError) { class4c.new.call }
+
+      assert_match(/undefined method.+Continue/, error1c.message)
+      assert_match(/undefined method.+Continue/, error2c.message)
+      assert_match(/undefined method.+Continue/, error3c.message)
+      assert_match(/undefined method.+Continue/, error4c.message)
     end
 
     test 'the overwriting of the default config' do
@@ -70,7 +156,7 @@ class BCDD::Result::Config
         include BCDD::Result::Context.mixin(config: { addon: { continue: false } })
 
         def call
-          Continue("this method won't exist as the default config was overwritten")
+          Continue(msg: "this method won't exist as the default config was overwritten")
         end
       end
 
@@ -78,7 +164,7 @@ class BCDD::Result::Config
         include BCDD::Result::Context::Expectations.mixin(config: { addon: { continue: false } })
 
         def call
-          Continue("this method won't exist as the default config was overwritten")
+          Continue(msg: "this method won't exist as the default config was overwritten")
         end
       end
 
