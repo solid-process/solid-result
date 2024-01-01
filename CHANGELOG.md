@@ -1,27 +1,28 @@
 - [\[Unreleased\]](#unreleased)
+  - [Changed](#changed)
 - [\[0.10.0\] - 2023-12-31](#0100---2023-12-31)
   - [Added](#added)
 - [\[0.9.1\] - 2023-12-12](#091---2023-12-12)
-  - [Changed](#changed)
+  - [Changed](#changed-1)
   - [Fixed](#fixed)
 - [\[0.9.0\] - 2023-12-12](#090---2023-12-12)
   - [Added](#added-1)
-  - [Changed](#changed-1)
+  - [Changed](#changed-2)
 - [\[0.8.0\] - 2023-12-11](#080---2023-12-11)
   - [Added](#added-2)
-  - [Changed](#changed-2)
+  - [Changed](#changed-3)
   - [Removed](#removed)
 - [\[0.7.0\] - 2023-10-27](#070---2023-10-27)
   - [Added](#added-3)
-  - [Changed](#changed-3)
+  - [Changed](#changed-4)
 - [\[0.6.0\] - 2023-10-11](#060---2023-10-11)
   - [Added](#added-4)
-  - [Changed](#changed-4)
+  - [Changed](#changed-5)
 - [\[0.5.0\] - 2023-10-09](#050---2023-10-09)
   - [Added](#added-5)
 - [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
   - [Added](#added-6)
-  - [Changed](#changed-5)
+  - [Changed](#changed-6)
   - [Removed](#removed-1)
 - [\[0.3.0\] - 2023-09-26](#030---2023-09-26)
   - [Added](#added-7)
@@ -32,6 +33,14 @@
   - [Added](#added-9)
 
 ## [Unreleased]
+
+### Changed
+
+- **(BREAKING)** Rename halted concept to terminal. Failures are terminal by default, but you can make a success terminal by enabling the `:continue` addon.
+
+- **(BREAKING)** Rename `BCDD::Result::Context::Success#and_expose` halted keyword argument to `terminal`.
+
+- **(BREAKING)** Rename `BCDD::Result#halted?` to `BCDD::Result#terminal?`.
 
 ## [0.10.0] - 2023-12-31
 
@@ -45,7 +54,7 @@
 
 ### Changed
 
-- **(BREAKING)** Make `BCDD::Result::Context::Success#and_expose()` to produce a halted success by default. You can turn this off by passing `halted: false`.
+- **(BREAKING)** Make `BCDD::Result::Context::Success#and_expose()` to produce a terminal success by default. You can turn this off by passing `halted: false`.
 
 ### Fixed
 
