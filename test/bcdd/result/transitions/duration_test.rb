@@ -6,6 +6,8 @@ class BCDD::Result::TransitionsDurationTest < Minitest::Test
   Sleep = -> { sleep(0.1).then { BCDD::Result::Success(:ok) } }
 
   test '#duration' do
+    return unless ENV['BCDD_RESULT_TEST_TRANSITIONS_DURATION']
+
     result = BCDD::Result.transitions do
       Sleep
         .call

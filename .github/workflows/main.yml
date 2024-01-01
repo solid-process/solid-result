@@ -21,10 +21,12 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-    - name: Run BCDD::Result.configuration test (Minitest)
-      run: bundle exec rake test_configuration TEST_CONFIG_FREEZING=true
     - name: Run tests (Minitest)
       run: bundle exec rake test
+    - name: Run BCDD::Result.configuration test (Minitest)
+      run: bundle exec rake test_configuration TEST_CONFIG_FREEZING=true
+    - name: Run BCDD::Result.transitions test (Minitest)
+      run: bundle exec rake test_transitions_duration BCDD_RESULT_TEST_TRANSITIONS_DURATION=true
     - name: Run static code analysis (Rubocop)
       run: bundle exec rake rubocop
     - name: Run static type checking (Steep)
