@@ -15,7 +15,7 @@ class BCDD::Result
       Failure.new(type: type, value: value)
     end
 
-    def initialize(type:, value:, subject: nil, expectations: nil, halted: nil)
+    def initialize(type:, value:, subject: nil, expectations: nil, terminal: nil)
       value.is_a?(::Hash) or raise ::ArgumentError, 'value must be a Hash'
 
       @acc = {}

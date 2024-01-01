@@ -18,14 +18,14 @@ class BCDD::Result::Expectations
   def self.new: (
     ?subject: untyped,
     ?contract: BCDD::Result::Contract::Evaluator,
-    ?halted: bool,
+    ?terminal: bool,
     **untyped
   ) -> (BCDD::Result::Expectations | untyped)
 
   def initialize: (
     ?subject: untyped,
     ?contract: BCDD::Result::Contract::Evaluator,
-    ?halted: bool,
+    ?terminal: bool,
     **untyped
   ) -> void
 
@@ -40,7 +40,7 @@ class BCDD::Result::Expectations
 
   attr_reader subject: untyped
   attr_reader contract: BCDD::Result::Contract::Evaluator
-  attr_reader halted: bool
+  attr_reader terminal: bool
 end
 
 module BCDD::Result::Expectations::Mixin

@@ -32,7 +32,7 @@ class BCDD::RailwayOrientedProgrammingAndThenTest < Minitest::Test
     end
   end
 
-  test '#and_then result halting/chaining' do
+  test 'terminal results' do
     success = Divide.call(10, 2)
 
     failure1 = Divide.call('10', 0)

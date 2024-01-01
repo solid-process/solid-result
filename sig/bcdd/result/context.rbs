@@ -10,7 +10,7 @@ class BCDD::Result::Context < BCDD::Result
     value: untyped,
     ?subject: untyped,
     ?expectations: BCDD::Result::Contract::Evaluator,
-    ?halted: bool
+    ?terminal: bool
   ) -> void
 
   def and_then: (?Symbol, **untyped) ?{ (Hash[Symbol, untyped]) -> untyped } -> BCDD::Result::Context
@@ -27,7 +27,7 @@ class BCDD::Result::Context
   class Success < BCDD::Result::Context
     include BCDD::Result::Success::Methods
 
-    def and_expose: (Symbol, Array[Symbol], halted: bool) -> BCDD::Result::Context::Success
+    def and_expose: (Symbol, Array[Symbol], terminal: bool) -> BCDD::Result::Context::Success
   end
 
   def self.Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
@@ -54,7 +54,7 @@ class BCDD::Result::Context
 
       private
 
-      def _ResultAs: (singleton(BCDD::Result::Context), Symbol, untyped, ?halted: bool) -> untyped
+      def _ResultAs: (singleton(BCDD::Result::Context), Symbol, untyped, ?terminal: bool) -> untyped
     end
 
     module Addons

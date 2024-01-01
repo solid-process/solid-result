@@ -20,15 +20,15 @@ class BCDD::Result
         _ResultAs(Failure, type, value)
       end
 
-      private def _ResultAs(kind_class, type, value, halted: nil)
-        kind_class.new(type: type, value: value, subject: self, halted: halted)
+      private def _ResultAs(kind_class, type, value, terminal: nil)
+        kind_class.new(type: type, value: value, subject: self, terminal: terminal)
       end
     end
 
     module Addons
       module Continuable
         def Success(type, value = nil)
-          _ResultAs(Success, type, value, halted: true)
+          _ResultAs(Success, type, value, terminal: true)
         end
 
         private def Continue(value)

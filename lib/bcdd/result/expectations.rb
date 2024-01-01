@@ -38,8 +38,8 @@ class BCDD::Result
 
     private_class_method :mixin!, :mixin_module, :result_factory_without_expectations
 
-    def initialize(subject: nil, contract: nil, halted: nil, **options)
-      @halted = halted
+    def initialize(subject: nil, contract: nil, terminal: nil, **options)
+      @terminal = terminal
 
       @subject = subject
 
@@ -60,16 +60,16 @@ class BCDD::Result
       _ResultAs(Failure, type, value)
     end
 
-    def with(subject:, halted: nil)
-      self.class.new(subject: subject, halted: halted, contract: contract)
+    def with(subject:, terminal: nil)
+      self.class.new(subject: subject, terminal: terminal, contract: contract)
     end
 
     private
 
     def _ResultAs(kind_class, type, value)
-      kind_class.new(type: type, value: value, subject: subject, expectations: contract, halted: halted)
+      kind_class.new(type: type, value: value, subject: subject, expectations: contract, terminal: terminal)
     end
 
-    attr_reader :subject, :halted, :contract
+    attr_reader :subject, :terminal, :contract
   end
 end

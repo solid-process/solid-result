@@ -56,7 +56,7 @@ class BCDD::Result::Context::AndThenWithSubjectContinueInstanceTest < Minitest::
     assert_equal({ message: 'arg2 must not be zero' }, failure3.value)
   end
 
-  class FirstSuccessHaltsTheStepChainAndThenBlock
+  class FirstSuccessToTerminateTheStepChainAndThenBlock
     include BCDD::Result::Context.mixin(config: { addon: { continue: true } })
 
     def call
@@ -66,7 +66,7 @@ class BCDD::Result::Context::AndThenWithSubjectContinueInstanceTest < Minitest::
     end
   end
 
-  class SecondSuccessHaltsTheStepChainAndThenBlock
+  class SecondSuccessToTerminateTheStepChainAndThenBlock
     include BCDD::Result::Context.mixin(config: { addon: { continue: true } })
 
     def call
@@ -76,7 +76,7 @@ class BCDD::Result::Context::AndThenWithSubjectContinueInstanceTest < Minitest::
     end
   end
 
-  class ThirdSuccessHaltsTheStepChainAndThenBlock
+  class ThirdSuccessToTerminateTheStepChainAndThenBlock
     include BCDD::Result::Context.mixin(config: { addon: { continue: true } })
 
     def call
@@ -86,17 +86,17 @@ class BCDD::Result::Context::AndThenWithSubjectContinueInstanceTest < Minitest::
     end
   end
 
-  test 'the step chain halting (and_then block)' do
-    result1 = FirstSuccessHaltsTheStepChainAndThenBlock.new.call
-    result2 = SecondSuccessHaltsTheStepChainAndThenBlock.new.call
-    result3 = ThirdSuccessHaltsTheStepChainAndThenBlock.new.call
+  test 'the step chain termination (and_then block)' do
+    result1 = FirstSuccessToTerminateTheStepChainAndThenBlock.new.call
+    result2 = SecondSuccessToTerminateTheStepChainAndThenBlock.new.call
+    result3 = ThirdSuccessToTerminateTheStepChainAndThenBlock.new.call
 
-    assert(result1.success?(:first) && result1.halted?)
-    assert(result2.success?(:second) && result2.halted?)
-    assert(result3.success?(:third) && result3.halted?)
+    assert(result1.success?(:first) && result1.terminal?)
+    assert(result2.success?(:second) && result2.terminal?)
+    assert(result3.success?(:third) && result3.terminal?)
   end
 
-  class FirstSuccessHaltsTheStepChainAndThenMethod
+  class FirstSuccessToTerminateTheStepChainAndThenMethod
     include BCDD::Result::Context.mixin(config: { addon: { continue: true } })
 
     def call
@@ -112,7 +112,7 @@ class BCDD::Result::Context::AndThenWithSubjectContinueInstanceTest < Minitest::
     def third_success;  Continue(third: true); end
   end
 
-  class SecondSuccessHaltsTheStepChainAndThenMethod
+  class SecondSuccessToTerminateTheStepChainAndThenMethod
     include BCDD::Result::Context.mixin(config: { addon: { continue: true } })
 
     def call
@@ -128,7 +128,7 @@ class BCDD::Result::Context::AndThenWithSubjectContinueInstanceTest < Minitest::
     def third_success;  Continue(third: true); end
   end
 
-  class ThirdSuccessHaltsTheStepChainAndThenMethod
+  class ThirdSuccessToTerminateTheStepChainAndThenMethod
     include BCDD::Result::Context.mixin(config: { addon: { continue: true } })
 
     def call
@@ -144,13 +144,13 @@ class BCDD::Result::Context::AndThenWithSubjectContinueInstanceTest < Minitest::
     def third_success;  Success(:third); end
   end
 
-  test 'the step chain halting (and_then calling a method)' do
-    result1 = FirstSuccessHaltsTheStepChainAndThenMethod.new.call
-    result2 = SecondSuccessHaltsTheStepChainAndThenMethod.new.call
-    result3 = ThirdSuccessHaltsTheStepChainAndThenMethod.new.call
+  test 'the step chain termination (and_then calling a method)' do
+    result1 = FirstSuccessToTerminateTheStepChainAndThenMethod.new.call
+    result2 = SecondSuccessToTerminateTheStepChainAndThenMethod.new.call
+    result3 = ThirdSuccessToTerminateTheStepChainAndThenMethod.new.call
 
-    assert(result1.success?(:first) && result1.halted?)
-    assert(result2.success?(:second) && result2.halted?)
-    assert(result3.success?(:third) && result3.halted?)
+    assert(result1.success?(:first) && result1.terminal?)
+    assert(result2.success?(:second) && result2.terminal?)
+    assert(result3.success?(:third) && result3.terminal?)
   end
 end

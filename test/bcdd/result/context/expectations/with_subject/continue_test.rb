@@ -143,7 +143,7 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     assert_raises(BCDD::Result::Contract::Error::UnexpectedType) { failure3.failure?(:err) }
   end
 
-  class InstanceFirstSuccessHaltsTheStepChainAndThenBlock
+  class InstanceFirstSuccessToTerminateTheStepChainAndThenBlock
     include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :first
@@ -156,7 +156,7 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     end
   end
 
-  class InstanceSecondSuccessHaltsTheStepChainAndThenBlock
+  class InstanceSecondSuccessToTerminateTheStepChainAndThenBlock
     include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :second
@@ -169,7 +169,7 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     end
   end
 
-  class InstanceThirdSuccessHaltsTheStepChainAndThenBlock
+  class InstanceThirdSuccessToTerminateTheStepChainAndThenBlock
     include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :third
@@ -182,7 +182,7 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     end
   end
 
-  module SingletonFirstSuccessHaltsTheStepChainAndThenBlock
+  module SingletonFirstSuccessToTerminateTheStepChainAndThenBlock
     extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :first
@@ -195,7 +195,7 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     end
   end
 
-  module SingletonSecondSuccessHaltsTheStepChainAndThenBlock
+  module SingletonSecondSuccessToTerminateTheStepChainAndThenBlock
     extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :second
@@ -208,7 +208,7 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     end
   end
 
-  module SingletonThirdSuccessHaltsTheStepChainAndThenBlock
+  module SingletonThirdSuccessToTerminateTheStepChainAndThenBlock
     extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :third
@@ -221,25 +221,25 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     end
   end
 
-  test 'the step chain halting (and_then block)' do
-    instance_result1 = InstanceFirstSuccessHaltsTheStepChainAndThenBlock.new.call
-    instance_result2 = InstanceSecondSuccessHaltsTheStepChainAndThenBlock.new.call
-    instance_result3 = InstanceThirdSuccessHaltsTheStepChainAndThenBlock.new.call
+  test 'the step chain termination (and_then block)' do
+    instance_result1 = InstanceFirstSuccessToTerminateTheStepChainAndThenBlock.new.call
+    instance_result2 = InstanceSecondSuccessToTerminateTheStepChainAndThenBlock.new.call
+    instance_result3 = InstanceThirdSuccessToTerminateTheStepChainAndThenBlock.new.call
 
-    singleton_result1 = SingletonFirstSuccessHaltsTheStepChainAndThenBlock.call
-    singleton_result2 = SingletonSecondSuccessHaltsTheStepChainAndThenBlock.call
-    singleton_result3 = SingletonThirdSuccessHaltsTheStepChainAndThenBlock.call
+    singleton_result1 = SingletonFirstSuccessToTerminateTheStepChainAndThenBlock.call
+    singleton_result2 = SingletonSecondSuccessToTerminateTheStepChainAndThenBlock.call
+    singleton_result3 = SingletonThirdSuccessToTerminateTheStepChainAndThenBlock.call
 
-    assert(instance_result1.success?(:first) && instance_result1.halted?)
-    assert(instance_result2.success?(:second) && instance_result2.halted?)
-    assert(instance_result3.success?(:third) && instance_result3.halted?)
+    assert(instance_result1.success?(:first) && instance_result1.terminal?)
+    assert(instance_result2.success?(:second) && instance_result2.terminal?)
+    assert(instance_result3.success?(:third) && instance_result3.terminal?)
 
-    assert(singleton_result1.success?(:first) && singleton_result1.halted?)
-    assert(singleton_result2.success?(:second) && singleton_result2.halted?)
-    assert(singleton_result3.success?(:third) && singleton_result3.halted?)
+    assert(singleton_result1.success?(:first) && singleton_result1.terminal?)
+    assert(singleton_result2.success?(:second) && singleton_result2.terminal?)
+    assert(singleton_result3.success?(:third) && singleton_result3.terminal?)
   end
 
-  class InstanceFirstSuccessHaltsTheStepChainAndThenMethod
+  class InstanceFirstSuccessToTerminateTheStepChainAndThenMethod
     include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :first
@@ -258,7 +258,7 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     def third_success;  Continue(third: true); end
   end
 
-  class InstanceSecondSuccessHaltsTheStepChainAndThenMethod
+  class InstanceSecondSuccessToTerminateTheStepChainAndThenMethod
     include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :second
@@ -277,7 +277,7 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     def third_success;  Continue(third: true); end
   end
 
-  class InstanceThirdSuccessHaltsTheStepChainAndThenMethod
+  class InstanceThirdSuccessToTerminateTheStepChainAndThenMethod
     include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :third
@@ -296,7 +296,7 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     def third_success;  Success(:third); end
   end
 
-  module SingletonFirstSuccessHaltsTheStepChainAndThenMethod
+  module SingletonFirstSuccessToTerminateTheStepChainAndThenMethod
     extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :first
@@ -315,7 +315,7 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     def third_success;  Continue(third: true); end
   end
 
-  module SingletonSecondSuccessHaltsTheStepChainAndThenMethod
+  module SingletonSecondSuccessToTerminateTheStepChainAndThenMethod
     extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :second
@@ -334,7 +334,7 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     def third_success;  Continue(third: true); end
   end
 
-  module SingletonThirdSuccessHaltsTheStepChainAndThenMethod
+  module SingletonThirdSuccessToTerminateTheStepChainAndThenMethod
     extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :third
@@ -353,13 +353,13 @@ class BCDD::Result::Context::ExpectationsWithSubjectSuccessTypeTest < Minitest::
     def third_success;  Success(:third); end
   end
 
-  test 'the step chain halting (and_then calling a method)' do
-    instance_result1 = InstanceFirstSuccessHaltsTheStepChainAndThenMethod.new.call
-    instance_result2 = InstanceSecondSuccessHaltsTheStepChainAndThenMethod.new.call
-    instance_result3 = InstanceThirdSuccessHaltsTheStepChainAndThenMethod.new.call
+  test 'the step chain termination (and_then calling a method)' do
+    instance_result1 = InstanceFirstSuccessToTerminateTheStepChainAndThenMethod.new.call
+    instance_result2 = InstanceSecondSuccessToTerminateTheStepChainAndThenMethod.new.call
+    instance_result3 = InstanceThirdSuccessToTerminateTheStepChainAndThenMethod.new.call
 
-    assert(instance_result1.success?(:first) && instance_result1.halted?)
-    assert(instance_result2.success?(:second) && instance_result2.halted?)
-    assert(instance_result3.success?(:third) && instance_result3.halted?)
+    assert(instance_result1.success?(:first) && instance_result1.terminal?)
+    assert(instance_result2.success?(:second) && instance_result2.terminal?)
+    assert(instance_result3.success?(:third) && instance_result3.terminal?)
   end
 end

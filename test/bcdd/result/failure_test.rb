@@ -12,10 +12,10 @@ class BCDD::Result
       assert Failure < BCDD::Result::Failure::Methods
     end
 
-    test '#halted?' do
+    test '#terminal?' do
       result = Failure.new(type: :err, value: nil)
 
-      assert_predicate result, :halted?
+      assert_predicate result, :terminal?
     end
 
     test '#success? should return false' do

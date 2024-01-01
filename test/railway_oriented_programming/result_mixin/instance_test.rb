@@ -39,7 +39,7 @@ class BCDD::RailwayOrientedProgrammingResultMixinInstanceTest < Minitest::Test
     end
   end
 
-  test 'result halting/chaining with an instance (instance methods)' do
+  test 'terminal results with an instance (instance methods)' do
     success = Divide.new(10, 2).call
 
     failure1 = Divide.new('10', 0).call
