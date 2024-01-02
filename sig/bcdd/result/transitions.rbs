@@ -32,7 +32,8 @@ class BCDD::Result
       def parent_value: () -> untyped
       def current_value: () -> untyped
       def insert: (untyped) -> Node
-      def insert!: (untyped) -> Node
+      def insert!: (untyped) -> Tree
+      def move_to!: (Node) -> Tree
       def move_up!: (?Integer level) -> Tree
       def move_down!: (?Integer level) -> Tree
       def move_to_root!: () -> Tree
@@ -54,13 +55,16 @@ class BCDD::Result
         private attr_accessor records: Array[Hash[Symbol, untyped]]
         private attr_accessor root_started_at: Integer
 
-        def start: (name: String, desc: String) -> void
-        def finish: (result: BCDD::Result) -> void
+        def exec: (String, String) { () -> untyped } -> BCDD::Result
         def reset!: () -> void
         def record: (BCDD::Result) -> void
         def record_and_then: ((untyped), untyped, untyped) { () -> BCDD::Result } -> BCDD::Result
+        def reset_and_then!: () -> void
 
         private
+
+        def start: (String, String) -> void
+        def finish: (BCDD::Result) -> void
 
         TreeNodeValueNormalizer: ^(Integer, Array[untyped]) -> untyped
 
@@ -72,17 +76,24 @@ class BCDD::Result
       end
 
       module Disabled
-        def self.start: (name: String, desc: String) -> void
-        def self.finish: (result: BCDD::Result) -> void
+        def self.exec: (String, String) { () -> untyped } -> BCDD::Result
         def self.reset!: () -> void
         def self.record: (BCDD::Result) -> void
         def self.record_and_then: ((untyped), untyped, untyped) { () -> BCDD::Result } -> BCDD::Result
+        def self.reset_and_then!: () -> void
+
+        private
+
+        def self.start: (String, String) -> void
+        def self.finish: (BCDD::Result) -> void
       end
 
       def self.instance: () -> (Enabled | singleton(Disabled))
     end
 
     THREAD_VAR_NAME: Symbol
+
+    EnsureResult: ^(untyped) -> BCDD::Result
 
     def self.tracking: () -> (Tracking::Enabled | singleton(Tracking::Disabled))
   end

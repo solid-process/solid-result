@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+require 'singleton'
+
 require_relative 'result/version'
-require_relative 'result/transitions'
 require_relative 'result/error'
+require_relative 'result/transitions'
+require_relative 'result/callable_and_then'
 require_relative 'result/data'
 require_relative 'result/handler'
 require_relative 'result/failure'
@@ -88,12 +91,20 @@ class BCDD::Result
     tap { yield(value, type) if unknown }
   end
 
-  def and_then(method_name = nil, context = nil, &block)
+  def and_then(method_name = nil, injected_value = nil, &block)
     return self if terminal?
 
     method_name && block and raise ::ArgumentError, 'method_name and block are mutually exclusive'
 
-    method_name ? call_and_then_source_method(method_name, context) : call_and_then_block(block)
+    method_name ? call_and_then_source_method(method_name, injected_value) : call_and_then_block(block)
+  end
+
+  def and_then!(source, injected_value = nil, _call: nil)
+    raise Error::CallableAndThenDisabled unless Config.instance.feature.enabled?(:and_then!)
+
+    return self if terminal?
+
+    call_and_then_callable!(source, value: value, injected_value: injected_value, method_name: _call)
   end
 
   def handle
@@ -168,6 +179,10 @@ class BCDD::Result
 
   def call_and_then_block!(block)
     block.call(value)
+  end
+
+  def call_and_then_callable!(source, value:, injected_value:, method_name:)
+    CallableAndThen::Caller.call(source, value: value, injected_value: injected_value, method_name: method_name)
   end
 
   def ensure_result_object(result, origin:)

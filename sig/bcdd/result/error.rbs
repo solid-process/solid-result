@@ -27,5 +27,8 @@ class BCDD::Result
       def self.build: (types: Set[Symbol])
         -> BCDD::Result::Error::UnhandledTypes
     end
+
+    class CallableAndThenDisabled < BCDD::Result::Error
+    end
   end
 end

@@ -42,6 +42,8 @@ class BCDD::Result
       assert(BCDD::Result.config.addon.enabled?(:continue))
 
       assert_predicate(BCDD::Result.config, :frozen?)
+
+      assert_predicate(BCDD::Result.config.and_then!, :frozen?)
     end
   end
 end

@@ -15,10 +15,12 @@ class BCDD::Result::Config
             enabled: true,
             affects: ['BCDD::Result::Expectations', 'BCDD::Result::Context::Expectations']
           },
-          transitions: {
-            enabled: true,
-            affects: ['BCDD::Result', 'BCDD::Result::Context']
-          }
+          transitions: { enabled: true, affects: %w[
+            BCDD::Result BCDD::Result::Context BCDD::Result::Expectations BCDD::Result::Context::Expectations
+          ] },
+          and_then!: { enabled: false, affects: %w[
+            BCDD::Result BCDD::Result::Context BCDD::Result::Expectations BCDD::Result::Context::Expectations
+          ] }
         },
         config.options
       )

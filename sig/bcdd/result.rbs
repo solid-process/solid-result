@@ -10,6 +10,7 @@ class BCDD::Result
 
   def self.config: -> BCDD::Result::Config
   def self.configuration: { (BCDD::Result::Config) -> void } -> BCDD::Result::Config
+  def self.transitions: { () -> untyped } -> BCDD::Result
 
   def initialize: (
     type: Symbol,
@@ -33,7 +34,9 @@ class BCDD::Result
   def on_failure: (*Symbol) { (untyped, Symbol) -> void } -> BCDD::Result
   def on_unknown: () { (untyped, Symbol) -> void } -> BCDD::Result
 
-  def and_then: (?Symbol method_name, ?untyped context) ?{ (untyped) -> untyped } -> untyped
+  def and_then: (?Symbol method_name, ?untyped injected_value) ?{ (untyped) -> untyped } -> untyped
+
+  def and_then!: (untyped, ?untyped injected_value, _call: (Symbol | nil)) -> untyped
 
   def handle: () { (BCDD::Result::Handler) -> void } -> untyped
 
@@ -55,6 +58,7 @@ class BCDD::Result
   def call_and_then_source_method!: (untyped, untyped) -> BCDD::Result
   def call_and_then_block: (untyped) -> BCDD::Result
   def call_and_then_block!: (untyped) -> BCDD::Result
+  def call_and_then_callable!: (untyped, value: untyped, injected_value: untyped, method_name: (Symbol | nil)) -> BCDD::Result
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result
 end
 

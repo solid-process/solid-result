@@ -14,6 +14,8 @@ class BCDD::Result::Config
 
   def initialize: -> void
 
+  def and_then!: () -> BCDD::Result::CallableAndThen::Config
+
   def freeze: -> BCDD::Result::Config
   def options: -> Hash[Symbol, BCDD::Result::Config::Switcher]
   def to_h: -> Hash[Symbol, Hash[Symbol | String, bool]]
