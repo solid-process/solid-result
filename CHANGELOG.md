@@ -1,38 +1,43 @@
 - [\[Unreleased\]](#unreleased)
+  - [Added](#added)
   - [Changed](#changed)
 - [\[0.10.0\] - 2023-12-31](#0100---2023-12-31)
-  - [Added](#added)
+  - [Added](#added-1)
 - [\[0.9.1\] - 2023-12-12](#091---2023-12-12)
   - [Changed](#changed-1)
   - [Fixed](#fixed)
 - [\[0.9.0\] - 2023-12-12](#090---2023-12-12)
-  - [Added](#added-1)
+  - [Added](#added-2)
   - [Changed](#changed-2)
 - [\[0.8.0\] - 2023-12-11](#080---2023-12-11)
-  - [Added](#added-2)
+  - [Added](#added-3)
   - [Changed](#changed-3)
   - [Removed](#removed)
 - [\[0.7.0\] - 2023-10-27](#070---2023-10-27)
-  - [Added](#added-3)
+  - [Added](#added-4)
   - [Changed](#changed-4)
 - [\[0.6.0\] - 2023-10-11](#060---2023-10-11)
-  - [Added](#added-4)
+  - [Added](#added-5)
   - [Changed](#changed-5)
 - [\[0.5.0\] - 2023-10-09](#050---2023-10-09)
-  - [Added](#added-5)
-- [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
   - [Added](#added-6)
+- [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
+  - [Added](#added-7)
   - [Changed](#changed-6)
   - [Removed](#removed-1)
 - [\[0.3.0\] - 2023-09-26](#030---2023-09-26)
-  - [Added](#added-7)
-- [\[0.2.0\] - 2023-09-26](#020---2023-09-26)
   - [Added](#added-8)
+- [\[0.2.0\] - 2023-09-26](#020---2023-09-26)
+  - [Added](#added-9)
   - [Removed](#removed-2)
 - [\[0.1.0\] - 2023-09-25](#010---2023-09-25)
-  - [Added](#added-9)
+  - [Added](#added-10)
 
 ## [Unreleased]
+
+### Added
+
+- Add the `Given()` addon to produce a `Success(:given, value)` result. As the `Continue()` addon, it is ignored by the expectations. Use it to add a value to the result chain and invoke the next step (through `and_then`).
 
 ### Changed
 

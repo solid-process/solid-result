@@ -56,8 +56,12 @@ module BCDD::Result::Expectations::Mixin
   end
 
   module Addons
-    module Continuable
+    module Continue
       private def Continue: (untyped) -> BCDD::Result::Success
+    end
+
+    module Given
+      private def Given: (untyped) -> BCDD::Result::Success
     end
 
     OPTIONS: Hash[Symbol, Module]

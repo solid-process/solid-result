@@ -15,12 +15,20 @@ class BCDD::Result
     end
 
     module Addons
-      module Continuable
+      module Continue
         include BCDD::Result::Mixin::Methods
 
         private
 
         def Continue: (untyped) -> BCDD::Result::Success
+      end
+
+      module Given
+        include BCDD::Result::Mixin::Methods
+
+        private
+
+        def Given: (untyped) -> BCDD::Result::Success
       end
 
       OPTIONS: Hash[Symbol, Module]

@@ -2,9 +2,9 @@
 
 require 'test_helper'
 
-class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
+class BCDD::Result::Context::AddonsContinueExpectationsTest < Minitest::Test
   class DivideType
-    include BCDD::Result::Expectations.mixin(
+    include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :ok,
       failure: :err
@@ -19,25 +19,23 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
     private
 
     def validate_numbers(arg1, arg2)
-      arg1.is_a?(::Numeric) or return Failure(:err, 'arg1 must be numeric')
-      arg2.is_a?(::Numeric) or return Failure(:err, 'arg2 must be numeric')
+      arg1.is_a?(::Numeric) or return Failure(:err, message: 'arg1 must be numeric')
+      arg2.is_a?(::Numeric) or return Failure(:err, message: 'arg2 must be numeric')
 
-      Continue([arg1, arg2])
+      Continue(number1: arg1, number2: arg2)
     end
 
-    def validate_non_zero(numbers)
-      return Continue(numbers) unless numbers.last.zero?
-
-      Failure(:err, 'arg2 must not be zero')
+    def validate_non_zero(number2:, **)
+      number2.zero? ? Failure(:err, 'arg2 must not be zero') : Continue()
     end
 
-    def divide((number1, number2))
-      Success(:ok, number1 / number2)
+    def divide(number1:, number2:)
+      Success(:ok, number: number1 / number2)
     end
   end
 
   class DivideTypes
-    include BCDD::Result::Expectations.mixin(
+    include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :division_completed,
       failure: %i[invalid_arg division_by_zero]
@@ -52,28 +50,43 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
     private
 
     def validate_numbers(arg1, arg2)
-      arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
-      arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+      arg1.is_a?(::Numeric) or return Failure(:invalid_arg, message: 'arg1 must be numeric')
+      arg2.is_a?(::Numeric) or return Failure(:invalid_arg, message: 'arg2 must be numeric')
 
-      Continue([arg1, arg2])
+      Continue(number1: arg1, number2: arg2)
     end
 
-    def validate_non_zero(numbers)
-      return Continue(numbers) unless numbers.last.zero?
-
-      Failure(:division_by_zero, 'arg2 must not be zero')
+    def validate_non_zero(number2:, **)
+      number2.zero? ? Failure(:err, message: 'arg2 must not be zero') : Continue()
     end
 
-    def divide((number1, number2))
-      Success(:division_completed, number1 / number2)
+    def divide(number1:, number2:)
+      Success(:division_completed, number: number1 / number2)
     end
   end
 
   module DivideTypeAndValue
-    extend self, BCDD::Result::Expectations.mixin(
+    extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
-      success: { division_completed: Numeric },
-      failure: { invalid_arg: String, division_by_zero: String }
+      success: {
+        division_completed: ->(value) {
+          case value
+          in { number: Numeric } then true
+          end
+        }
+      },
+      failure: {
+        invalid_arg: ->(value) {
+          case value
+          in { message: String } then true
+          end
+        },
+        division_by_zero: ->(value) {
+          case value
+          in { message: String } then true
+          end
+        }
+      }
     )
 
     def call(arg1, arg2)
@@ -85,20 +98,20 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
     private
 
     def validate_numbers(arg1, arg2)
-      arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
-      arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+      arg1.is_a?(::Numeric) or return Failure(:invalid_arg, message: 'arg1 must be numeric')
+      arg2.is_a?(::Numeric) or return Failure(:invalid_arg, message: 'arg2 must be numeric')
 
-      Continue([arg1, arg2])
+      Continue(number1: arg1, number2: arg2)
     end
 
-    def validate_non_zero(numbers)
-      return Continue(numbers) unless numbers.last.zero?
+    def validate_non_zero(number2:, **)
+      return Failure(:division_by_zero, message: 'arg2 must not be zero') if number2.zero?
 
-      Failure(:division_by_zero, 'arg2 must not be zero')
+      Continue()
     end
 
-    def divide((number1, number2))
-      Success(:division_completed, number1 / number2)
+    def divide(number1:, number2:)
+      Success(:division_completed, number: number1 / number2)
     end
   end
 
@@ -131,79 +144,79 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
   end
 
   class InstanceFirstSuccessToTerminateTheStepChainAndThenBlock
-    include BCDD::Result::Expectations.mixin(
+    include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :first
     )
 
     def call
       Success(:first)
-        .and_then { Continue(:second) }
-        .and_then { Continue(:third) }
+        .and_then { Continue(second: true) }
+        .and_then { Continue(third: true) }
     end
   end
 
   class InstanceSecondSuccessToTerminateTheStepChainAndThenBlock
-    include BCDD::Result::Expectations.mixin(
+    include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :second
     )
 
     def call
-      Continue(:first)
+      Continue(first: true)
         .and_then { Success(:second) }
-        .and_then { Continue(:third) }
+        .and_then { Continue(third: true) }
     end
   end
 
   class InstanceThirdSuccessToTerminateTheStepChainAndThenBlock
-    include BCDD::Result::Expectations.mixin(
+    include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :third
     )
 
     def call
-      Continue(:first)
-        .and_then { Continue(:second) }
+      Continue(first: true)
+        .and_then { Continue(second: true) }
         .and_then { Success(:third) }
     end
   end
 
   module SingletonFirstSuccessToTerminateTheStepChainAndThenBlock
-    extend self, BCDD::Result::Expectations.mixin(
+    extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :first
     )
 
     def call
       Success(:first)
-        .and_then { Continue(:second) }
-        .and_then { Continue(:third) }
+        .and_then { Continue(second: true) }
+        .and_then { Continue(third: true) }
     end
   end
 
   module SingletonSecondSuccessToTerminateTheStepChainAndThenBlock
-    extend self, BCDD::Result::Expectations.mixin(
+    extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :second
     )
 
     def call
-      Continue(:first)
+      Continue(first: true)
         .and_then { Success(:second) }
-        .and_then { Continue(:third) }
+        .and_then { Continue(third: true) }
     end
   end
 
   module SingletonThirdSuccessToTerminateTheStepChainAndThenBlock
-    extend self, BCDD::Result::Expectations.mixin(
+    extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :third
     )
 
     def call
-      Continue(:first)
-        .and_then { Continue(:second) }
+      Continue(first: true)
+        .and_then { Continue(second: true) }
         .and_then { Success(:third) }
     end
   end
@@ -227,7 +240,7 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
   end
 
   class InstanceFirstSuccessToTerminateTheStepChainAndThenMethod
-    include BCDD::Result::Expectations.mixin(
+    include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :first
     )
@@ -241,12 +254,12 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
     private
 
     def first_success;  Success(:first); end
-    def second_success; Continue(:second); end
-    def third_success;  Continue(:third); end
+    def second_success; Continue(second: true); end
+    def third_success;  Continue(third: true); end
   end
 
   class InstanceSecondSuccessToTerminateTheStepChainAndThenMethod
-    include BCDD::Result::Expectations.mixin(
+    include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :second
     )
@@ -259,13 +272,13 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
 
     private
 
-    def first_success;  Continue(:first); end
+    def first_success;  Continue(first: true); end
     def second_success; Success(:second); end
-    def third_success;  Continue(:third); end
+    def third_success;  Continue(third: true); end
   end
 
   class InstanceThirdSuccessToTerminateTheStepChainAndThenMethod
-    include BCDD::Result::Expectations.mixin(
+    include BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :third
     )
@@ -278,13 +291,13 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
 
     private
 
-    def first_success;  Continue(:first); end
-    def second_success; Continue(:second); end
+    def first_success;  Continue(first: true); end
+    def second_success; Continue(second: true); end
     def third_success;  Success(:third); end
   end
 
   module SingletonFirstSuccessToTerminateTheStepChainAndThenMethod
-    extend self, BCDD::Result::Expectations.mixin(
+    extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :first
     )
@@ -298,12 +311,12 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
     private
 
     def first_success;  Success(:first); end
-    def second_success; Continue(:second); end
-    def third_success;  Continue(:third); end
+    def second_success; Continue(second: true); end
+    def third_success;  Continue(third: true); end
   end
 
   module SingletonSecondSuccessToTerminateTheStepChainAndThenMethod
-    extend self, BCDD::Result::Expectations.mixin(
+    extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :second
     )
@@ -316,13 +329,13 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
 
     private
 
-    def first_success;  Continue(:first); end
+    def first_success;  Continue(first: true); end
     def second_success; Success(:second); end
-    def third_success;  Continue(:third); end
+    def third_success;  Continue(third: true); end
   end
 
   module SingletonThirdSuccessToTerminateTheStepChainAndThenMethod
-    extend self, BCDD::Result::Expectations.mixin(
+    extend self, BCDD::Result::Context::Expectations.mixin(
       config: { addon: { continue: true } },
       success: :third
     )
@@ -335,8 +348,8 @@ class BCDD::Result::ExpectationsWithSubjectSuccessTypeTest < Minitest::Test
 
     private
 
-    def first_success;  Continue(:first); end
-    def second_success; Continue(:second); end
+    def first_success;  Continue(first: true); end
+    def second_success; Continue(second: true); end
     def third_success;  Success(:third); end
   end
 

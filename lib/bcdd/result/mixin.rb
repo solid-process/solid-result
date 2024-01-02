@@ -26,7 +26,7 @@ class BCDD::Result
     end
 
     module Addons
-      module Continuable
+      module Continue
         def Success(type, value = nil)
           _ResultAs(Success, type, value, terminal: true)
         end
@@ -36,7 +36,13 @@ class BCDD::Result
         end
       end
 
-      OPTIONS = { continue: Continuable }.freeze
+      module Given
+        private def Given(value)
+          _ResultAs(Success, :given, value)
+        end
+      end
+
+      OPTIONS = { continue: Continue, given: Given }.freeze
 
       def self.options(config_flags)
         Config::Options.addon(map: config_flags, from: OPTIONS)

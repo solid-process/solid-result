@@ -73,7 +73,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
   - [`BCDD::Result.transitions`](#bcddresulttransitions)
     - [Configuration](#configuration)
   - [`BCDD::Result.configuration`](#bcddresultconfiguration)
-    - [`config.addon.enable!(:continue)`](#configaddonenablecontinue)
+    - [`config.addon.enable!(:given, :continue)`](#configaddonenablegiven-continue)
     - [`config.constant_alias.enable!('Result', 'BCDD::Context')`](#configconstant_aliasenableresult-bcddcontext)
     - [`config.pattern_matching.disable!(:nil_as_valid_value_checking)`](#configpattern_matchingdisablenil_as_valid_value_checking)
     - [`config.feature.disable!(:expectations)`](#configfeaturedisableexpectations)
@@ -918,35 +918,48 @@ Divide.call(4, 2, logger: Logger.new(IO::NULL))
 
 The `BCDD::Result.mixin` also accepts the `config:` argument. It is a hash that will be used to define custom behaviors for the mixin.
 
+**given**
+
+This addon is enabled by default. It will create the `Given(value)` method. Use it to add a value to the result chain and invoke the next step (through `and_then`).
+
+You can turn it off by passing `given: false` to the `config:` argument or using the `BCDD::Result.configuration`.
+
 **continue**
 
 This addon will create the `Continue(value)` method and change the `Success()` behavior to terminate the step chain.
 
 So, if you want to advance to the next step, you must use `Continue(value)` instead of `Success(type, value)`. Otherwise, the step chain will be terminated.
 
+In this example below, the `validate_nonzero` will return a `Success(:division_completed, 0)` and terminate the chain if the first number is zero.
+
 ```ruby
 module Divide
   extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
 
   def call(arg1, arg2)
-    validate_numbers(arg1, arg2)
+    Given([arg1, arg2])
+      .and_then(:validate_numbers)
       .and_then(:validate_nonzero)
       .and_then(:divide)
   end
 
   private
 
-  def validate_numbers(arg1, arg2)
-    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
-    arg2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+  def validate_numbers(numbers)
+    number1, number2 = numbers
 
-    Continue([arg1, arg2])
+    number1.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
+    number2.is_a?(::Numeric) or return Failure(:invalid_arg, 'arg2 must be numeric')
+
+    Continue(numbers)
   end
 
   def validate_nonzero(numbers)
-    return Continue(numbers) unless numbers.last.zero?
+    return Failure(:division_by_zero, 'arg2 must not be zero') if numbers.last.zero?
 
-    Failure(:division_by_zero, 'arg2 must not be zero')
+    return Success(:division_completed, 0) if numbers.first.zero?
+
+    Continue(numbers)
   end
 
   def divide((number1, number2))
@@ -1678,7 +1691,15 @@ Divide::Result::Success(:division_completed, number: '2')
 
 The `BCDD::Result::Context.mixin` and `BCDD::Result::Context::Expectations.mixin` also accepts the `config:` argument. And it works the same way as the `BCDD::Result` mixins.
 
-**Continue**
+**given**
+
+This addon is enabled by default. It will create the `Given(*value)` method. Use it to add a value to the result chain and invoke the next step (through `and_then`).
+
+You can turn it off by passing `given: false` to the `config:` argument or using the `BCDD::Result.configuration`.
+
+The `Given()` addon for a BCDD::Result::Context can be called with one or more arguments. The arguments will be converted to a hash (`to_h`) and merged to define the first value of the result chain.
+
+**continue**
 
 The `BCDD::Result::Context.mixin(config: { addon: { continue: true } })` or `BCDD::Result::Context::Expectations.mixin(config: { addon: { continue: true } })` creates the `Continue(value)` method and change the `Success()` behavior to terminate the step chain.
 
@@ -1687,7 +1708,7 @@ So, if you want to advance to the next step, you must use `Continue(**value)` in
 Let's use a mix of `BCDD::Result::Context` features to see in action with this add-on:
 
 ```ruby
-module Divide
+module Division
   require 'logger'
 
   extend self, BCDD::Result::Context::Expectations.mixin(
@@ -1705,25 +1726,28 @@ module Divide
   )
 
   def call(arg1, arg2, logger: ::Logger.new(STDOUT))
-    validate_numbers(arg1, arg2)
-      .and_then(:validate_nonzero)
+    Given(number1: arg1, number2: arg2)
+      .and_then(:require_numbers)
+      .and_then(:check_for_zeros)
       .and_then(:divide, logger: logger)
       .and_expose(:division_completed, [:number])
   end
 
   private
 
-  def validate_numbers(arg1, arg2)
-    arg1.is_a?(::Numeric) or return Failure(:invalid_arg, message: 'arg1 must be numeric')
-    arg2.is_a?(::Numeric) or return Failure(:invalid_arg, message: 'arg2 must be numeric')
+  def require_numbers(number1:, number2:)
+    number1.is_a?(::Numeric) or return Failure(:invalid_arg, message: 'arg1 must be numeric')
+    number2.is_a?(::Numeric) or return Failure(:invalid_arg, message: 'arg2 must be numeric')
 
-    Continue(number1: arg1, number2: arg2)
+    Continue()
   end
 
-  def validate_nonzero(number2:, **)
-    return Continue() if number2.nonzero?
+  def check_for_zeros(number1:, number2:)
+    return Failure(:division_by_zero, message: 'arg2 must not be zero') if number2.zero?
 
-    Failure(:division_by_zero, message: 'arg2 must not be zero')
+    return Success(:division_completed, number: 0) if number1.zero?
+
+    Continue()
   end
 
   def divide(number1:, number2:, logger:)
@@ -1735,23 +1759,26 @@ module Divide
   end
 end
 
-Divide.call(14, 2)
+Division.call(14, 2)
 # I, [2023-10-27T02:01:05.812388 #77823]  INFO -- : The division result is 7
 #<BCDD::Result::Context::Success type=:division_completed value={:number=>7}>
 
-Divide.call('14', 2)
+Division.call(0, 2)
+##<BCDD::Result::Context::Success type=:division_completed value={:number=>0}>
+
+Division.call('14', 2)
 #<BCDD::Result::Context::Failure type=:invalid_arg value={:message=>"arg1 must be numeric"}>
 
-Divide.call(14, '2')
+Division.call(14, '2')
 #<BCDD::Result::Context::Failure type=:invalid_arg value={:message=>"arg2 must be numeric"}>
 
-Divide.call(14, 0)
+Division.call(14, 0)
 #<BCDD::Result::Context::Failure type=:division_by_zero value={:message=>"arg2 must not be zero"}>
 ```
 
 ### `BCDD::Result.transitions`
 
-Use `BCDD::Result.transitions(&block)` to track all transitions in the same or between different operations. When there is a nesting of transition blocks, this mechanism will be able to correlate parent and child blocks and present the duration of all operations in milliseconds.
+Use `BCDD::Result.transitions(&block)` to track all transitions in the same or between different operations (it works with `BCDD::Result` and `BCDD::Result::Context`). When there is a nesting of transition blocks, this mechanism will be able to correlate parent and child blocks and present the duration of all operations in milliseconds.
 
 When you wrap the creation of the result with `BCDD::Result.transitions`, the final result will expose all the transition records through the `BCDD::Result#transitions` method.
 
@@ -1761,7 +1788,8 @@ class Division
 
   def call(arg1, arg2)
     BCDD::Result.transitions(name: 'Division', desc: 'divide two numbers') do
-      require_numbers(arg1, arg2)
+      Given([arg1, arg2])
+        .and_then(:require_numbers)
         .and_then(:check_for_zeros)
         .and_then(:divide)
     end
@@ -1771,7 +1799,7 @@ class Division
 
   ValidNumber = ->(arg) { arg.is_a?(Numeric) && arg != Float::NAN && arg != Float::INFINITY }
 
-  def require_numbers(arg1, arg2)
+  def require_numbers((arg1, arg2))
     ValidNumber[arg1] or return Failure(:invalid_arg, 'arg1 must be a valid number')
     ValidNumber[arg2] or return Failure(:invalid_arg, 'arg2 must be a valid number')
 
@@ -1823,52 +1851,68 @@ result.transitions
   },
   :records => [
     {
-      :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :current => {:id=>1, :name=>"Division", :desc=>"divide two numbers"},
-      :result => {:kind=>:success, :type=>:continued, :value=>[20, 2]},
-      :and_then => {},
-      :time => 2023-12-31 22:19:33.281619 UTC
+      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
+      :result=>{:kind=>:success, :type=>:given, :value=>[20, 2]},
+      :and_then=>{},
+      :time=>2024-01-02 03:35:11.248418 UTC
     },
     {
       :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
       :result=>{:kind=>:success, :type=>:continued, :value=>[20, 2]},
-      :and_then=>{:type=>:method, :arg=>nil, :subject=>#<Division:0x0000000103e5f7c8>, :method_name=>:check_for_zeros},
-      :time=>2023-12-31 22:19:33.281693 UTC
+      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106099028>, :method_name=>:require_numbers},
+      :time=>2024-01-02 03:35:11.248558 UTC
+    },
+    {
+      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
+      :result=>{:kind=>:success, :type=>:continued, :value=>[20, 2]},
+      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106099028>, :method_name=>:check_for_zeros},
+      :time=>2024-01-02 03:35:11.248587 UTC
     },
     {
       :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
       :result=>{:kind=>:success, :type=>:division_completed, :value=>10},
-      :and_then=>{:type=>:method, :arg=>nil, :subject=>#<Division:0x0000000103e5f7c8>, :method_name=>:divide},
-      :time=>2023-12-31 22:19:33.281715 UTC
+      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106099028>, :method_name=>:divide},
+      :time=>2024-01-02 03:35:11.248607 UTC
     },
     {
       :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
-      :result=>{:kind=>:success, :type=>:continued, :value=>[10, 2]},
+      :result=>{:kind=>:success, :type=>:given, :value=>[10, 2]},
       :and_then=>{},
-      :time=>2023-12-31 22:19:33.281747 UTC
+      :time=>2024-01-02 03:35:11.24865 UTC
     },
     {
       :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
       :result=>{:kind=>:success, :type=>:continued, :value=>[10, 2]},
-      :and_then=>{:type=>:method, :arg=>nil, :subject=>#<Division:0x0000000103e5f1b0>, :method_name=>:check_for_zeros},
-      :time=>2023-12-31 22:19:33.281755 UTC
+      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106097ed0>, :method_name=>:require_numbers},
+      :time=>2024-01-02 03:35:11.248661 UTC
+    },
+    {
+      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
+      :result=>{:kind=>:success, :type=>:continued, :value=>[10, 2]},
+      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106097ed0>, :method_name=>:check_for_zeros},
+      :time=>2024-01-02 03:35:11.248672 UTC
     },
     {
       :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
       :result=>{:kind=>:success, :type=>:division_completed, :value=>5},
-      :and_then=>{:type=>:method, :arg=>nil, :subject=>#<Division:0x0000000103e5f1b0>, :method_name=>:divide},
-      :time=>2023-12-31 22:19:33.281763 UTC
+      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106097ed0>, :method_name=>:divide},
+      :time=>2024-01-02 03:35:11.248682 UTC
     },
     {
       :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
@@ -1876,7 +1920,7 @@ result.transitions
       :current=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :result=>{:kind=>:success, :type=>:sum, :value=>15},
       :and_then=>{},
-      :time=>2023-12-31 22:19:33.281784 UTC
+      :time=>2024-01-02 03:35:11.248721 UTC
     }
   ]
 }
@@ -1909,7 +1953,7 @@ The `BCDD::Result.configuration` allows you to configure default behaviors for `
 
 ```ruby
 BCDD::Result.configuration do |config|
-  config.addon.enable!(:continue)
+  config.addon.enable!(:given, :continue)
 
   config.constant_alias.enable!('Result', 'BCDD::Context')
 
@@ -1923,9 +1967,11 @@ Use `disable!` to disable a feature and `enable!` to enable it.
 
 Let's see what each configuration in the example above does:
 
-#### `config.addon.enable!(:continue)`
+#### `config.addon.enable!(:given, :continue)`
 
-This configuration enables the `Continue()` method for `BCDD::Result`, `BCDD::Result::Context`, `BCDD::Result::Expectation`, and `BCDD::Result::Context::Expectation`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
+This configuration enables the `Continue()` method for `BCDD::Result.mixin`, `BCDD::Result::Context.mixin`, `BCDD::Result::Expectation.mixin`, and `BCDD::Result::Context::Expectation.mixin`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
+
+It is also enabling the `Given()` which is already enabled by default. Link to documentation: [(1)](#add-ons) [(2)](#mixin-add-ons).
 
 #### `config.constant_alias.enable!('Result', 'BCDD::Context')`
 
@@ -1955,16 +2001,26 @@ The `BCDD::Result.config` allows you to access the current configuration.
 
 ```ruby
 BCDD::Result.config.addon.enabled?(:continue)
+BCDD::Result.config.addon.enabled?(:given)
 
 BCDD::Result.config.addon.options
 # {
 #   :continue=>{
 #     :enabled=>false,
 #     :affects=>[
-#       "BCDD::Result",
-#       "BCDD::Result::Context",
-#       "BCDD::Result::Expectations",
-#       "BCDD::Result::Context::Expectations"
+#       "BCDD::Result.mixin",
+#       "BCDD::Result::Context.mixin",
+#       "BCDD::Result::Expectations.mixin",
+#       "BCDD::Result::Context::Expectations.mixin"
+#     ]
+#   },
+#   :given=>{
+#     :enabled=>true,
+#     :affects=>[
+#       "BCDD::Result.mixin",
+#       "BCDD::Result::Context.mixin",
+#       "BCDD::Result::Expectations.mixin",
+#       "BCDD::Result::Context::Expectations.mixin"
 #     ]
 #   }
 # }

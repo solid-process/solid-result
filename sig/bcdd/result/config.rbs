@@ -73,6 +73,7 @@ class BCDD::Result::Config::Switcher
 end
 
 module BCDD::Result::Config::Addons
+  AFFECTS: Array[String]
   OPTIONS: Hash[String, Hash[Symbol, untyped]]
 
   def self.switcher: -> BCDD::Result::Config::Switcher
