@@ -16,14 +16,14 @@ class BCDD::Result::Expectations
   def self.result_factory_without_expectations: -> singleton(BCDD::Result)
 
   def self.new: (
-    ?subject: untyped,
+    ?source: untyped,
     ?contract: BCDD::Result::Contract::Evaluator,
     ?terminal: bool,
     **untyped
   ) -> (BCDD::Result::Expectations | untyped)
 
   def initialize: (
-    ?subject: untyped,
+    ?source: untyped,
     ?contract: BCDD::Result::Contract::Evaluator,
     ?terminal: bool,
     **untyped
@@ -32,13 +32,13 @@ class BCDD::Result::Expectations
   def Success: (Symbol, ?untyped) -> BCDD::Result::Success
   def Failure: (Symbol, ?untyped) -> BCDD::Result::Failure
 
-  def with: (subject: untyped) -> BCDD::Result::Expectations
+  def with: (source: untyped) -> BCDD::Result::Expectations
 
   private
 
   def _ResultAs: (singleton(BCDD::Result), Symbol, untyped) -> untyped
 
-  attr_reader subject: untyped
+  attr_reader source: untyped
   attr_reader contract: BCDD::Result::Contract::Evaluator
   attr_reader terminal: bool
 end

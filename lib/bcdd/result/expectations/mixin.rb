@@ -24,7 +24,7 @@ class BCDD::Result
 
       FACTORY = <<~RUBY
         private def _Result
-          @_Result ||= Result.with(subject: self, terminal: %<terminal>s)
+          @_Result ||= Result.with(source: self, terminal: %<terminal>s)
         end
       RUBY
 
@@ -38,13 +38,13 @@ class BCDD::Result
     module Addons
       module Continue
         private def Continue(value)
-          Success.new(type: :continued, value: value, subject: self)
+          Success.new(type: :continued, value: value, source: self)
         end
       end
 
       module Given
         private def Given(value)
-          Success.new(type: :given, value: value, subject: self)
+          Success.new(type: :given, value: value, source: self)
         end
       end
 

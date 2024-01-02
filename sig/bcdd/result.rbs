@@ -4,7 +4,7 @@ class BCDD::Result
   private attr_reader type_checker: BCDD::Result::Contract::TypeChecker
 
   attr_reader data: BCDD::Result::Data
-  attr_reader subject: untyped
+  attr_reader source: untyped
   attr_reader terminal: bool
   attr_reader transitions: Hash[Symbol, untyped]
 
@@ -14,7 +14,7 @@ class BCDD::Result
   def initialize: (
     type: Symbol,
     value: untyped,
-    ?subject: untyped,
+    ?source: untyped,
     ?expectations: BCDD::Result::Contract::Evaluator,
     ?terminal: bool
   ) -> void
@@ -51,8 +51,8 @@ class BCDD::Result
 
   def kind: -> Symbol
   def known: (Proc) -> untyped
-  def call_and_then_subject_method: (Symbol, untyped) -> BCDD::Result
-  def call_and_then_subject_method!: (untyped, untyped) -> BCDD::Result
+  def call_and_then_source_method: (Symbol, untyped) -> BCDD::Result
+  def call_and_then_source_method!: (untyped, untyped) -> BCDD::Result
   def call_and_then_block: (untyped) -> BCDD::Result
   def call_and_then_block!: (untyped) -> BCDD::Result
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result

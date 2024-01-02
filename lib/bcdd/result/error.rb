@@ -22,29 +22,29 @@ class BCDD::Result::Error < StandardError
     end
   end
 
-  class InvalidResultSubject < self
-    def self.build(given_result:, expected_subject:)
+  class InvalidResultSource < self
+    def self.build(given_result:, expected_source:)
       message =
-        "You cannot call #and_then and return a result that does not belong to the subject!\n" \
-        "Expected subject: #{expected_subject.inspect}\n" \
-        "Given subject: #{given_result.send(:subject).inspect}\n" \
+        "You cannot call #and_then and return a result that does not belong to the same source!\n" \
+        "Expected source: #{expected_source.inspect}\n" \
+        "Given source: #{given_result.send(:source).inspect}\n" \
         "Given result: #{given_result.inspect}"
 
       new(message)
     end
   end
 
-  class InvalidSubjectMethodArity < self
-    def self.build(subject:, method:, max_arity:)
-      new("#{subject.class}##{method.name} has unsupported arity (#{method.arity}). Expected 0..#{max_arity}")
+  class InvalidSourceMethodArity < self
+    def self.build(source:, method:, max_arity:)
+      new("#{source.class}##{method.name} has unsupported arity (#{method.arity}). Expected 0..#{max_arity}")
     end
   end
 
   class UnhandledTypes < self
     def self.build(types:)
-      subject = types.size == 1 ? 'This was' : 'These were'
+      source = types.size == 1 ? 'This was' : 'These were'
 
-      new("You must handle all cases. #{subject} not handled: #{types.map(&:inspect).join(', ')}")
+      new("You must handle all cases. #{source} not handled: #{types.map(&:inspect).join(', ')}")
     end
   end
 end

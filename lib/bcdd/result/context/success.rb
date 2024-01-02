@@ -10,6 +10,6 @@ class BCDD::Result::Context::Success < BCDD::Result::Context
 
     exposed_value = acc.merge(value).slice(*keys)
 
-    self.class.new(type: type, value: exposed_value, subject: subject, terminal: terminal)
+    self.class.new(type: type, value: exposed_value, source: source, terminal: terminal)
   end
 end

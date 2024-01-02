@@ -14,7 +14,7 @@ class BCDD::Result::Context
       end
 
       private def _ResultAs(kind_class, type, value, terminal: nil)
-        kind_class.new(type: type, value: value, subject: self, terminal: terminal)
+        kind_class.new(type: type, value: value, source: self, terminal: terminal)
       end
     end
 
