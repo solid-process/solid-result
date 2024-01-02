@@ -649,9 +649,9 @@ Divide.call(2, 2)
 
 This method generates a module that any object can include or extend. It adds two methods to the target object: `Success()` and `Failure()`.
 
-The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the former will utilize the target object (which has received the include/extend) as the result's subject.
+The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the former will utilize the target object (which has received the include/extend) as the result's source.
 
-Because the result has a subject, the `#and_then` method can call methods from it.
+Because the result has a source, the `#and_then` method can call methods from it.
 
 ##### Class example (Instance Methods)
 
@@ -746,9 +746,9 @@ Divide.call(4, '2') #<BCDD::Result::Failure type=:invalid_arg value="arg2 must b
 
 To use the `#and_then` method to call methods, they must use `Success()` and `Failure()` to produce the results.
 
-If you try to use `BCDD::Result::Subject()`/`BCDD::Result::Failure()`, or results from another `BCDD::Result.mixin` instance with `#and_then`, it will raise an error because the subjects will be different.
+If you try to use `BCDD::Result::Success()`/`BCDD::Result::Failure()`, or results from another `BCDD::Result.mixin` instance with `#and_then`, it will raise an error because the sources are different.
 
-**Note:** You can still use the block syntax, but all the results must be produced by the subject's `Success()` and `Failure()` methods.
+**Note:** You can still use the block syntax, but all the results must be produced by the source's `Success()` and `Failure()` methods.
 
 ```ruby
 module ValidateNonzero
@@ -794,13 +794,13 @@ Look at the error produced by the code above:
 ```ruby
 Divide.call(2, 0)
 
-# You cannot call #and_then and return a result that does not belong to the subject! (BCDD::Result::Error::InvalidResultSubject)
-# Expected subject: Divide
-# Given subject: ValidateNonzero
+# You cannot call #and_then and return a result that does not belong to the same source! (BCDD::Result::Error::InvalidResultSource)
+# Expected source: Divide
+# Given source: ValidateNonzero
 # Given result: #<BCDD::Result::Failure type=:division_by_zero value="arg2 must not be zero">
 ```
 
-In order to fix this, you must handle the result produced by `ValidateNonzero.call()` and return a result that belongs to the subject.
+In order to fix this, you must handle the result produced by `ValidateNonzero.call()` and return a result that belongs to the same source.
 
 ```ruby
 module ValidateNonzero
@@ -832,7 +832,8 @@ module Divide
   end
 
   def validate_nonzero(numbers)
-    # In this case we are handling the other subject result and returning our own
+    # In this case we are handling the result from other source
+    # and returning our own
     ValidateNonzero.call(numbers).handle do |on|
       on.success { |numbers| Success(:ok, numbers) }
 
@@ -858,8 +859,8 @@ Divide.call(2, 0)
 
 ##### Dependency Injection
 
-The `BCDD::Result#and_then` accepts a second argument that will be used to share a value with the subject's method.
-To receive this argument, the subject's method must have an arity of two, where the first argument will be the result value and the second will be the shared value.
+The `BCDD::Result#and_then` accepts a second argument that will be used to share a value with the source's method.
+To receive this argument, the source's method must have an arity of two, where the first argument will be the result value and the second will be the injected value.
 
 ```ruby
 require 'logger'
@@ -1863,7 +1864,7 @@ result.transitions
       :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
       :result=>{:kind=>:success, :type=>:continued, :value=>[20, 2]},
-      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106099028>, :method_name=>:require_numbers},
+      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106099028>, :method_name=>:require_numbers},
       :time=>2024-01-02 03:35:11.248558 UTC
     },
     {
@@ -1871,7 +1872,7 @@ result.transitions
       :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
       :result=>{:kind=>:success, :type=>:continued, :value=>[20, 2]},
-      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106099028>, :method_name=>:check_for_zeros},
+      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106099028>, :method_name=>:check_for_zeros},
       :time=>2024-01-02 03:35:11.248587 UTC
     },
     {
@@ -1879,7 +1880,7 @@ result.transitions
       :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
       :result=>{:kind=>:success, :type=>:division_completed, :value=>10},
-      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106099028>, :method_name=>:divide},
+      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106099028>, :method_name=>:divide},
       :time=>2024-01-02 03:35:11.248607 UTC
     },
     {
@@ -1895,7 +1896,7 @@ result.transitions
       :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
       :result=>{:kind=>:success, :type=>:continued, :value=>[10, 2]},
-      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106097ed0>, :method_name=>:require_numbers},
+      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106097ed0>, :method_name=>:require_numbers},
       :time=>2024-01-02 03:35:11.248661 UTC
     },
     {
@@ -1903,7 +1904,7 @@ result.transitions
       :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
       :result=>{:kind=>:success, :type=>:continued, :value=>[10, 2]},
-      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106097ed0>, :method_name=>:check_for_zeros},
+      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106097ed0>, :method_name=>:check_for_zeros},
       :time=>2024-01-02 03:35:11.248672 UTC
     },
     {
@@ -1911,7 +1912,7 @@ result.transitions
       :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
       :result=>{:kind=>:success, :type=>:division_completed, :value=>5},
-      :and_then=>{:type=>:method, :arg=>nil, :subject=><Division:0x0000000106097ed0>, :method_name=>:divide},
+      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106097ed0>, :method_name=>:divide},
       :time=>2024-01-02 03:35:11.248682 UTC
     },
     {

@@ -38,11 +38,11 @@ module BCDD::Result::Transitions
       track(result, time: ::Time.now.getutc)
     end
 
-    def record_and_then(type_arg, arg, subject)
+    def record_and_then(type_arg, arg, source)
       type = type_arg.instance_of?(::Method) ? :method : type_arg
 
       unless tree.frozen?
-        current_and_then = { type: type, arg: arg, subject: subject }
+        current_and_then = { type: type, arg: arg, source: source }
         current_and_then[:method_name] = type_arg.name if type == :method
 
         tree.current.value[1] = current_and_then

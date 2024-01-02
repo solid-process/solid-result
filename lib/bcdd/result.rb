@@ -16,9 +16,9 @@ require_relative 'result/config'
 class BCDD::Result
   attr_accessor :unknown, :transitions
 
-  attr_reader :subject, :data, :type_checker, :terminal
+  attr_reader :source, :data, :type_checker, :terminal
 
-  protected :subject
+  protected :source
 
   private :unknown, :unknown=, :type_checker, :transitions=
 
@@ -32,11 +32,11 @@ class BCDD::Result
     config.freeze
   end
 
-  def initialize(type:, value:, subject: nil, expectations: nil, terminal: nil)
+  def initialize(type:, value:, source: nil, expectations: nil, terminal: nil)
     data = Data.new(kind, type, value)
 
     @type_checker = Contract.evaluate(data, expectations)
-    @subject = subject
+    @source = source
     @terminal = terminal || kind == :failure
     @data = data
 
@@ -93,7 +93,7 @@ class BCDD::Result
 
     method_name && block and raise ::ArgumentError, 'method_name and block are mutually exclusive'
 
-    method_name ? call_and_then_subject_method(method_name, context) : call_and_then_block(block)
+    method_name ? call_and_then_source_method(method_name, context) : call_and_then_block(block)
   end
 
   def handle
@@ -139,27 +139,27 @@ class BCDD::Result
     block.call(value, type)
   end
 
-  def call_and_then_subject_method(method_name, context_data)
-    method = subject.method(method_name)
+  def call_and_then_source_method(method_name, injected_value)
+    method = source.method(method_name)
 
-    Transitions.tracking.record_and_then(method, context_data, subject) do
-      result = call_and_then_subject_method!(method, context_data)
+    Transitions.tracking.record_and_then(method, injected_value, source) do
+      result = call_and_then_source_method!(method, injected_value)
 
       ensure_result_object(result, origin: :method)
     end
   end
 
-  def call_and_then_subject_method!(method, context_data)
+  def call_and_then_source_method!(method, injected_value)
     case method.arity
-    when 0 then subject.send(method.name)
-    when 1 then subject.send(method.name, value)
-    when 2 then subject.send(method.name, value, context_data)
-    else raise Error::InvalidSubjectMethodArity.build(subject: subject, method: method, max_arity: 2)
+    when 0 then source.send(method.name)
+    when 1 then source.send(method.name, value)
+    when 2 then source.send(method.name, value, injected_value)
+    else raise Error::InvalidSourceMethodArity.build(source: source, method: method, max_arity: 2)
     end
   end
 
   def call_and_then_block(block)
-    Transitions.tracking.record_and_then(:block, nil, subject) do
+    Transitions.tracking.record_and_then(:block, nil, source) do
       result = call_and_then_block!(block)
 
       ensure_result_object(result, origin: :block)
@@ -173,8 +173,8 @@ class BCDD::Result
   def ensure_result_object(result, origin:)
     raise Error::UnexpectedOutcome.build(outcome: result, origin: origin) unless result.is_a?(::BCDD::Result)
 
-    return result if result.subject.equal?(subject)
+    return result if result.source.equal?(source)
 
-    raise Error::InvalidResultSubject.build(given_result: result, expected_subject: subject)
+    raise Error::InvalidResultSource.build(given_result: result, expected_source: source)
   end
 end

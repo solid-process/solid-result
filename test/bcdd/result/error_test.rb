@@ -42,36 +42,36 @@ class BCDD::Result::ErrorTest < Minitest::Test
     )
   end
 
-  test '::Error::InvalidResultSubject.build' do
-    assert BCDD::Result::Error::InvalidResultSubject < BCDD::Result::Error
+  test '::Error::InvalidResultSource.build' do
+    assert BCDD::Result::Error::InvalidResultSource < BCDD::Result::Error
 
-    given_result = BCDD::Result::Success.new(type: :number, value: 3, subject: 1)
+    given_result = BCDD::Result::Success.new(type: :number, value: 3, source: 1)
 
-    error_input = { given_result: given_result, expected_subject: 2 }
+    error_input = { given_result: given_result, expected_source: 2 }
 
     assert_equal(
-      "You cannot call #and_then and return a result that does not belong to the subject!\n" \
-      "Expected subject: 2\n" \
-      "Given subject: 1\n" \
+      "You cannot call #and_then and return a result that does not belong to the same source!\n" \
+      "Expected source: 2\n" \
+      "Given source: 1\n" \
       'Given result: #<BCDD::Result::Success type=:number value=3>',
-      BCDD::Result::Error::InvalidResultSubject.build(**error_input).message
+      BCDD::Result::Error::InvalidResultSource.build(**error_input).message
     )
   end
 
-  test '::Error::InvalidSubjectMethodArity.build' do
-    assert BCDD::Result::Error::InvalidSubjectMethodArity < BCDD::Result::Error
+  test '::Error::InvalidSourceMethodArity.build' do
+    assert BCDD::Result::Error::InvalidSourceMethodArity < BCDD::Result::Error
 
-    subject = Object.new
+    source = Object.new
 
-    def subject.do_something(_arg1, _arg2, _arg3); end
+    def source.do_something(_arg1, _arg2, _arg3); end
 
-    method = subject.method(:do_something)
+    method = source.method(:do_something)
 
-    error_input = { subject: subject, method: method, max_arity: 2 }
+    error_input = { source: source, method: method, max_arity: 2 }
 
     assert_equal(
       'Object#do_something has unsupported arity (3). Expected 0..2',
-      BCDD::Result::Error::InvalidSubjectMethodArity.build(**error_input).message
+      BCDD::Result::Error::InvalidSourceMethodArity.build(**error_input).message
     )
   end
 end

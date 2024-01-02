@@ -1,14 +1,14 @@
 class BCDD::Result::Context < BCDD::Result
   EXPECTED_OUTCOME: String
 
-  SubjectMethodArity: ^(Method) -> Integer
+  SourceMethodArity: ^(Method) -> Integer
 
   attr_reader acc: Hash[Symbol, untyped]
 
   def initialize: (
     type: Symbol,
     value: untyped,
-    ?subject: untyped,
+    ?source: untyped,
     ?expectations: BCDD::Result::Contract::Evaluator,
     ?terminal: bool
   ) -> void
@@ -17,7 +17,7 @@ class BCDD::Result::Context < BCDD::Result
 
   private
 
-  def call_and_then_subject_method: (Symbol, Hash[Symbol, untyped]) -> BCDD::Result::Context
+  def call_and_then_source_method: (Symbol, Hash[Symbol, untyped]) -> BCDD::Result::Context
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result::Context
 
   def raise_unexpected_outcome_error: (BCDD::Result::Context | untyped, Symbol) -> void
