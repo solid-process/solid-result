@@ -78,6 +78,12 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`config.pattern_matching.disable!(:nil_as_valid_value_checking)`](#configpattern_matchingdisablenil_as_valid_value_checking)
     - [`config.feature.disable!(:expectations)`](#configfeaturedisableexpectations)
   - [`BCDD::Result.config`](#bcddresultconfig)
+- [`BCDD::Result#and_then!`](#bcddresultand_then)
+    - [Dependency Injection](#dependency-injection-1)
+    - [Configuration](#configuration-1)
+    - [Analysis: Why is `and_then!` an Anti-pattern?](#analysis-why-is-and_then-an-anti-pattern)
+    - [`#and_then` versus `#and_then!`](#and_then-versus-and_then)
+    - [Analysis: Why is `#and_then` the antidote/standard?](#analysis-why-is-and_then-the-antidotestandard)
 - [About](#about)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -2079,9 +2085,205 @@ BCDD::Result.config.feature.options
 #       "BCDD::Result",
 #       "BCDD::Result::Context"
 #     ]
-#   }
+#   },
+#   :and_then!=>{
+#     :enabled=>false,
+#     :affects=>[
+#       "BCDD::Result",
+#       "BCDD::Result::Context"
+#     ]
+#   },
 # }
 ```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+## `BCDD::Result#and_then!`
+
+In the Ruby ecosystem, several gems facilitate operation composition using classes and modules. Two notable examples are the `interactor` gem and the `u-case` gem.
+
+**`interactor` gem example**
+
+```ruby
+class PlaceOrder
+  include Interactor::Organizer
+
+  organize CreateOrder,
+           PayOrder,
+           SendOrderConfirmation,
+           NotifyAdmins
+end
+```
+
+**`u-case` gem example**
+
+```ruby
+class PlaceOrder < Micro::Case
+  flow CreateOrder, PayOrder, SendOrderConfirmation, NotifyAdmins
+end
+
+# Alternative approach
+class PlaceOrder < Micro::Case
+  def call!
+    call(CreateOrder)
+      .then(PayOrder)
+      .then(SendOrderConfirmation)
+      .then(NotifyAdmins)
+  end
+end
+```
+
+To facilitate migration for users accustomed to the above approaches, `bcdd-result` includes the `BCDD::Result#and_then!`/`BCDD::Result::Context#and_then!` methods, which will invoke the method `call` of the given operation and expect it to return a `BCDD::Result`/`BCDD::Result::Context` object.
+
+```ruby
+BCDD::Result.configure do |config|
+  config.feature.enable!(:and_then!)
+end
+
+class PlaceOrder
+  include BCDD::Result::Context.mixin
+
+  def call(**input)
+    Given(input)
+      .and_then!(CreateOrder.new)
+      .and_then!(PayOrder.new)
+      .and_then!(SendOrderConfirmation.new)
+      .and_then!(NotifyAdmins.new)
+  end
+end
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### Dependency Injection
+
+Like `#and_then`, `#and_then!` also supports an additional argument for dependency injection.
+
+**In BCDD::Result**
+
+```ruby
+class PlaceOrder
+  include BCDD::Result.mixin
+
+  def call(input, logger:)
+    Given(input)
+      .and_then!(CreateOrder.new, logger)
+      # Further method chaining...
+  end
+end
+```
+
+**In BCDD::Result::Context**
+
+```ruby
+class PlaceOrder
+  include BCDD::Result::Context.mixin
+
+  def call(logger:, **input)
+    Given(input)
+      .and_then!(CreateOrder.new, logger:)
+      # Further method chaining...
+  end
+end
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### Configuration
+
+```ruby
+BCDD::Result.configure do |config|
+  config.feature.enable!(:and_then!)
+
+  config.and_then!.default_method_name_to_call = :perform
+end
+```
+
+**Explanation:**
+
+- `enable!(:and_then!)`: Activates the `and_then!` feature.
+
+- `default_method_name_to_call`: Sets a default method other than `:call` for `and_then!`.
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### Analysis: Why is `and_then!` an Anti-pattern?
+
+The `and_then!` approach, despite its brevity, introduces several issues:
+
+- **Lack of Clarity:** The input/output relationship between the steps is not apparent.
+
+- **Steps Coupling:** Each operation becomes interdependent (high coupling), complicating implementation and compromising the reusability of these operations.
+
+We recommend cautious use of `#and_then!`. Due to these issues, it is turned off by default and considered an antipattern.
+
+It should be a temporary solution, primarily for assisting in migration from another to gem to `bcdd-result`.
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### `#and_then` versus `#and_then!`
+
+The main difference between the `#and_then` and `#and_then!` is that the latter does not check the result source. However, as a drawback, the result source will change.
+
+Attention: to ensure the correct behavior, do not mix `#and_then` and `#and_then!` in the same result chain.
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### Analysis: Why is `#and_then` the antidote/standard?
+
+The `BCDD::Result#and_then`/`BCDD::Result::Context#and_then` methods diverge from the above approach by requiring explicit invocation and mapping of the outcomes at each process step. This approach has the following advantages:
+
+- **Clarity:** The input/output relationship between the steps is apparent and highly understandable.
+
+- **Steps uncoupling:** Each operation becomes independent (low coupling). You can even map a failure result to a success (and vice versa).
+
+See this example to understand what your code should look like:
+
+```ruby
+class PlaceOrder
+  include BCDD::Result::Context.mixin(config: { addon: { continue: true } })
+
+  def call(**input)
+    Given(input)
+      .and_then(:create_order)
+      .and_then(:pay_order)
+      .and_then(:send_order_confirmation)
+      .and_then(:notify_admins)
+      .and_expose(:order_placed, %i[order])
+  end
+
+  private
+
+  def create_order(customer:, products:)
+    CreateOrder.new.call(customer:, products:).handle do |on|
+      on.success { |output| Continue(order: output[:order]) }
+      on.failure { |error| Failure(:order_creation_failed, error:) }
+    end
+  end
+
+  def pay_order(customer:, order:, payment_method:, **)
+    PayOrder.new.call(customer:, payment_method:, order:).handle do |on|
+      on.success { |output| Continue(payment: output[:payment]) }
+      on.failure { |error| Failure(:order_payment_failed, error:) }
+    end
+  end
+
+  def send_order_confirmation(customer:, order:, payment:, **)
+    SendOrderConfirmation.new.call(customer:, order:, payment:).handle do |on|
+      on.success { Continue() }
+      on.failure { |error| Failure(:order_confirmation_failed, error:) }
+    end
+  end
+
+  def notify_admins(customer:, order:, payment:, **)
+    NotifyAdmins.new.call(customer:, order:, payment:)
+
+    Continue()
+  end
+end
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ## About
 
