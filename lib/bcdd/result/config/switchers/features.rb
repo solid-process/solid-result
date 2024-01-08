@@ -10,7 +10,11 @@ class BCDD::Result
         },
         transitions: {
           default: true,
-          affects: %w[BCDD::Result BCDD::Result::Context]
+          affects: %w[BCDD::Result BCDD::Result::Context BCDD::Result::Expectations BCDD::Result::Context::Expectations]
+        },
+        and_then!: {
+          default: false,
+          affects: %w[BCDD::Result BCDD::Result::Context BCDD::Result::Expectations BCDD::Result::Context::Expectations]
         }
       }.transform_values!(&:freeze).freeze
 

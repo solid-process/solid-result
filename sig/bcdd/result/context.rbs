@@ -13,11 +13,16 @@ class BCDD::Result::Context < BCDD::Result
     ?terminal: bool
   ) -> void
 
-  def and_then: (?Symbol, **untyped) ?{ (Hash[Symbol, untyped]) -> untyped } -> BCDD::Result::Context
+  def and_then: (?Symbol, **untyped) ?{ (Hash[Symbol, untyped]) -> untyped } -> untyped
+
+  def and_then!: (untyped, **untyped) -> untyped
 
   private
 
   def call_and_then_source_method: (Symbol, Hash[Symbol, untyped]) -> BCDD::Result::Context
+
+  def call_and_then_callable!: (untyped, value: untyped, injected_value: untyped, method_name: (Symbol | nil)) -> BCDD::Result::Context
+
   def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Result::Context
 
   def raise_unexpected_outcome_error: (BCDD::Result::Context | untyped, Symbol) -> void
@@ -31,6 +36,53 @@ class BCDD::Result::Context
   end
 
   def self.Success: (Symbol, **untyped) -> BCDD::Result::Context::Success
+end
+
+module BCDD::Result::Context::CallableAndThen
+  class Caller < BCDD::Result::CallableAndThen::Caller
+    module KeyArgs
+      def self.parameters?: (untyped) -> bool
+
+      def self.invalid_arity: (untyped, Symbol) -> BCDD::Result::CallableAndThen::Error::InvalidArity
+    end
+
+    def self.call: (
+      untyped source,
+      value: untyped,
+      injected_value: untyped,
+      method_name: (Symbol | nil),
+    ) -> BCDD::Result::Context
+
+    private
+
+    def self.call_proc!: (
+      untyped source,
+      Hash[Symbol, untyped] value,
+      nil injected_value
+    ) -> BCDD::Result::Context
+
+    def self.call_method!: (
+      untyped source,
+      Method method,
+      Hash[Symbol, untyped] value,
+      nil injected_value
+    ) -> BCDD::Result::Context
+
+    def self.callable_method: (
+      untyped source,
+      (Symbol | nil) method_name
+    ) -> ::Method
+
+    def self.ensure_result_object: (
+      untyped source,
+      untyped value,
+      BCDD::Result::Context result
+    ) -> BCDD::Result::Context
+
+    def self.expected_result_object: () -> singleton(BCDD::Result::Context)
+
+    def self.expected_outcome: () -> String
+  end
 end
 
 class BCDD::Result::Context

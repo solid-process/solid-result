@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'singleton'
-
 require_relative 'config/options'
 require_relative 'config/switcher'
 require_relative 'config/switchers/addons'
@@ -20,6 +18,11 @@ class BCDD::Result
       @feature = Features.switcher
       @constant_alias = ConstantAliases.switcher
       @pattern_matching = PatternMatching.switcher
+      @and_then_ = CallableAndThen::Config.new
+    end
+
+    def and_then!
+      @and_then_
     end
 
     def freeze
@@ -27,6 +30,7 @@ class BCDD::Result
       feature.freeze
       constant_alias.freeze
       pattern_matching.freeze
+      and_then!.freeze
 
       super
     end
@@ -45,7 +49,9 @@ class BCDD::Result
     end
 
     def inspect
-      "#<#{self.class.name} options=#{options.keys.sort.inspect}>"
+      "#<#{self.class.name} " \
+        "options=#{options.keys.sort.inspect} " \
+        "and_then!=#{and_then!.options.inspect}>"
     end
   end
 end

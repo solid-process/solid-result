@@ -6,26 +6,18 @@ module BCDD::Result::Transitions
 
     private :tree, :tree=, :records, :records=, :root_started_at, :root_started_at=
 
-    def start(name:, desc:)
-      name_and_desc = [name, desc]
+    def exec(name, desc)
+      start(name, desc)
 
-      tree.frozen? ? root_start(name_and_desc) : tree.insert!(name_and_desc)
-    end
+      transition_node = tree.current
 
-    def finish(result:)
-      node = tree.current
+      result = EnsureResult[yield]
 
-      tree.move_up!
+      tree.move_to_root! if transition_node.root?
 
-      return unless node.root?
+      finish(result)
 
-      duration = (now_in_milliseconds - root_started_at)
-
-      metadata = { duration: duration, tree_map: tree.nested_ids }
-
-      result.send(:transitions=, version: Tracking::VERSION, records: records, metadata: metadata)
-
-      reset!
+      result
     end
 
     def reset!
@@ -51,7 +43,35 @@ module BCDD::Result::Transitions
       yield
     end
 
+    def reset_and_then!
+      return if tree.frozen?
+
+      tree.current.value[1] = Tracking::EMPTY_HASH
+    end
+
     private
+
+    def start(name, desc)
+      name_and_desc = [name, desc]
+
+      tree.frozen? ? root_start(name_and_desc) : tree.insert!(name_and_desc)
+    end
+
+    def finish(result)
+      node = tree.current
+
+      tree.move_up!
+
+      return unless node.root?
+
+      duration = (now_in_milliseconds - root_started_at)
+
+      metadata = { duration: duration, tree_map: tree.nested_ids }
+
+      result.send(:transitions=, version: Tracking::VERSION, records: records, metadata: metadata)
+
+      reset!
+    end
 
     TreeNodeValueNormalizer = ->(id, (nam, des)) { [{ id: id, name: nam, desc: des }, Tracking::EMPTY_HASH] }
 
@@ -74,7 +94,7 @@ module BCDD::Result::Transitions
     end
 
     def now_in_milliseconds
-      Process.clock_gettime(Process::CLOCK_MONOTONIC, :millisecond)
+      ::Process.clock_gettime(::Process::CLOCK_MONOTONIC, :millisecond)
     end
   end
 end

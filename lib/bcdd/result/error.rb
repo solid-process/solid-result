@@ -9,7 +9,7 @@ class BCDD::Result::Error < StandardError
   end
 
   class MissingTypeArgument < self
-    def initialize(_arg = nil)
+    def initialize(_message = nil)
       super('A type (argument) is required to invoke the #on/#on_type method')
     end
   end
@@ -45,6 +45,15 @@ class BCDD::Result::Error < StandardError
       source = types.size == 1 ? 'This was' : 'These were'
 
       new("You must handle all cases. #{source} not handled: #{types.map(&:inspect).join(', ')}")
+    end
+  end
+
+  class CallableAndThenDisabled < self
+    def initialize(_message = nil)
+      super(
+        'You cannot use #and_then! as the feature is disabled. ' \
+        'Please use BCDD::Result.config.feature.enable!(:and_then!) to enable it.'
+      )
     end
   end
 end

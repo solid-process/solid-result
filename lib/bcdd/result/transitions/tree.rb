@@ -46,9 +46,9 @@ class BCDD::Result
       def initialize(value, normalizer: ->(_id, val) { val })
         @size = 0
 
-        @root = Node.new(value, parent: nil, id: @size, normalizer: normalizer)
+        @root = Node.new(value, parent: nil, id: size, normalizer: normalizer)
 
-        @current = @root
+        @current = root
       end
 
       def root_value
@@ -70,19 +70,23 @@ class BCDD::Result
       end
 
       def insert!(value)
-        @current = insert(value)
+        move_to! insert(value)
+      end
+
+      def move_to!(node)
+        tap { @current = node }
       end
 
       def move_up!(level = 1)
-        tap { level.times { @current = current.parent || root } }
+        tap { level.times { move_to!(current.parent || root) } }
       end
 
       def move_down!(level = 1, index: -1)
-        tap { level.times { current.children[index].then { |child| @current = child if child } } }
+        tap { level.times { current.children[index].then { |child| move_to!(child) if child } } }
       end
 
       def move_to_root!
-        tap { @current = root }
+        move_to!(root)
       end
 
       NestedIds = ->(node) { [node.id, node.children.map(&NestedIds)] }

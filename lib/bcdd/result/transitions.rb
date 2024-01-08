@@ -7,21 +7,19 @@ class BCDD::Result
 
     THREAD_VAR_NAME = :bcdd_result_transitions_tracking
 
+    EnsureResult = ->(result) do
+      return result if result.is_a?(::BCDD::Result)
+
+      raise Error::UnexpectedOutcome.build(outcome: result, origin: :transitions)
+    end
+
     def self.tracking
       Thread.current[THREAD_VAR_NAME] ||= Tracking.instance
     end
   end
 
-  def self.transitions(name: nil, desc: nil)
-    Transitions.tracking.start(name: name, desc: desc)
-
-    result = yield
-
-    result.is_a?(::BCDD::Result) or raise Error::UnexpectedOutcome.build(outcome: result, origin: :transitions)
-
-    Transitions.tracking.finish(result: result)
-
-    result
+  def self.transitions(name: nil, desc: nil, &block)
+    Transitions.tracking.exec(name, desc, &block)
   rescue ::Exception => e
     Transitions.tracking.reset!
 
