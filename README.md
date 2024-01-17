@@ -4,6 +4,7 @@
   <p align="center">
     <img src="https://img.shields.io/badge/ruby->%3D%202.7.0-ruby.svg?colorA=99004d&colorB=cc0066" alt="Ruby">
     <a href="https://rubygems.org/gems/bcdd-result"><img src="https://badge.fury.io/rb/bcdd-result.svg" alt="bcdd-result gem version" height="18"></a>
+    <a href="https://codeclimate.com/github/B-CDD/result/maintainability"><img src="https://api.codeclimate.com/v1/badges/aa8360f8f012d7dedd62/maintainability" /></a>
   </p>
 </p>
 
@@ -1782,6 +1783,8 @@ Division.call(14, '2')
 Division.call(14, 0)
 #<BCDD::Result::Context::Failure type=:division_by_zero value={:message=>"arg2 must not be zero"}>
 ```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ### `BCDD::Result.transitions`
 
