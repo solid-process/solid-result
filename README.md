@@ -5,6 +5,7 @@
     <img src="https://img.shields.io/badge/ruby->%3D%202.7.0-ruby.svg?colorA=99004d&colorB=cc0066" alt="Ruby">
     <a href="https://rubygems.org/gems/bcdd-result"><img src="https://badge.fury.io/rb/bcdd-result.svg" alt="bcdd-result gem version" height="18"></a>
     <a href="https://codeclimate.com/github/B-CDD/result/maintainability"><img src="https://api.codeclimate.com/v1/badges/aa8360f8f012d7dedd62/maintainability" /></a>
+    <a href="https://codeclimate.com/github/B-CDD/result/test_coverage"><img src="https://api.codeclimate.com/v1/badges/aa8360f8f012d7dedd62/test_coverage" /></a>
   </p>
 </p>
 
@@ -2290,7 +2291,7 @@ end
 
 ## About
 
-[Rodrigo Serradura](https://github.com/serradura) created this project. He is the B/CDD process/method creator and has already made similar gems like the [u-case](https://github.com/serradura/u-case) and [kind](https://github.com/serradura/kind/blob/main/lib/kind/result.rb). This gem is a general-purpose abstraction/monad, but it also contains key features that serve as facilitators for adopting B/CDD in the code.
+[Rodrigo Serradura](https://github.com/serradura) created this project. He is the B/CDD process/method creator and has already made similar gems like the [u-case](https://github.com/serradura/u-case) and [kind](https://github.com/serradura/kind/blob/main/lib/kind/result.rb). This gem can be used independently, but it also contains essential features that facilitate the adoption of B/CDD in code.
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
