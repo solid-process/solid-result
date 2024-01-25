@@ -29,8 +29,17 @@ class BCDD::Result::Context < BCDD::Result
 end
 
 class BCDD::Result::Context
+  class Error < BCDD::Result::Error
+    class InvalidExposure < BCDD::Result::Context::Error
+    end
+  end
+end
+
+class BCDD::Result::Context
   class Success < BCDD::Result::Context
     include BCDD::Result::Success::Methods
+
+    FetchValues: Proc
 
     def and_expose: (Symbol, Array[Symbol], terminal: bool) -> BCDD::Result::Context::Success
   end

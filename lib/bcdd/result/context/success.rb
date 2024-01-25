@@ -1,8 +1,22 @@
 # frozen_string_literal: true
 
 class BCDD::Result
+  class Context::Error < BCDD::Result::Error
+    InvalidExposure = ::Class.new(self)
+  end
+
   class Context::Success < Context
     include ::BCDD::Result::Success::Methods
+
+    FetchValues = ->(acc_values, keys) do
+      fetched_values = acc_values.fetch_values(*keys)
+
+      keys.zip(fetched_values).to_h
+    rescue ::KeyError => e
+      message = "#{e.message}. Available to expose: #{acc_values.keys.map(&:inspect).join(', ')}"
+
+      raise Context::Error::InvalidExposure, message
+    end
 
     def and_expose(type, keys, terminal: true)
       unless keys.is_a?(::Array) && !keys.empty? && keys.all?(::Symbol)
@@ -11,9 +25,11 @@ class BCDD::Result
 
       Transitions.tracking.reset_and_then!
 
-      exposed_value = acc.merge(value).slice(*keys)
+      acc_values = acc.merge(value)
 
-      self.class.new(type: type, value: exposed_value, source: source, terminal: terminal)
+      value_to_expose = FetchValues.call(acc_values, keys)
+
+      self.class.new(type: type, value: value_to_expose, source: source, terminal: terminal)
     end
   end
 end
