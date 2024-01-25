@@ -118,17 +118,22 @@ module BCDDResultTransitionAssertions
     assert_instance_of(Array, metadata[:tree_map])
   end
 
+  TimeValue = ->(value) { value.is_a?(::Time) && value.utc? }
+  AndThenValue = ->(value) { value.is_a?(::Hash) && value.empty? }
+
   def assert_transition_record(result, index, options)
     transition = result.transitions[:records][index]
 
-    root, parent, current, result = options.fetch_values(:root, :parent, :current, :result)
+    root, parent, current, result_data = options.fetch_values(:root, :parent, :current, :result)
 
-    and_then = options.fetch(:and_then) { ->(value) { value.is_a?(::Hash) && value.empty? } }
+    result_data[:source] = result.send(:source) unless result_data.key?(:source)
 
-    time = options.fetch(:time) { ->(value) { value.is_a?(::Time) && value.utc? } }
+    and_then = options.fetch(:and_then) { AndThenValue }
+
+    time = options.fetch(:time) { TimeValue }
 
     assert_hash_schema!(
-      { root: root, parent: parent, current: current, result: result, and_then: and_then, time: time },
+      { root: root, parent: parent, current: current, result: result_data, and_then: and_then, time: time },
       transition
     )
   end

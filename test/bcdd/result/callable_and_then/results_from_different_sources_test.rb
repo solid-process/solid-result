@@ -84,26 +84,30 @@ class BCDD::Result
 
       root = { id: 0, name: 'NormalizeAndValidateEmail', desc: nil }
 
+      source = -> { _1 == NormalizeAndValidateEmail }
+
       {
         root: root,
         parent: root,
         current: root,
-        result: { kind: :success, type: :given, value: 1 }
+        result: { kind: :success, type: :given, value: 1, source: source }
       }.then { assert_transition_record(result1, 0, _1) }
+
+      source = -> { _1 == NormalizeEmail }
 
       {
         root: root,
         parent: root,
         current: { id: 1, name: 'NormalizeEmail', desc: nil },
-        result: { kind: :success, type: :given, value: 1 }
+        result: { kind: :success, type: :given, value: 1, source: source }
       }.then { assert_transition_record(result1, 1, _1) }
 
       {
         root: root,
         parent: root,
         current: { id: 1, name: 'NormalizeEmail', desc: nil },
-        result: { kind: :failure, type: :invalid_input, value: 'input must be a String' },
-        and_then: { type: :method, arg: nil, source: -> { _1 == NormalizeEmail }, method_name: :normalize }
+        result: { kind: :failure, type: :invalid_input, value: 'input must be a String', source: source },
+        and_then: { type: :method, arg: nil, method_name: :normalize }
       }.then { assert_transition_record(result1, 2, _1) }
 
       # ---
@@ -116,41 +120,45 @@ class BCDD::Result
 
       root = { id: 0, name: 'NormalizeAndValidateEmail', desc: nil }
 
+      source = -> { _1 == NormalizeAndValidateEmail }
+
       {
         root: root,
         parent: root,
         current: root,
-        result: { kind: :success, type: :given, value: " FOO@bAr.com  \n" }
+        result: { kind: :success, type: :given, value: " FOO@bAr.com  \n", source: source }
       }.then { assert_transition_record(result2, 0, _1) }
+
+      source = -> { _1 == NormalizeEmail }
 
       {
         root: root,
         parent: root,
         current: { id: 1, name: 'NormalizeEmail', desc: nil },
-        result: { kind: :success, type: :given, value: " FOO@bAr.com  \n" }
+        result: { kind: :success, type: :given, value: " FOO@bAr.com  \n", source: source }
       }.then { assert_transition_record(result2, 1, _1) }
 
       {
         root: root,
         parent: root,
         current: { id: 1, name: 'NormalizeEmail', desc: nil },
-        result: { kind: :success, type: :normalized_input, value: 'foo@bar.com' },
-        and_then: { type: :method, arg: nil, source: -> { _1 == NormalizeEmail }, method_name: :normalize }
+        result: { kind: :success, type: :normalized_input, value: 'foo@bar.com', source: source },
+        and_then: { type: :method, arg: nil, method_name: :normalize }
       }.then { assert_transition_record(result2, 2, _1) }
 
       {
         root: root,
         parent: root,
         current: { id: 2, name: 'EmailValidation', desc: nil },
-        result: { kind: :success, type: :given, value: 'foo@bar.com' }
+        result: { kind: :success, type: :given, value: 'foo@bar.com', source: EmailValidation }
       }.then { assert_transition_record(result2, 3, _1) }
 
       {
         root: root,
         parent: root,
         current: { id: 2, name: 'EmailValidation', desc: nil },
-        result: { kind: :success, type: :valid_email, value: 'foo@bar.com' },
-        and_then: { type: :method, arg: nil, source: EmailValidation, method_name: :validate }
+        result: { kind: :success, type: :valid_email, value: 'foo@bar.com', source: EmailValidation },
+        and_then: { type: :method, arg: nil, method_name: :validate }
       }.then { assert_transition_record(result2, 4, _1) }
     end
   end

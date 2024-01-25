@@ -68,45 +68,45 @@ class BCDD::Result
         root: root,
         parent: root,
         current: root,
-        result: { kind: :success, type: :given, value: { a: 1 } }
+        result: { kind: :success, type: :given, value: { a: 1 }, source: root_process }
       }.then { assert_transition_record(result, 0, _1) }
 
       {
         root: root,
         parent: root,
         current: root,
-        result: { kind: :success, type: :b, value: { b: 2 } },
-        and_then: { type: :method, arg: { b: 2 }, source: root_process, method_name: :call_b }
+        result: { kind: :success, type: :b, value: { b: 2 }, source: root_process },
+        and_then: { type: :method, arg: { b: 2 }, method_name: :call_b }
       }.then { assert_transition_record(result, 1, _1) }
 
       {
         root: root,
         parent: root,
         current: { id: 1, name: 'CallC', desc: nil },
-        result: { kind: :success, type: :c, value: { c: 3 } }
+        result: { kind: :success, type: :c, value: { c: 3 }, source: nil }
       }.then { assert_transition_record(result, 2, _1) }
 
       {
         root: root,
         parent: root,
         current: root,
-        result: { kind: :success, type: :d, value: { d: 4 } },
-        and_then: { type: :method, arg: -> { _1.is_a?(Hash) && _1.empty? }, source: root_process, method_name: :call_d }
+        result: { kind: :success, type: :d, value: { d: 4 }, source: root_process },
+        and_then: { type: :method, arg: -> { _1.is_a?(Hash) && _1.empty? }, method_name: :call_d }
       }.then { assert_transition_record(result, 3, _1) }
 
       {
         root: root,
         parent: root,
         current: { id: 2, name: 'CallE', desc: nil },
-        result: { kind: :success, type: :e, value: { e: 5 } }
+        result: { kind: :success, type: :e, value: { e: 5 }, source: nil }
       }.then { assert_transition_record(result, 4, _1) }
 
       {
         root: root,
         parent: root,
         current: root,
-        result: { kind: :success, type: :g, value: { g: 6 } },
-        and_then: { type: :method, arg: { h: 7 }, source: root_process, method_name: :call_g }
+        result: { kind: :success, type: :g, value: { g: 6 }, source: root_process },
+        and_then: { type: :method, arg: { h: 7 }, method_name: :call_g }
       }.then { assert_transition_record(result, 5, _1) }
 
       {

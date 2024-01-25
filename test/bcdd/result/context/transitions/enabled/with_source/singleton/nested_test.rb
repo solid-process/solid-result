@@ -125,28 +125,29 @@ class BCDD::Result
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' } }
+        result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' }, source: Division }
       }.then { |spec| assert_transition_record(result, 0, spec) }
 
       {
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' } }
+        result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' }, source: Division }
       }.then { |spec| assert_transition_record(result, 1, spec) }
 
       {
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' } }
+        result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' }, source: Division }
       }.then { |spec| assert_transition_record(result, 2, spec) }
 
       {
         root: root,
         parent: root,
         current: root,
-        result: { kind: :failure, type: :errors, value: { messages: ['num1 must be numeric'] * 3 } }
+        result: { kind: :failure, type: :errors, value: { messages: ['num1 must be numeric'] * 3 },
+                  source: SumDivisionsByTwo }
       }.then { |spec| assert_transition_record(result, 3, spec) }
 
       # ---
@@ -173,7 +174,7 @@ class BCDD::Result
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' } }
+        result: { kind: :failure, type: :invalid_arg, value: { message: 'num1 must be numeric' }, source: Division }
       }.then { |spec| assert_transition_record(result, 0, spec) }
 
       # 2nd division transitions
@@ -187,23 +188,23 @@ class BCDD::Result
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :success, type: :continued, value: { num1: 20, num2: 2 } }
+        result: { kind: :success, type: :continued, value: { num1: 20, num2: 2 }, source: Division }
       }.then { |spec| assert_transition_record(result, 1, spec) }
 
       {
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :success, type: :continued, value: {} },
-        and_then: { type: :method, arg: { useless_arg: true }, source: Division, method_name: :validate_nonzero }
+        result: { kind: :success, type: :continued, value: {}, source: Division },
+        and_then: { type: :method, arg: { useless_arg: true }, method_name: :validate_nonzero }
       }.then { |spec| assert_transition_record(result, 2, spec) }
 
       {
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :success, type: :division_completed, value: { number: 10 } },
-        and_then: { type: :method, arg: {}, source: Division, method_name: :divide }
+        result: { kind: :success, type: :division_completed, value: { number: 10 }, source: Division },
+        and_then: { type: :method, arg: {}, method_name: :divide }
       }.then { |spec| assert_transition_record(result, 3, spec) }
 
       # 3rd division transitions
@@ -217,23 +218,23 @@ class BCDD::Result
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :success, type: :continued, value: { num1: 0, num2: 2 } }
+        result: { kind: :success, type: :continued, value: { num1: 0, num2: 2 }, source: Division }
       }.then { |spec| assert_transition_record(result, 4, spec) }
 
       {
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :success, type: :continued, value: {} },
-        and_then: { type: :method, arg: { useless_arg: true }, source: Division, method_name: :validate_nonzero }
+        result: { kind: :success, type: :continued, value: {}, source: Division },
+        and_then: { type: :method, arg: { useless_arg: true }, method_name: :validate_nonzero }
       }.then { |spec| assert_transition_record(result, 5, spec) }
 
       {
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :success, type: :division_completed, value: { number: 0 } },
-        and_then: { type: :method, arg: {}, source: Division, method_name: :divide }
+        result: { kind: :success, type: :division_completed, value: { number: 0 }, source: Division },
+        and_then: { type: :method, arg: {}, method_name: :divide }
       }.then { |spec| assert_transition_record(result, 6, spec) }
 
       # Final result transition

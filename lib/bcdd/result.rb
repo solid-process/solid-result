@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'set'
 require 'singleton'
 
 require_relative 'result/version'
@@ -153,7 +154,7 @@ class BCDD::Result
   def call_and_then_source_method(method_name, injected_value)
     method = source.method(method_name)
 
-    Transitions.tracking.record_and_then(method, injected_value, source) do
+    Transitions.tracking.record_and_then(method, injected_value) do
       result = call_and_then_source_method!(method, injected_value)
 
       ensure_result_object(result, origin: :method)
@@ -170,7 +171,7 @@ class BCDD::Result
   end
 
   def call_and_then_block(block)
-    Transitions.tracking.record_and_then(:block, nil, source) do
+    Transitions.tracking.record_and_then(:block, nil) do
       result = call_and_then_block!(block)
 
       ensure_result_object(result, origin: :block)

@@ -10,7 +10,7 @@ module BCDD::Result::Transitions
 
     def self.record(result); end
 
-    def self.record_and_then(_type, _data, _source)
+    def self.record_and_then(_type, _data)
       yield
     end
 

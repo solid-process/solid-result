@@ -58,7 +58,7 @@ class BCDD::Result
         def exec: (String, String) { () -> untyped } -> BCDD::Result
         def reset!: () -> void
         def record: (BCDD::Result) -> void
-        def record_and_then: ((untyped), untyped, untyped) { () -> BCDD::Result } -> BCDD::Result
+        def record_and_then: ((untyped), untyped) { () -> BCDD::Result } -> BCDD::Result
         def reset_and_then!: () -> void
 
         private
@@ -79,7 +79,7 @@ class BCDD::Result
         def self.exec: (String, String) { () -> untyped } -> BCDD::Result
         def self.reset!: () -> void
         def self.record: (BCDD::Result) -> void
-        def self.record_and_then: ((untyped), untyped, untyped) { () -> BCDD::Result } -> BCDD::Result
+        def self.record_and_then: ((untyped), untyped) { () -> BCDD::Result } -> BCDD::Result
         def self.reset_and_then!: () -> void
 
         private
