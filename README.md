@@ -1855,83 +1855,83 @@ result = SumDivisionsByTwo.call(20, 10)
 
 result.transitions
 {
-  :version =>1,
+  :version => 1,
   :metadata => {
-    :duration => 0,                       # milliseconds
-    :tree_map => [0, [[1, []], [2, []]]], # represents the tree of transitions using the id of each transition block
+    :duration => 0,                      # milliseconds
+    :tree_map => [0, [[1, []], [2, []]]] # represents the tree of transitions using the id of each transition block
   },
-  :records => [
+  :records=> [
     {
-      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
-      :result=>{:kind=>:success, :type=>:given, :value=>[20, 2]},
-      :and_then=>{},
-      :time=>2024-01-02 03:35:11.248418 UTC
+      :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current => {:id=>1, :name=>"Division", :desc=>"divide two numbers"},
+      :result => {:kind=>:success, :type=>:given, :value=>[20, 2], :source=><Division:0x0000000102fd7ed0>},
+      :and_then => {},
+      :time => 2024-01-26 02:53:11.310346 UTC
     },
     {
-      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
-      :result=>{:kind=>:success, :type=>:continued, :value=>[20, 2]},
-      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106099028>, :method_name=>:require_numbers},
-      :time=>2024-01-02 03:35:11.248558 UTC
+      :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current => {:id=>1, :name=>"Division", :desc=>"divide two numbers"},
+      :result => {:kind=>:success, :type=>:continued, :value=>[20, 2], :source=><Division:0x0000000102fd7ed0>},
+      :and_then => {:type=>:method, :arg=>nil, :method_name=>:require_numbers},
+      :time => 2024-01-26 02:53:11.310392 UTC
     },
     {
-      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
-      :result=>{:kind=>:success, :type=>:continued, :value=>[20, 2]},
-      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106099028>, :method_name=>:check_for_zeros},
-      :time=>2024-01-02 03:35:11.248587 UTC
+      :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current => {:id=>1, :name=>"Division", :desc=>"divide two numbers"},
+      :result => {:kind=>:success, :type=>:continued, :value=>[20, 2], :source=><Division:0x0000000102fd7ed0>},
+      :and_then => {:type=>:method, :arg=>nil, :method_name=>:check_for_zeros},
+      :time=>2024-01-26 02:53:11.310403 UTC
     },
     {
-      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :current=>{:id=>1, :name=>"Division", :desc=>"divide two numbers"},
-      :result=>{:kind=>:success, :type=>:division_completed, :value=>10},
-      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106099028>, :method_name=>:divide},
-      :time=>2024-01-02 03:35:11.248607 UTC
+      :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current => {:id=>1, :name=>"Division", :desc=>"divide two numbers"},
+      :result => {:kind=>:success, :type=>:division_completed, :value=>10, :source=><Division:0x0000000102fd7ed0>},
+      :and_then => {:type=>:method, :arg=>nil, :method_name=>:divide},
+      :time => 2024-01-26 02:53:11.310409 UTC
     },
     {
-      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
-      :result=>{:kind=>:success, :type=>:given, :value=>[10, 2]},
-      :and_then=>{},
-      :time=>2024-01-02 03:35:11.24865 UTC
+      :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current => {:id=>2, :name=>"Division", :desc=>"divide two numbers"},
+      :result => {:kind=>:success, :type=>:given, :value=>[10, 2], :source=><Division:0x0000000102fd6378>},
+      :and_then => {},
+      :time => 2024-01-26 02:53:11.310424 UTC
     },
     {
-      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
-      :result=>{:kind=>:success, :type=>:continued, :value=>[10, 2]},
-      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106097ed0>, :method_name=>:require_numbers},
-      :time=>2024-01-02 03:35:11.248661 UTC
+      :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current => {:id=>2, :name=>"Division", :desc=>"divide two numbers"},
+      :result => {:kind=>:success, :type=>:continued, :value=>[10, 2], :source=><Division:0x0000000102fd6378>},
+      :and_then => {:type=>:method, :arg=>nil, :method_name=>:require_numbers},
+      :time => 2024-01-26 02:53:11.310428 UTC
     },
     {
-      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
-      :result=>{:kind=>:success, :type=>:continued, :value=>[10, 2]},
-      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106097ed0>, :method_name=>:check_for_zeros},
-      :time=>2024-01-02 03:35:11.248672 UTC
+      :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current => {:id=>2, :name=>"Division", :desc=>"divide two numbers"},
+      :result => {:kind=>:success, :type=>:continued, :value=>[10, 2], :source=><Division:0x0000000102fd6378>},
+      :and_then => {:type=>:method, :arg=>nil, :method_name=>:check_for_zeros},
+      :time => 2024-01-26 02:53:11.310431 UTC
     },
     {
-      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :current=>{:id=>2, :name=>"Division", :desc=>"divide two numbers"},
-      :result=>{:kind=>:success, :type=>:division_completed, :value=>5},
-      :and_then=>{:type=>:method, :arg=>nil, :source=><Division:0x0000000106097ed0>, :method_name=>:divide},
-      :time=>2024-01-02 03:35:11.248682 UTC
+      :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current => {:id=>2, :name=>"Division", :desc=>"divide two numbers"},
+      :result => {:kind=>:success, :type=>:division_completed, :value=>5, :source=><Division:0x0000000102fd6378>},
+      :and_then => {:type=>:method, :arg=>nil, :method_name=>:divide},
+      :time => 2024-01-26 02:53:11.310434 UTC
     },
     {
-      :root=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :parent=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :current=>{:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
-      :result=>{:kind=>:success, :type=>:sum, :value=>15},
-      :and_then=>{},
-      :time=>2024-01-02 03:35:11.248721 UTC
+      :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :current => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
+      :result => {:kind=>:success, :type=>:sum, :value=>15, :source=>SumDivisionsByTwo},
+      :and_then => {},
+      :time => 2024-01-26 02:53:11.310444 UTC
     }
   ]
 }

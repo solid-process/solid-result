@@ -138,21 +138,21 @@ class BCDD::Result::TransitionsEnabledWithSourceInstanceNestedTest < Minitest::T
       root: root,
       parent: root,
       current: { id: Integer, name: 'Division', desc: nil },
-      result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric' }
+      result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric', source: Division }
     }.then { |spec| assert_transition_record(result, 0, spec) }
 
     {
       root: root,
       parent: root,
       current: { id: Integer, name: 'Division', desc: nil },
-      result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric' }
+      result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric', source: Division }
     }.then { |spec| assert_transition_record(result, 1, spec) }
 
     {
       root: root,
       parent: root,
       current: { id: Integer, name: 'Division', desc: nil },
-      result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric' }
+      result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric', source: Division }
     }.then { |spec| assert_transition_record(result, 2, spec) }
 
     {
@@ -186,7 +186,7 @@ class BCDD::Result::TransitionsEnabledWithSourceInstanceNestedTest < Minitest::T
       root: root,
       parent: root,
       current: { id: Integer, name: 'Division', desc: nil },
-      result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric' }
+      result: { kind: :failure, type: :invalid_arg, value: 'num1 must be numeric', source: Division }
     }.then { |spec| assert_transition_record(result, 0, spec) }
 
     # 2nd division transitions
@@ -200,29 +200,29 @@ class BCDD::Result::TransitionsEnabledWithSourceInstanceNestedTest < Minitest::T
       root: root,
       parent: root,
       current: { id: Integer, name: 'Division', desc: nil },
-      result: { kind: :success, type: :ok, value: [20, 2] }
+      result: { kind: :success, type: :ok, value: [20, 2], source: Division }
     }.then { |spec| assert_transition_record(result, 1, spec) }
 
     {
       root: root,
       parent: { id: Integer, name: 'CheckForZeros', desc: nil },
       current: { id: Integer, name: 'DetectZero', desc: nil },
-      result: { kind: :failure, type: :not_zero, value: nil }
+      result: { kind: :failure, type: :not_zero, value: nil, source: nil }
     }.then { |spec| assert_transition_record(result, 2, spec) }
 
     {
       root: root,
       parent: { id: Integer, name: 'Division', desc: nil },
       current: { id: Integer, name: 'CheckForZeros', desc: nil },
-      result: { kind: :failure, type: :no_zeros, value: nil }
+      result: { kind: :failure, type: :no_zeros, value: nil, source: nil }
     }.then { |spec| assert_transition_record(result, 3, spec) }
 
     {
       root: root,
       parent: root,
       current: { id: Integer, name: 'Division', desc: nil },
-      result: { kind: :success, type: :division_completed, value: 10 },
-      and_then: { type: :method, arg: 'useless_arg', source: -> { _1.is_a?(Division) }, method_name: :divide }
+      result: { kind: :success, type: :division_completed, value: 10, source: Division },
+      and_then: { type: :method, arg: 'useless_arg', method_name: :divide }
     }.then { |spec| assert_transition_record(result, 4, spec) }
 
     # 3rd division transitions
@@ -236,29 +236,29 @@ class BCDD::Result::TransitionsEnabledWithSourceInstanceNestedTest < Minitest::T
       root: root,
       parent: root,
       current: { id: Integer, name: 'Division', desc: nil },
-      result: { kind: :success, type: :ok, value: [0, 2] }
+      result: { kind: :success, type: :ok, value: [0, 2], source: Division }
     }.then { |spec| assert_transition_record(result, 5, spec) }
 
     {
       root: root,
       parent: { id: Integer, name: 'CheckForZeros', desc: nil },
       current: { id: Integer, name: 'DetectZero', desc: nil },
-      result: { kind: :failure, type: :not_zero, value: nil }
+      result: { kind: :failure, type: :not_zero, value: nil, source: nil }
     }.then { |spec| assert_transition_record(result, 6, spec) }
 
     {
       root: root,
       parent: { id: Integer, name: 'Division', desc: nil },
       current: { id: Integer, name: 'CheckForZeros', desc: nil },
-      result: { kind: :success, type: :num1_is_zero, value: nil }
+      result: { kind: :success, type: :num1_is_zero, value: nil, source: nil }
     }.then { |spec| assert_transition_record(result, 7, spec) }
 
     {
       root: root,
       parent: root,
       current: { id: Integer, name: 'Division', desc: nil },
-      result: { kind: :success, type: :division_completed, value: 0 },
-      and_then: { type: :method, arg: 'useless_arg', source: -> { _1.is_a?(Division) }, method_name: :divide }
+      result: { kind: :success, type: :division_completed, value: 0, source: Division },
+      and_then: { type: :method, arg: 'useless_arg', method_name: :divide }
     }.then { |spec| assert_transition_record(result, 8, spec) }
 
     # Final result transition

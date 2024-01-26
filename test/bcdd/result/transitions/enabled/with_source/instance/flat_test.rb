@@ -131,8 +131,8 @@ class BCDD::Result::TransitionsEnabledWithSourceInstanceFlatTest < Minitest::Tes
     }.then { |spec| assert_division_transition(result3, 0, spec) }
 
     {
-      result: { kind: :failure, type: :division_by_zero, value: 'num2 cannot be zero' },
-      and_then: { type: :method, arg: nil, source: division3, method_name: :check_for_zeros }
+      result: { kind: :failure, type: :division_by_zero, value: 'num2 cannot be zero', source: division3 },
+      and_then: { type: :method, arg: nil, method_name: :check_for_zeros }
     }.then { |spec| assert_division_transition(result3, 1, spec) }
 
     # ---
@@ -147,8 +147,8 @@ class BCDD::Result::TransitionsEnabledWithSourceInstanceFlatTest < Minitest::Tes
     }.then { |spec| assert_division_transition(result4, 0, spec) }
 
     {
-      result: { kind: :success, type: :division_completed, value: 0 },
-      and_then: { type: :method, arg: nil, source: division4, method_name: :check_for_zeros }
+      result: { kind: :success, type: :division_completed, value: 0, source: division4 },
+      and_then: { type: :method, arg: nil, method_name: :check_for_zeros }
     }.then { |spec| assert_division_transition(result4, 1, spec) }
 
     # ---
@@ -163,13 +163,13 @@ class BCDD::Result::TransitionsEnabledWithSourceInstanceFlatTest < Minitest::Tes
     }.then { |spec| assert_division_transition(result5, 0, spec) }
 
     {
-      result: { kind: :success, type: :continued, value: [4, 2] },
-      and_then: { type: :method, arg: nil, source: division5, method_name: :check_for_zeros }
+      result: { kind: :success, type: :continued, value: [4, 2], source: division5 },
+      and_then: { type: :method, arg: nil, method_name: :check_for_zeros }
     }.then { |spec| assert_division_transition(result5, 1, spec) }
 
     {
-      result: { kind: :success, type: :division_completed, value: 2 },
-      and_then: { type: :method, arg: nil, source: division5, method_name: :divide }
+      result: { kind: :success, type: :division_completed, value: 2, source: division5 },
+      and_then: { type: :method, arg: nil, method_name: :divide }
     }.then { |spec| assert_division_transition(result5, 2, spec) }
 
     # ---
