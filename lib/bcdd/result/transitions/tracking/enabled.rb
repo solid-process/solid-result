@@ -2,22 +2,32 @@
 
 module BCDD::Result::Transitions
   class Tracking::Enabled
-    attr_accessor :tree, :records, :root_started_at
+    attr_accessor :tree, :records, :root_started_at, :listener
 
-    private :tree, :tree=, :records, :records=, :root_started_at, :root_started_at=
+    private :tree, :tree=, :records, :records=, :root_started_at, :root_started_at=, :listener, :listener=
 
     def exec(name, desc)
-      start(name, desc)
+      transition_node, scope = start(name, desc)
 
-      transition_node = tree.current
+      result = nil
 
-      result = EnsureResult[yield]
+      listener.around_transitions(scope: scope) do
+        result = EnsureResult[yield]
+      end
 
       tree.move_to_root! if transition_node.root?
 
       finish(result)
 
       result
+    end
+
+    def err!(exception)
+      listener.before_interruption(exception: exception, transitions: map_transitions)
+
+      reset!
+
+      raise exception
     end
 
     def reset!
@@ -30,17 +40,19 @@ module BCDD::Result::Transitions
       track(result, time: ::Time.now.getutc)
     end
 
-    def record_and_then(type_arg, arg)
+    def record_and_then(type_arg, arg, &block)
+      return yield if tree.frozen?
+
       type = type_arg.instance_of?(::Method) ? :method : type_arg
 
-      unless tree.frozen?
-        current_and_then = { type: type, arg: arg }
-        current_and_then[:method_name] = type_arg.name if type == :method
+      current_and_then = { type: type, arg: arg }
+      current_and_then[:method_name] = type_arg.name if type == :method
 
-        tree.current.value[1] = current_and_then
-      end
+      tree.current.value[1] = current_and_then
 
-      yield
+      scope, and_then = tree.current_value
+
+      listener.around_and_then(scope: scope, and_then: and_then, &block)
     end
 
     def reset_and_then!
@@ -55,6 +67,12 @@ module BCDD::Result::Transitions
       name_and_desc = [name, desc]
 
       tree.frozen? ? root_start(name_and_desc) : tree.insert!(name_and_desc)
+
+      scope = tree.current.value[0]
+
+      listener.on_start(scope: scope)
+
+      [tree.current, scope]
     end
 
     def finish(result)
@@ -64,11 +82,11 @@ module BCDD::Result::Transitions
 
       return unless node.root?
 
-      duration = (now_in_milliseconds - root_started_at)
+      transitions = map_transitions
 
-      metadata = { duration: duration, tree_map: tree.nested_ids }
+      result.send(:transitions=, transitions)
 
-      result.send(:transitions=, version: Tracking::VERSION, records: records, metadata: metadata)
+      listener.on_finish(transitions: transitions)
 
       reset!
     end
@@ -78,12 +96,24 @@ module BCDD::Result::Transitions
     def root_start(name_and_desc)
       self.root_started_at = now_in_milliseconds
 
+      self.listener = build_listener
+
       self.records = []
 
       self.tree = Tree.new(name_and_desc, normalizer: TreeNodeValueNormalizer)
     end
 
     def track(result, time:)
+      record = track_record(result, time)
+
+      records << record
+
+      listener.on_record(record: record)
+
+      record
+    end
+
+    def track_record(result, time)
       result_data = result.data.to_h
       result_data[:source] = result.send(:source)
 
@@ -91,11 +121,31 @@ module BCDD::Result::Transitions
       parent, = tree.parent_value
       current, and_then = tree.current_value
 
-      records << { root: root, parent: parent, current: current, result: result_data, and_then: and_then, time: time }
+      { root: root, parent: parent, current: current, result: result_data, and_then: and_then, time: time }
     end
 
     def now_in_milliseconds
       ::Process.clock_gettime(::Process::CLOCK_MONOTONIC, :millisecond)
+    end
+
+    def map_transitions
+      duration = (now_in_milliseconds - root_started_at)
+
+      trace_id = Config.instance.trace_id.call
+
+      metadata = { duration: duration, tree_map: tree.nested_ids, trace_id: trace_id }
+
+      { version: Tracking::VERSION, records: records, metadata: metadata }
+    end
+
+    def build_listener
+      Config.instance.listener.new
+    rescue ::StandardError => e
+      err = "#{e.message} (#{e.class}); Backtrace: #{e.backtrace&.join("\n")}"
+
+      warn("Fallback to #{Listener::Null} because registered listener raised an exception: #{err}")
+
+      Listener::Null.new
     end
   end
 end

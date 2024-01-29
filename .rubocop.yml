@@ -25,6 +25,10 @@ Layout/MultilineMethodCallIndentation:
 Lint/UnderscorePrefixedVariableName:
   Enabled: false
 
+Lint/UnusedMethodArgument:
+  Exclude:
+    - lib/bcdd/result/transitions/listener.rb
+
 Style/AccessModifierDeclarations:
   Enabled: false
 

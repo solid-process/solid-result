@@ -1,5 +1,49 @@
 class BCDD::Result
   module Transitions
+    module Listener
+      def around_transitions: (
+        scope: Hash[Symbol, untyped]
+      ) { () -> untyped } -> untyped
+
+      def on_start: (
+        scope: Hash[Symbol, untyped]
+      ) { () -> untyped } -> untyped
+
+      def around_and_then: (
+        scope: Hash[Symbol, untyped],
+        and_then: Hash[Symbol, untyped],
+      ) { () -> untyped } -> untyped
+
+      def on_record: (record: Hash[Symbol, untyped] ) -> untyped
+
+      def on_finish: (transitions: Hash[Symbol, untyped] ) -> untyped
+
+      def before_interruption: (
+        exception: ::Exception,
+        transitions: Hash[Symbol, untyped]
+      ) -> untyped
+    end
+
+    module Listener::Null
+      extend Listener
+
+      def self.new: () -> untyped
+    end
+
+    class Config
+      include ::Singleton
+
+      attr_reader listener: untyped
+      attr_reader trace_id: ::Proc
+
+      def self.instance: -> Config
+
+      def initialize: -> void
+
+      def listener=: (Listener) -> void
+      def trace_id=: (::Proc) -> void
+    end
+
     class Tree
       class Node
         attr_reader id: Integer
@@ -53,9 +97,11 @@ class BCDD::Result
       class Enabled
         private attr_accessor tree: Transitions::Tree
         private attr_accessor records: Array[Hash[Symbol, untyped]]
+        private attr_accessor listener: untyped
         private attr_accessor root_started_at: Integer
 
-        def exec: (String, String) { () -> untyped } -> BCDD::Result
+        def exec: (untyped, untyped) { () -> untyped } -> untyped
+        def err!: (::Exception) -> void
         def reset!: () -> void
         def record: (BCDD::Result) -> void
         def record_and_then: ((untyped), untyped) { () -> BCDD::Result } -> BCDD::Result
@@ -63,20 +109,26 @@ class BCDD::Result
 
         private
 
-        def start: (String, String) -> void
-        def finish: (BCDD::Result) -> void
+        def start: (String, String) -> [Transitions::Tree::Node, Hash[Symbol, untyped]]
+        def finish: (untyped) -> untyped
 
         TreeNodeValueNormalizer: ^(Integer, Array[untyped]) -> untyped
 
         def root_start: (Array[untyped]) -> void
 
         def track: (BCDD::Result, time: Time) -> void
+        def track_record: (BCDD::Result, Time) -> Hash[Symbol, untyped]
 
         def now_in_milliseconds: () -> Integer
+
+        def map_transitions: () -> Hash[Symbol, untyped]
+
+        def build_listener: () -> Listener
       end
 
       module Disabled
-        def self.exec: (String, String) { () -> untyped } -> BCDD::Result
+        def self.exec: (untyped, untyped) { () -> untyped } -> untyped
+        def self.err!: (::Exception) -> void
         def self.reset!: () -> void
         def self.record: (BCDD::Result) -> void
         def self.record_and_then: ((untyped), untyped) { () -> BCDD::Result } -> BCDD::Result
@@ -85,7 +137,7 @@ class BCDD::Result
         private
 
         def self.start: (String, String) -> void
-        def self.finish: (BCDD::Result) -> void
+        def self.finish: (untyped) -> untyped
       end
 
       def self.instance: () -> (Enabled | singleton(Disabled))

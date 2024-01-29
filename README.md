@@ -1808,7 +1808,7 @@ class Division
 
   private
 
-  ValidNumber = ->(arg) { arg.is_a?(Numeric) && arg != Float::NAN && arg != Float::INFINITY }
+  ValidNumber = ->(arg) { arg.is_a?(Numeric) && (!arg.respond_to?(:finite?) || arg.finite?) }
 
   def require_numbers((arg1, arg2))
     ValidNumber[arg1] or return Failure(:invalid_arg, 'arg1 must be a valid number')

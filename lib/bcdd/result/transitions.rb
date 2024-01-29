@@ -4,6 +4,7 @@ class BCDD::Result
   module Transitions
     require_relative 'transitions/tree'
     require_relative 'transitions/tracking'
+    require_relative 'transitions/config'
 
     THREAD_VAR_NAME = :bcdd_result_transitions_tracking
 
@@ -21,8 +22,6 @@ class BCDD::Result
   def self.transitions(name: nil, desc: nil, &block)
     Transitions.tracking.exec(name, desc, &block)
   rescue ::Exception => e
-    Transitions.tracking.reset!
-
-    raise e
+    Transitions.tracking.err!(e)
   end
 end

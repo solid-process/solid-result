@@ -6,8 +6,10 @@ class BCDD::Result
   class ConfigurationTest < Minitest::Test
     test '.configuration' do
       config_instance = Config.send(:new)
+      transitions_config_instance = Transitions::Config.send(:new)
 
       BCDD::Result.expects(:config).twice.returns(config_instance)
+      Transitions::Config.expects(:instance).returns(transitions_config_instance)
 
       refute_predicate(config_instance, :frozen?)
 
@@ -44,6 +46,8 @@ class BCDD::Result
       assert_predicate(BCDD::Result.config, :frozen?)
 
       assert_predicate(BCDD::Result.config.and_then!, :frozen?)
+
+      assert_predicate(BCDD::Result.config.transitions, :frozen?)
     end
   end
 end

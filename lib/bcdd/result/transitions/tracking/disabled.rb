@@ -6,6 +6,10 @@ module BCDD::Result::Transitions
       EnsureResult[yield]
     end
 
+    def self.err!(err)
+      raise err
+    end
+
     def self.reset!; end
 
     def self.record(result); end

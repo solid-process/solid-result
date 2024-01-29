@@ -10,7 +10,7 @@ class BCDD::Result
 
   def self.config: -> BCDD::Result::Config
   def self.configuration: { (BCDD::Result::Config) -> void } -> BCDD::Result::Config
-  def self.transitions: { () -> untyped } -> BCDD::Result
+  def self.transitions: (name: untyped, desc: untyped) { () -> untyped } -> BCDD::Result
 
   def initialize: (
     type: Symbol,
