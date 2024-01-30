@@ -67,6 +67,10 @@ class BCDD::Result::Config
     end
 
     test '#freeze' do
+      transitions_config_instance = BCDD::Result::Transitions::Config.send(:new)
+
+      BCDD::Result::Transitions::Config.expects(:instance).returns(transitions_config_instance)
+
       instance = BCDD::Result::Config.send(:new)
 
       assert_instance_of(BCDD::Result::Config, instance)
@@ -80,6 +84,7 @@ class BCDD::Result::Config
       assert_predicate(instance.feature, :frozen?)
       assert_predicate(instance.constant_alias, :frozen?)
       assert_predicate(instance.pattern_matching, :frozen?)
+      assert_predicate(transitions_config_instance, :frozen?)
     end
   end
 end

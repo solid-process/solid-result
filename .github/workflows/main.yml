@@ -40,4 +40,4 @@ jobs:
       if: ${{ matrix.ruby == 3.2 }}
 
     - uses: paambaati/codeclimate-action@v5
-      if: ${{ matrix.ruby == 3.2 }}
+      if: ${{ matrix.ruby == 3.2 && !github.base_ref }}

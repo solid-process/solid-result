@@ -9,7 +9,7 @@ require_relative 'config/switchers/pattern_matching'
 
 class BCDD::Result
   class Config
-    include Singleton
+    include ::Singleton
 
     attr_reader :addon, :feature, :constant_alias, :pattern_matching
 
@@ -19,6 +19,10 @@ class BCDD::Result
       @constant_alias = ConstantAliases.switcher
       @pattern_matching = PatternMatching.switcher
       @and_then_ = CallableAndThen::Config.new
+    end
+
+    def transitions
+      Transitions::Config.instance
     end
 
     def and_then!
@@ -31,6 +35,7 @@ class BCDD::Result
       constant_alias.freeze
       pattern_matching.freeze
       and_then!.freeze
+      transitions.freeze
 
       super
     end

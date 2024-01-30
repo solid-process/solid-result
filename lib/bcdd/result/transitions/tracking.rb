@@ -6,14 +6,19 @@ class BCDD::Result
       require_relative 'tracking/enabled'
       require_relative 'tracking/disabled'
 
+      VERSION = 1
+
       EMPTY_ARRAY = [].freeze
       EMPTY_HASH = {}.freeze
       EMPTY_TREE = Tree.new(nil).freeze
-      VERSION = 1
-      EMPTY = { version: VERSION, records: EMPTY_ARRAY, metadata: { duration: 0, tree_map: EMPTY_ARRAY } }.freeze
+      EMPTY = {
+        version: VERSION,
+        records: EMPTY_ARRAY,
+        metadata: { duration: 0, ids_tree: EMPTY_ARRAY, ids_matrix: EMPTY_HASH, trace_id: nil }.freeze
+      }.freeze
 
       def self.instance
-        Config.instance.feature.enabled?(:transitions) ? Tracking::Enabled.new : Tracking::Disabled
+        ::BCDD::Result::Config.instance.feature.enabled?(:transitions) ? Tracking::Enabled.new : Tracking::Disabled
       end
     end
   end

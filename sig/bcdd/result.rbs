@@ -9,8 +9,8 @@ class BCDD::Result
   attr_reader transitions: Hash[Symbol, untyped]
 
   def self.config: -> BCDD::Result::Config
-  def self.configuration: { (BCDD::Result::Config) -> void } -> BCDD::Result::Config
-  def self.transitions: { () -> untyped } -> BCDD::Result
+  def self.configuration: (freeze: bool) { (BCDD::Result::Config) -> void } -> (bool | BCDD::Result::Config)
+  def self.transitions: (name: untyped, desc: untyped) { () -> untyped } -> BCDD::Result
 
   def initialize: (
     type: Symbol,

@@ -43,11 +43,46 @@
 
 ### Added
 
-- `BCDD::Result::Context` - Raise error when trying to expose an invalid key.
+- `BCDD::Result::Context#and_expose` - Raise error when trying to expose an invalid key.
+
+- `BCDD::Result.configuration` - Accept freeze option (default: `true`). When true, the configuration will be frozen after the block execution.
+
+- `BCDD::Result.config.transitions` - Add transitions feature configuration.
+  - `config.transitions.listener =` - Set a listener to be called during the result transitions tracking. It must be a class that includes `BCDD::Result::Transitions::Listener`.
+  - `config.transitions.trace_id =` - Set a lambda (must have arity 0) to be called to get a trace id. Use to correlate different or the same operation (executed multiple times).
+
+- Add transitions metadata property `:ids_matrix`. It is a simplification of the `:ids_tree` property. The matrix rows are the direct transitions from the root transition block, and the columns are the transitions nested from the direct transitions.
+  ```ruby
+  # ids_matrix       # {
+  0 | 1 | 2 | 3 | 4  #   0 => [0, 0],
+  - | - | - | - | -  #   1 => [1, 1],
+  0 |   |   |   |    #   2 => [1, 2],
+  1 | 1 | 2 |   |    #   3 => [2, 1],
+  2 | 3 |   |   |    #   4 => [3, 1],
+  3 | 4 | 5 | 6 | 7  #   5 => [3, 2],
+  4 | 8 |   |   |    #   6 => [3, 3],
+                     #   7 => [3, 4],
+                     #   8 => [4, 1]
+                     # }
+  ```
 
 ### Changed
 
 - **(BREAKING)** Move transition `:source` from `:and_then` to `:result` property.
+
+- **(BREAKING)** Rename transitions metadata property `:tree_map` to `:ids_tree`.
+  ```ruby
+  # ids_tree #
+  0          # [0, [
+  |- 1       #   [1, [[2, []]]],
+  |  |- 2    #   [3, []],
+  |- 3       #   [4, [
+  |- 4       #     [5, []],
+  |  |- 5    #     [6, [[7, []]]]
+  |  |- 6    #   ]],
+  |     |- 7 #   [8, []]
+  |- 8       # ]]
+  ```
 
 ## [0.12.0] - 2024-01-07
 
