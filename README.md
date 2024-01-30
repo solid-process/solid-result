@@ -72,13 +72,13 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
       - [Module example (Singleton Methods)](#module-example-singleton-methods-1)
     - [`BCDD::Result::Context::Expectations`](#bcddresultcontextexpectations)
     - [Mixin add-ons](#mixin-add-ons)
-  - [`BCDD::Result.transitions`](#bcddresulttransitions)
-    - [Configuration](#configuration)
-  - [`BCDD::Result.configuration`](#bcddresultconfiguration)
-    - [`config.addon.enable!(:given, :continue)`](#configaddonenablegiven-continue)
-    - [`config.constant_alias.enable!('Result', 'BCDD::Context')`](#configconstant_aliasenableresult-bcddcontext)
-    - [`config.pattern_matching.disable!(:nil_as_valid_value_checking)`](#configpattern_matchingdisablenil_as_valid_value_checking)
-    - [`config.feature.disable!(:expectations)`](#configfeaturedisableexpectations)
+- [`BCDD::Result.transitions`](#bcddresulttransitions)
+  - [`ids_tree` *versus* `ids_matrix`](#ids_tree-versus-ids_matrix)
+  - [Configuration](#configuration)
+    - [Turning on/off](#turning-onoff)
+    - [Setting a `trace_id` fetcher](#setting-a-trace_id-fetcher)
+    - [Setting a `listener`](#setting-a-listener)
+- [`BCDD::Result.configuration`](#bcddresultconfiguration)
   - [`BCDD::Result.config`](#bcddresultconfig)
 - [`BCDD::Result#and_then!`](#bcddresultand_then)
     - [Dependency Injection](#dependency-injection-1)
@@ -1787,7 +1787,7 @@ Division.call(14, 0)
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-### `BCDD::Result.transitions`
+## `BCDD::Result.transitions`
 
 Use `BCDD::Result.transitions(&block)` to track all transitions in the same or between different operations (it works with `BCDD::Result` and `BCDD::Result::Context`). When there is a nesting of transition blocks, this mechanism will be able to correlate parent and child blocks and present the duration of all operations in milliseconds.
 
@@ -1857,9 +1857,10 @@ result.transitions
 {
   :version => 1,
   :metadata => {
-    :duration => 0,                      # milliseconds
-    :ids_tree => [0, [[1, []], [2, []]]] # represents the tree of transitions using the id of each transition block
-    :ids_matrix => {0 => [0, 0], 1 => [1, 1], 2 => [2, 1]} # represents the matrix (row, col) of each transition id
+    :duration => 0,   # milliseconds
+    :trace_id => nil, # can be set through configuration
+    :ids_tree => [0, [[1, []], [2, []]]],
+    :ids_matrix => {0 => [0, 0], 1 => [1, 1], 2 => [2, 1]}
   },
   :records=> [
     {
@@ -1940,7 +1941,46 @@ result.transitions
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-#### Configuration
+### `ids_tree` *versus* `ids_matrix`
+
+The `:ids_matrix`. It is a simplification of the `:ids_tree` property (a graph/tree representation of the transitions ids).
+
+The matrix rows are the direct transitions from the root transition block, and the columns are the transitions nested from the direct transitions.
+
+Use these data structures to build your own visualization of the transitions.
+
+> Check out [Transitions Listener example](examples/transitions_listener/lib/my_bcdd_result_transitions_listener.rb) to see how a listener can be used to build a visualization of the transitions, using these properties.
+
+```ruby
+# ids_tree         #
+0                  # [0, [
+|- 1               #   [1, [[2, []]]],
+|  |- 2            #   [3, []],
+|- 3               #   [4, [
+|- 4               #     [5, []],
+|  |- 5            #     [6, [[7, []]]]
+|  |- 6            #   ]],
+|     |- 7         #   [8, []]
+|- 8               # ]]
+
+# ids_matrix       # {
+0 | 1 | 2 | 3 | 4  #   0 => [0, 0],
+- | - | - | - | -  #   1 => [1, 1],
+0 |   |   |   |    #   2 => [1, 2],
+1 | 1 | 2 |   |    #   3 => [2, 1],
+2 | 3 |   |   |    #   4 => [3, 1],
+3 | 4 | 5 | 6 | 7  #   5 => [3, 2],
+4 | 8 |   |   |    #   6 => [3, 3],
+                   #   7 => [3, 4],
+                   #   8 => [4, 1]
+                   # }
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+### Configuration
+
+#### Turning on/off
 
 You can use `BCDD::Result.config.feature.disable!(:transitions)` and `BCDD::Result.config.feature.enable!(:transitions)` to turn on/off the `BCDD::Result.transitions` feature.
 
@@ -1959,9 +1999,118 @@ result.transitions
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-### `BCDD::Result.configuration`
+#### Setting a `trace_id` fetcher
+
+You can define a lambda (arity 0) to fetch the trace_id. This lambda will be called before the first transition and will be used to set the `:trace_id` in the `:metadata` property.
+
+Use to correlate different or the same operation (executed multiple times).
+
+```ruby
+BCDD::Result.config.transitions.trace_id = -> { Thread.current[:bcdd_result_transitions_trace_id] }
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### Setting a `listener`
+
+You can define a listener to be called during the result transitions tracking (check out [this example](examples/transitions_listener/lib/my_bcdd_result_transitions_listener.rb)). It must be a class that includes `BCDD::Result::Transitions::Listener`.
+
+Use it to build your additional logic on top of the transitions tracking. Examples:
+  - Log the transitions.
+  - Perform a trace of the transitions.
+  - Instrument the transitions (measure/report).
+  - Build a visualization of the transitions (Diagrams, using the `records` + `:ids_tree` and `:ids_matrix` properties).
+
+After implementing your listener, you can set it to the `BCDD::Result.config.transitions.listener=`:
+
+```ruby
+BCDD::Result.config.transitions.listener = MyTransitionsListener
+```
+
+See the example below to understand how to implement one:
+
+```ruby
+class MyTransitionsListener
+  include BCDD::Result::Transitions::Listener
+
+  # A listener will be initialized before the first transition, and it is discarded after the last one.
+  def initialize
+  end
+
+  # This method will be called before each transition block.
+  # The parent transition block will be called first in the case of nested transition blocks.
+  #
+  # @param scope: {:id=>1, :name=>"SomeOperation", :desc=>"Optional description"}
+  def on_start(scope:)
+  end
+
+  # This method will wrap all the transitions in the same block.
+  # It can be used to perform an instrumentation (measure/report) of the transitions.
+  #
+  # @param scope: {:id=>1, :name=>"SomeOperation", :desc=>"Optional description"}
+  def around_transitions(scope:)
+    yield
+  end
+
+  # This method will wrap each and_then call.
+  # It can be used to perform an instrumentation (measure/report) of the and_then calls.
+  #
+  # @param scope: {:id=>1, :name=>"SomeOperation", :desc=>"Optional description"}
+  # @param and_then:
+  #  {:type=>:block, :arg=>:some_injected_value}
+  #  {:type=>:method, :arg=>:some_injected_value, :method_name=>:some_method_name}
+  def around_and_then(scope:, and_then:)
+    yield
+  end
+
+  # This method will be called after each result recording/tracking.
+  #
+  # @param record:
+  # {
+  #   :root => {:id=>0, :name=>"RootOperation", :desc=>nil},
+  #   :parent => {:id=>0, :name=>"RootOperation", :desc=>nil},
+  #   :current => {:id=>1, :name=>"SomeOperation", :desc=>nil},
+  #   :result => {:kind=>:success, :type=>:continued, :value=>{some: :thing}, :source=><MyProcess:0x0000000102fd6378>},
+  #   :and_then => {:type=>:method, :arg=>nil, :method_name=>:some_method},
+  #   :time => 2024-01-26 02:53:11.310431 UTC
+  # }
+  def on_record(record:)
+  end
+
+  # This method will be called at the end of the transitions tracking.
+  #
+  # @param transitions:
+  # {
+  #   :version => 1,
+  #   :metadata => {
+  #     :duration => 0,
+  #     :trace_id => nil,
+  #     :ids_tree => [0, [[1, []], [2, []]]],
+  #     :ids_matrix => {0 => [0, 0], 1 => [1, 1], 2 => [2, 1]}
+  #   },
+  #   :records => [
+  #     # ...
+  #   ]
+  # }
+  def on_finish(transitions:)
+  end
+
+  # This method will be called when an exception is raised during the transitions tracking.
+  #
+  # @param exception: Exception
+  # @param transitions: Hash
+  def before_interruption(exception:, transitions:)
+  end
+end
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+## `BCDD::Result.configuration`
 
 The `BCDD::Result.configuration` allows you to configure default behaviors for `BCDD::Result` and `BCDD::Result::Context` through a configuration block. After using it, the configuration is frozen, ensuring the expected behaviors for your application.
+
+> Note: You can use `BCDD::Result.configuration(freeze: false) {}` to avoid the freezing. This can be useful in tests. Please be sure to use it with caution.
 
 ```ruby
 BCDD::Result.configuration do |config|
@@ -1979,13 +2128,13 @@ Use `disable!` to disable a feature and `enable!` to enable it.
 
 Let's see what each configuration in the example above does:
 
-#### `config.addon.enable!(:given, :continue)`
+### `config.addon.enable!(:given, :continue)` <!-- omit in toc -->
 
 This configuration enables the `Continue()` method for `BCDD::Result.mixin`, `BCDD::Result::Context.mixin`, `BCDD::Result::Expectation.mixin`, and `BCDD::Result::Context::Expectation.mixin`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
 
 It is also enabling the `Given()` which is already enabled by default. Link to documentation: [(1)](#add-ons) [(2)](#mixin-add-ons).
 
-#### `config.constant_alias.enable!('Result', 'BCDD::Context')`
+### `config.constant_alias.enable!('Result', 'BCDD::Context')` <!-- omit in toc -->
 
 This configuration make `Result` a constant alias for `BCDD::Result`, and `BCDD::Context` a constant alias for `BCDD::Result::Context`.
 
@@ -1993,23 +2142,23 @@ Link to documentations:
 - [Result alias](#bcddresult-versus-result)
 - [Context aliases](#constant-aliases)
 
-#### `config.pattern_matching.disable!(:nil_as_valid_value_checking)`
+### `config.pattern_matching.disable!(:nil_as_valid_value_checking)` <!-- omit in toc -->
 
 This configuration disables the `nil_as_valid_value_checking` for `BCDD::Result` and `BCDD::Result::Context`. Link to [documentation](#pattern-matching-support).
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
-
-#### `config.feature.disable!(:expectations)`
+### `config.feature.disable!(:expectations)` <!-- omit in toc -->
 
 This configuration turns off the expectations for `BCDD::Result` and `BCDD::Result::Context`. The expectations are helpful in development and test environments, but they can be disabled in production environments for performance gain.
 
 PS: I'm using `::Rails.env.production?` to check the environment, but you can use any logic you want.
 
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
 ### `BCDD::Result.config`
 
 The `BCDD::Result.config` allows you to access the current configuration.
 
-**BCDD::Result.config.addon**
+#### **BCDD::Result.config.addon** <!-- omit in toc -->
 
 ```ruby
 BCDD::Result.config.addon.enabled?(:continue)
@@ -2038,7 +2187,7 @@ BCDD::Result.config.addon.options
 # }
 ```
 
-**BCDD::Result.config.constant_alias**
+#### **BCDD::Result.config.constant_alias** <!-- omit in toc -->
 
 ```ruby
 BCDD::Result.config.constant_alias.enabled?('Result')
@@ -2053,7 +2202,7 @@ BCDD::Result.config.constant_alias.options
 # }
 ```
 
-**BCDD::Result.config.pattern_matching**
+#### **BCDD::Result.config.pattern_matching** <!-- omit in toc -->
 
 ```ruby
 BCDD::Result.config.pattern_matching.enabled?(:nil_as_valid_value_checking)
@@ -2070,7 +2219,7 @@ BCDD::Result.config.pattern_matching.options
 # }
 ```
 
-**BCDD::Result.config.feature**
+#### **BCDD::Result.config.feature** <!-- omit in toc -->
 
 ```ruby
 BCDD::Result.config.feature.enabled?(:expectations)
