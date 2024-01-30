@@ -30,10 +30,10 @@ class BCDD::Result
     Config.instance
   end
 
-  def self.configuration
+  def self.configuration(freeze: true)
     yield(config)
 
-    config.freeze
+    freeze and config.freeze
   end
 
   def initialize(type:, value:, source: nil, expectations: nil, terminal: nil)

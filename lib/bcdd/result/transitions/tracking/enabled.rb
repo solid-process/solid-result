@@ -145,7 +145,7 @@ module BCDD::Result::Transitions
     def build_listener
       Config.instance.listener.new
     rescue ::StandardError => e
-      err = "#{e.message} (#{e.class}); Backtrace: #{e.backtrace&.join("\n")}"
+      err = "#{e.message} (#{e.class}); Backtrace: #{e.backtrace&.join(', ')}"
 
       warn("Fallback to #{Listener::Null} because registered listener raised an exception: #{err}")
 
