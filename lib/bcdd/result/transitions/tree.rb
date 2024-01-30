@@ -94,6 +94,32 @@ class BCDD::Result
       def nested_ids
         NestedIds[root]
       end
+
+      IdsMatrix = ->(tree, row, col, ids, previous) do
+        last_row = previous[0]
+
+        tree.each_with_index do |node, index|
+          row = [(index + 1), last_row].max
+
+          id, leaf = node
+
+          ids[id] = previous == [row, col] ? [row, col + 1] : [row, col]
+
+          previous = ids[id]
+
+          IdsMatrix[leaf, row, col + 1, ids, previous]
+        end
+      end
+
+      def ids_matrix
+        current = [0, 0]
+
+        ids = { 0 => current }
+
+        IdsMatrix[nested_ids[1], 1, 1, ids, current]
+
+        ids
+      end
     end
   end
 end

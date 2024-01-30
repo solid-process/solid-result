@@ -85,6 +85,10 @@ class BCDD::Result
       NestedIds: ^(Node) -> Array[untyped]
 
       def nested_ids: () -> Array[untyped]
+
+      IdsMatrix: ::Proc
+
+      def ids_matrix: () -> untyped
     end
 
     module Tracking

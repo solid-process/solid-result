@@ -149,11 +149,7 @@ module BCDD::Result::Transitions
 
       assert_equal(
         [0, [
-          [1, [
-            [2, [
-              [3, []]
-            ]]
-          ]],
+          [1, [[2, [[3, []]]]]],
           [4, [
             [5, []],
             [6, []]
@@ -197,6 +193,31 @@ module BCDD::Result::Transitions
       tree.move_down!
 
       assert(tree.current.id == 7 && tree.current.value == 'new-new-child')
+    end
+
+    test '#ids_matrix' do
+      tree = Tree.new('root')
+      tree.insert!('child')
+      tree.insert!('grandchild')
+      tree.insert!('great-grandchild')
+
+      tree.move_to_root!
+
+      tree.insert!('new-child')
+      tree.insert!('new-grandchild')
+
+      tree.move_up!
+
+      tree.insert!('new-grandchild__child')
+
+      tree.move_to_root!
+
+      tree.insert!('new-new-child')
+
+      assert_equal(
+        { 0 => [0, 0], 1 => [1, 1], 2 => [1, 2], 3 => [1, 3], 4 => [2, 1], 5 => [2, 2], 6 => [2, 3], 7 => [3, 1] },
+        tree.ids_matrix
+      )
     end
   end
 end
