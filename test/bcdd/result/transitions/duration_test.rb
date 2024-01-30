@@ -21,6 +21,6 @@ class BCDD::Result::TransitionsDurationTest < Minitest::Test
 
     assert(result.transitions[:metadata][:duration] > 299)
 
-    assert_equal([0, []], result.transitions[:metadata][:tree_map])
+    assert_equal([0, []], result.transitions[:metadata][:ids_tree])
   end
 end

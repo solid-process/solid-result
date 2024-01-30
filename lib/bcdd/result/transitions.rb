@@ -21,7 +21,5 @@ class BCDD::Result
 
   def self.transitions(name: nil, desc: nil, &block)
     Transitions.tracking.exec(name, desc, &block)
-  rescue ::Exception => e
-    Transitions.tracking.err!(e)
   end
 end

@@ -20,12 +20,16 @@ module BCDD::Result::Transitions
       finish(result)
 
       result
+    rescue ::Exception => e
+      err!(e, transition_node)
     end
 
-    def err!(exception)
-      listener.before_interruption(exception: exception, transitions: map_transitions)
+    def err!(exception, transition_node)
+      if transition_node.root?
+        listener.before_interruption(exception: exception, transitions: map_transitions)
 
-      reset!
+        reset!
+      end
 
       raise exception
     end
@@ -133,7 +137,7 @@ module BCDD::Result::Transitions
 
       trace_id = Config.instance.trace_id.call
 
-      metadata = { duration: duration, tree_map: tree.nested_ids, trace_id: trace_id }
+      metadata = { duration: duration, ids_tree: tree.nested_ids, ids_matrix: tree.ids_matrix, trace_id: trace_id }
 
       { version: Tracking::VERSION, records: records, metadata: metadata }
     end

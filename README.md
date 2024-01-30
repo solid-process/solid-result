@@ -1858,7 +1858,8 @@ result.transitions
   :version => 1,
   :metadata => {
     :duration => 0,                      # milliseconds
-    :tree_map => [0, [[1, []], [2, []]]] # represents the tree of transitions using the id of each transition block
+    :ids_tree => [0, [[1, []], [2, []]]] # represents the tree of transitions using the id of each transition block
+    :ids_matrix => {0 => [0, 0], 1 => [1, 1], 2 => [2, 1]} # represents the matrix (row, col) of each transition id
   },
   :records=> [
     {
@@ -1953,7 +1954,7 @@ result = SumDivisionsByTwo.call(20, 10)
 
 result.transitions
 
-{:version=>1, :records=>[], :metadata=>{:duration=>0, :tree_map=>[]}}
+{:version=>1, :records=>[], :metadata=>{:duration=>0, :ids_tree=>[]}}
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>

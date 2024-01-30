@@ -105,7 +105,7 @@ class BCDD::Result
         private attr_accessor root_started_at: Integer
 
         def exec: (untyped, untyped) { () -> untyped } -> untyped
-        def err!: (::Exception) -> void
+        def err!: (::Exception, untyped) -> void
         def reset!: () -> void
         def record: (BCDD::Result) -> void
         def record_and_then: ((untyped), untyped) { () -> BCDD::Result } -> BCDD::Result

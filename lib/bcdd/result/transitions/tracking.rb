@@ -14,7 +14,7 @@ class BCDD::Result
       EMPTY = {
         version: VERSION,
         records: EMPTY_ARRAY,
-        metadata: { duration: 0, tree_map: EMPTY_ARRAY, trace_id: nil }.freeze
+        metadata: { duration: 0, ids_tree: EMPTY_ARRAY, ids_matrix: EMPTY_HASH, trace_id: nil }.freeze
       }.freeze
 
       def self.instance

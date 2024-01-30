@@ -116,10 +116,11 @@ module BCDDResultTransitionAssertions
 
     metadata = transitions[:metadata]
 
-    assert_equal(%i[duration trace_id tree_map], metadata.keys.sort)
+    assert_equal(%i[duration ids_matrix ids_tree trace_id], metadata.keys.sort)
 
     assert_instance_of(Integer, metadata[:duration])
-    assert_instance_of(Array, metadata[:tree_map])
+    assert_instance_of(Array, metadata[:ids_tree])
+    assert_instance_of(Hash, metadata[:ids_matrix])
 
     assert_transitions_metadata_trace_id(metadata, trace_id)
   end

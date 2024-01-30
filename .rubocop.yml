@@ -11,7 +11,7 @@ AllCops:
 
 Lint/RescueException:
   Exclude:
-    - lib/bcdd/result/transitions.rb
+    - lib/bcdd/result/transitions/tracking/enabled.rb
 
 Layout/LineLength:
   Max: 120
