@@ -1949,7 +1949,7 @@ The matrix rows are the direct transitions from the root transition block, and t
 
 Use these data structures to build your own visualization of the transitions.
 
-> Check out [Transitions Listener example](examples/transitions_listener/lib/my_bcdd_result_transitions_listener.rb) to see how a listener can be used to build a visualization of the transitions, using these properties.
+> Check out [Transitions Listener example](examples/single_listener/lib/single_transitions_listener.rb) to see how a listener can be used to build a visualization of the transitions, using these properties.
 
 ```ruby
 # ids_tree         #
@@ -2013,7 +2013,7 @@ BCDD::Result.config.transitions.trace_id = -> { Thread.current[:bcdd_result_tran
 
 #### Setting a `listener`
 
-You can define a listener to be called during the result transitions tracking (check out [this example](examples/transitions_listener/lib/my_bcdd_result_transitions_listener.rb)). It must be a class that includes `BCDD::Result::Transitions::Listener`.
+You can define a listener to be called during the result transitions tracking (check out [this example](examples/single_listener/lib/single_transitions_listener.rb)). It must be a class that includes `BCDD::Result::Transitions::Listener`.
 
 Use it to build your additional logic on top of the transitions tracking. Examples:
   - Log the transitions.

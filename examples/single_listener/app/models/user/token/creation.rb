@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module User::Token
+class User::Token
   class Creation
     include BCDD::Context.mixin
 
@@ -24,7 +24,7 @@ module User::Token
     def validate_input(user:, executed_at:)
       err = ::Hash.new { |hash, key| hash[key] = [] }
 
-      err[:user] << 'must be a User::Record' unless user.is_a?(::User::Record)
+      err[:user] << 'must be a User' unless user.is_a?(::User)
       err[:user] << 'must be persisted' unless user.try(:persisted?)
       err[:executed_at] << 'must be a time' unless executed_at.is_a?(::Time)
 

@@ -10,13 +10,13 @@ end
 # rake DISABLE_TRANSITIONS=t
 # rake DISABLE_LISTENER=t
 #
-# rake HIDE_GIVEN_AND_CONTINUED=t
+# rake HIDE_GIVEN_AND_CONTINUE=t
 #
 # rake BREAK_ACCOUNT_CREATION=t
 # rake BREAK_USER_CREATION=t
 # rake BREAK_USER_TOKEN_CREATION=t
 #
-# rake BREAK_ACCOUNT_CREATION=t HIDE_GIVEN_AND_CONTINUED=t
+# rake BREAK_ACCOUNT_CREATION=t HIDE_GIVEN_AND_CONTINUE=t
 task default: %i[bcdd_result_transitions]
 
 task :config do
@@ -28,7 +28,7 @@ task bcdd_result_transitions: %i[config] do
   BCDD::Result.configuration do |config|
     config.feature.disable!(:transitions) if ENV['DISABLE_TRANSITIONS']
 
-    config.transitions.listener = MyBCDDResultTransitionsListener unless ENV['DISABLE_LISTENER']
+    config.transitions.listener = SingleTransitionsListener unless ENV['DISABLE_LISTENER']
   end
 
   result = nil
@@ -59,9 +59,9 @@ task raw_active_record: %i[config] do
     email = 'john.doe@email.com'
 
     ActiveRecord::Base.transaction do
-      User::Record.exists?(email:) and raise "User with email #{email} already exists"
+      User.exists?(email:) and raise "User with email #{email} already exists"
 
-      user = User::Record.create!(
+      user = User.create!(
         uuid: ::SecureRandom.uuid,
         name: 'John Doe',
         email:,
@@ -80,9 +80,9 @@ task raw_active_record: %i[config] do
         refresh_token_expires_at: executed_at + 30.days
       )
 
-      account = Account::Record.create!(uuid: ::SecureRandom.uuid)
+      account = Account.create!(uuid: ::SecureRandom.uuid)
 
-      Account::Member::Record.create!(account: account, user: user, role: :owner)
+      Account::Member.create!(account: account, user: user, role: :owner)
 
       result = { account: account, user: user }
     end
