@@ -66,6 +66,8 @@
                      # }
   ```
 
+- Add `BCDD::Result::Transitions::Listeners[]` - It creates a listener of listeners, which will be called in the order they were added.
+
 ### Changed
 
 - **(BREAKING)** Rename `Given()` type from `:given` to `:_given_`.
