@@ -17,7 +17,7 @@ class BCDD::Result::Context
         private def Given(*values)
           value = values.map(&:to_h).reduce({}) { |acc, val| acc.merge(val) }
 
-          Success.new(type: :given, value: value, source: self)
+          Success.new(type: :_given_, value: value, source: self)
         end
       end
 

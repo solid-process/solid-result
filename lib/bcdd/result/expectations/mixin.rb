@@ -44,7 +44,7 @@ class BCDD::Result
 
       module Given
         private def Given(value)
-          Success.new(type: :given, value: value, source: self)
+          Success.new(type: :_given_, value: value, source: self)
         end
       end
 

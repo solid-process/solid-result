@@ -1867,7 +1867,7 @@ result.transitions
       :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current => {:id=>1, :name=>"Division", :desc=>"divide two numbers"},
-      :result => {:kind=>:success, :type=>:given, :value=>[20, 2], :source=><Division:0x0000000102fd7ed0>},
+      :result => {:kind=>:success, :type=>:_given_, :value=>[20, 2], :source=><Division:0x0000000102fd7ed0>},
       :and_then => {},
       :time => 2024-01-26 02:53:11.310346 UTC
     },
@@ -1899,7 +1899,7 @@ result.transitions
       :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current => {:id=>2, :name=>"Division", :desc=>"divide two numbers"},
-      :result => {:kind=>:success, :type=>:given, :value=>[10, 2], :source=><Division:0x0000000102fd6378>},
+      :result => {:kind=>:success, :type=>:_given_, :value=>[10, 2], :source=><Division:0x0000000102fd6378>},
       :and_then => {},
       :time => 2024-01-26 02:53:11.310424 UTC
     },

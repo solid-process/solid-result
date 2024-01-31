@@ -38,7 +38,7 @@ class BCDD::Result
 
       module Given
         private def Given(value)
-          _ResultAs(Success, :given, value)
+          _ResultAs(Success, :_given_, value)
         end
       end
 

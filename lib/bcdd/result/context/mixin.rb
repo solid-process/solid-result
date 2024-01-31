@@ -33,7 +33,7 @@ class BCDD::Result::Context
         private def Given(*values)
           value = values.map(&:to_h).reduce({}) { |acc, val| acc.merge(val) }
 
-          _ResultAs(Success, :given, value)
+          _ResultAs(Success, :_given_, value)
         end
       end
 

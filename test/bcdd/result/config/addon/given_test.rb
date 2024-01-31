@@ -101,10 +101,10 @@ class BCDD::Result::Config
       assert_equal('this method will exist as the config is enabled by default', result3b.value[:msg])
       assert_equal('this method will exist as the config is enabled by default', result4b.value[:msg])
 
-      assert(result1b.success?(:given))
-      assert(result2b.success?(:given))
-      assert(result3b.success?(:given) && result3b.value.keys == [:msg])
-      assert(result4b.success?(:given) && result4b.value.keys == [:msg])
+      assert(result1b.success?(:_given_))
+      assert(result2b.success?(:_given_))
+      assert(result3b.success?(:_given_) && result3b.value.keys == [:msg])
+      assert(result4b.success?(:_given_) && result4b.value.keys == [:msg])
     end
 
     test 'the overwriting of the default config' do

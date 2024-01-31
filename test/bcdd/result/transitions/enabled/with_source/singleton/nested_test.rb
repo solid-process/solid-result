@@ -103,7 +103,7 @@ class BCDD::Result::TransitionsEnabledWithSourceSingletonNestedTest < Minitest::
       root: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
       parent: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
       current: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
-      result: { kind: :success, type: :given, value: %w[30 20 10] }
+      result: { kind: :success, type: :_given_, value: %w[30 20 10] }
     }.then { |spec| assert_transition_record(result1, 0, spec) }
 
     assert_equal(
@@ -115,7 +115,7 @@ class BCDD::Result::TransitionsEnabledWithSourceSingletonNestedTest < Minitest::
       root: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
       parent: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
       current: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
-      result: { kind: :success, type: :given, value: [30, '20', '10'] }
+      result: { kind: :success, type: :_given_, value: [30, '20', '10'] }
     }.then { |spec| assert_transition_record(result2, 0, spec) }
 
     assert_equal(
@@ -127,7 +127,7 @@ class BCDD::Result::TransitionsEnabledWithSourceSingletonNestedTest < Minitest::
       root: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
       parent: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
       current: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
-      result: { kind: :success, type: :given, value: [30, 20, '10'] }
+      result: { kind: :success, type: :_given_, value: [30, 20, '10'] }
     }.then { |spec| assert_transition_record(result3, 0, spec) }
 
     assert_equal(
@@ -139,7 +139,7 @@ class BCDD::Result::TransitionsEnabledWithSourceSingletonNestedTest < Minitest::
       root: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
       parent: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
       current: { id: 0, name: 'SumDivisionsByTwo', desc: nil },
-      result: { kind: :success, type: :given, value: [30, 20, 10] }
+      result: { kind: :success, type: :_given_, value: [30, 20, 10] }
     }.then { |spec| assert_transition_record(result4, 0, spec) }
 
     assert_equal(
