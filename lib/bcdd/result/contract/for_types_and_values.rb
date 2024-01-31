@@ -30,7 +30,7 @@ class BCDD::Result
     def type_and_value!(data)
       type, value = data.type, data.value
 
-      return value if Contract::ForTypes::TYPES_TO_IGNORE.member?(type)
+      return value if IgnoredTypes.include?(type)
 
       value_checking = @types_and_values[type!(type)]
 

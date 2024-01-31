@@ -38,13 +38,13 @@ class BCDD::Result
     module Addons
       module Continue
         private def Continue(value)
-          _Result.Success(:_continue_, value)
+          _Result.Success(IgnoredTypes::CONTINUE, value)
         end
       end
 
       module Given
         private def Given(value)
-          _Result.Success(:_given_, value)
+          _Result.Success(IgnoredTypes::GIVEN, value)
         end
       end
 

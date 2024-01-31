@@ -9,7 +9,7 @@ class BCDD::Result::Context
     module Addons
       module Continue
         private def Continue(**value)
-          Success(:_continue_, **value)
+          Success(::BCDD::Result::IgnoredTypes::CONTINUE, **value)
         end
       end
 
@@ -17,7 +17,7 @@ class BCDD::Result::Context
         private def Given(*values)
           value = values.map(&:to_h).reduce({}) { |acc, val| acc.merge(val) }
 
-          Success(:_given_, **value)
+          Success(::BCDD::Result::IgnoredTypes::GIVEN, **value)
         end
       end
 

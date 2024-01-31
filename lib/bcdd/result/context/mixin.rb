@@ -25,7 +25,7 @@ class BCDD::Result::Context
         end
 
         private def Continue(**value)
-          _ResultAs(Success, :_continue_, value)
+          _ResultAs(Success, ::BCDD::Result::IgnoredTypes::CONTINUE, value)
         end
       end
 
@@ -33,7 +33,7 @@ class BCDD::Result::Context
         private def Given(*values)
           value = values.map(&:to_h).reduce({}) { |acc, val| acc.merge(val) }
 
-          _ResultAs(Success, :_given_, value)
+          _ResultAs(Success, ::BCDD::Result::IgnoredTypes::GIVEN, value)
         end
       end
 
