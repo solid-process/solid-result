@@ -29,7 +29,9 @@ class BCDD::Result
 
       value_to_expose = FetchValues.call(acc_values, keys)
 
-      self.class.new(type: type, value: value_to_expose, source: source, terminal: terminal)
+      expectations = type_checker.expectations
+
+      self.class.new(type: type, value: value_to_expose, source: source, terminal: terminal, expectations: expectations)
     end
   end
 end

@@ -41,7 +41,7 @@ class BCDD::Result
 
     @type_checker = Contract.evaluate(data, expectations)
     @source = source
-    @terminal = terminal || kind == :failure
+    @terminal = kind == :failure || (terminal && !Contract::ForTypes::TYPES_TO_IGNORE.member?(type))
     @data = data
 
     self.unknown = true
