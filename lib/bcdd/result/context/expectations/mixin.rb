@@ -9,7 +9,7 @@ class BCDD::Result::Context
     module Addons
       module Continue
         private def Continue(**value)
-          Success.new(type: :continued, value: value, source: self)
+          Success.new(type: :_continue_, value: value, source: self)
         end
       end
 

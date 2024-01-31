@@ -188,14 +188,14 @@ class BCDD::Result
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :success, type: :continued, value: { num1: 20, num2: 2 }, source: Division }
+        result: { kind: :success, type: :_continue_, value: { num1: 20, num2: 2 }, source: Division }
       }.then { |spec| assert_transition_record(result, 1, spec) }
 
       {
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :success, type: :continued, value: {}, source: Division },
+        result: { kind: :success, type: :_continue_, value: {}, source: Division },
         and_then: { type: :method, arg: { useless_arg: true }, method_name: :validate_nonzero }
       }.then { |spec| assert_transition_record(result, 2, spec) }
 
@@ -218,14 +218,14 @@ class BCDD::Result
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :success, type: :continued, value: { num1: 0, num2: 2 }, source: Division }
+        result: { kind: :success, type: :_continue_, value: { num1: 0, num2: 2 }, source: Division }
       }.then { |spec| assert_transition_record(result, 4, spec) }
 
       {
         root: root,
         parent: root,
         current: { id: Integer, name: nil, desc: nil },
-        result: { kind: :success, type: :continued, value: {}, source: Division },
+        result: { kind: :success, type: :_continue_, value: {}, source: Division },
         and_then: { type: :method, arg: { useless_arg: true }, method_name: :validate_nonzero }
       }.then { |spec| assert_transition_record(result, 5, spec) }
 

@@ -1420,7 +1420,7 @@ result = Divide.new.call(4, 2)
 
 # The example below shows an error because the :ok type is not allowed.
 # But look at the allowed types have only one type (:division_completed).
-# This is because the :continued type is ignored by the expectations.
+# This is because the :_continue_ type is ignored by the expectations.
 #
 result.success?(:ok)
 # type :ok is not allowed. Allowed types: :division_completed (BCDD::Result::Contract::Error::UnexpectedType)
@@ -1875,7 +1875,7 @@ result.transitions
       :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current => {:id=>1, :name=>"Division", :desc=>"divide two numbers"},
-      :result => {:kind=>:success, :type=>:continued, :value=>[20, 2], :source=><Division:0x0000000102fd7ed0>},
+      :result => {:kind=>:success, :type=>:_continue_, :value=>[20, 2], :source=><Division:0x0000000102fd7ed0>},
       :and_then => {:type=>:method, :arg=>nil, :method_name=>:require_numbers},
       :time => 2024-01-26 02:53:11.310392 UTC
     },
@@ -1883,7 +1883,7 @@ result.transitions
       :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current => {:id=>1, :name=>"Division", :desc=>"divide two numbers"},
-      :result => {:kind=>:success, :type=>:continued, :value=>[20, 2], :source=><Division:0x0000000102fd7ed0>},
+      :result => {:kind=>:success, :type=>:_continue_, :value=>[20, 2], :source=><Division:0x0000000102fd7ed0>},
       :and_then => {:type=>:method, :arg=>nil, :method_name=>:check_for_zeros},
       :time=>2024-01-26 02:53:11.310403 UTC
     },
@@ -1907,7 +1907,7 @@ result.transitions
       :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current => {:id=>2, :name=>"Division", :desc=>"divide two numbers"},
-      :result => {:kind=>:success, :type=>:continued, :value=>[10, 2], :source=><Division:0x0000000102fd6378>},
+      :result => {:kind=>:success, :type=>:_continue_, :value=>[10, 2], :source=><Division:0x0000000102fd6378>},
       :and_then => {:type=>:method, :arg=>nil, :method_name=>:require_numbers},
       :time => 2024-01-26 02:53:11.310428 UTC
     },
@@ -1915,7 +1915,7 @@ result.transitions
       :root => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :parent => {:id=>0, :name=>"SumDivisionsByTwo", :desc=>nil},
       :current => {:id=>2, :name=>"Division", :desc=>"divide two numbers"},
-      :result => {:kind=>:success, :type=>:continued, :value=>[10, 2], :source=><Division:0x0000000102fd6378>},
+      :result => {:kind=>:success, :type=>:_continue_, :value=>[10, 2], :source=><Division:0x0000000102fd6378>},
       :and_then => {:type=>:method, :arg=>nil, :method_name=>:check_for_zeros},
       :time => 2024-01-26 02:53:11.310431 UTC
     },
@@ -2070,7 +2070,7 @@ class MyTransitionsListener
   #   :root => {:id=>0, :name=>"RootOperation", :desc=>nil},
   #   :parent => {:id=>0, :name=>"RootOperation", :desc=>nil},
   #   :current => {:id=>1, :name=>"SomeOperation", :desc=>nil},
-  #   :result => {:kind=>:success, :type=>:continued, :value=>{some: :thing}, :source=><MyProcess:0x0000000102fd6378>},
+  #   :result => {:kind=>:success, :type=>:_continue_, :value=>{some: :thing}, :source=><MyProcess:0x0000000102fd6378>},
   #   :and_then => {:type=>:method, :arg=>nil, :method_name=>:some_method},
   #   :time => 2024-01-26 02:53:11.310431 UTC
   # }

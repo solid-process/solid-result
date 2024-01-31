@@ -25,7 +25,7 @@ class BCDD::Result::Context
         end
 
         private def Continue(**value)
-          _ResultAs(Success, :continued, value)
+          _ResultAs(Success, :_continue_, value)
         end
       end
 

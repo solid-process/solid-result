@@ -13,7 +13,7 @@ class BCDD::Result::TransitionsEnabledWithSourceSingletonNestedTest < Minitest::
         Given(numbers)
           .and_then(:detect_zero, index: 1)
           .and_then(:detect_zero, index: 0)
-          .then { _1.success?(:continued) ? Failure(:no_zeros, numbers) : _1 }
+          .then { _1.success?(:_continue_) ? Failure(:no_zeros, numbers) : _1 }
       end
     end
 
