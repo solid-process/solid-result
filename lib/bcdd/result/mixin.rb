@@ -32,13 +32,13 @@ class BCDD::Result
         end
 
         private def Continue(value)
-          _ResultAs(Success, :continued, value)
+          _ResultAs(Success, IgnoredTypes::CONTINUE, value)
         end
       end
 
       module Given
         private def Given(value)
-          _ResultAs(Success, :given, value)
+          _ResultAs(Success, IgnoredTypes::GIVEN, value)
         end
       end
 

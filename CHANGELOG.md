@@ -68,6 +68,10 @@
 
 ### Changed
 
+- **(BREAKING)** Rename `Given()` type from `:given` to `:_given_`.
+
+- **(BREAKING)** Rename `Continue()` type from `:continued` to `:_continue_`.
+
 - **(BREAKING)** Move transition `:source` from `:and_then` to `:result` property.
 
 - **(BREAKING)** Rename transitions metadata property `:tree_map` to `:ids_tree`.

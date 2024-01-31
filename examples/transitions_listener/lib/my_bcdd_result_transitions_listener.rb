@@ -44,7 +44,7 @@ class MyBCDDResultTransitionsListener
   #   :root => {:id=>0, :name=>"RootOperation", :desc=>nil},
   #   :parent => {:id=>0, :name=>"RootOperation", :desc=>nil},
   #   :current => {:id=>1, :name=>"SomeOperation", :desc=>nil},
-  #   :result => {:kind=>:success, :type=>:continued, :value=>{some: :thing}, :source=><MyProcess:0x0000000102fd6378>},
+  #   :result => {:kind=>:success, :type=>:_continue_, :value=>{some: :thing}, :source=><MyProcess:0x0000000102fd6378>},
   #   :and_then => {:type=>:method, :arg=>nil, :method_name=>:some_method},
   #   :time => 2024-01-26 02:53:11.310431 UTC
   # }

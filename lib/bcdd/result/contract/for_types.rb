@@ -11,7 +11,7 @@ class BCDD::Result
     end
 
     def type?(type)
-      allowed_types.member?(type)
+      IgnoredTypes.include?(type) || allowed_types.member?(type)
     end
 
     def type!(type)

@@ -126,7 +126,7 @@ class BCDD::Result::TransitionsEnabledWithSourceInstanceFlatTest < Minitest::Tes
     result3 = division3.call(4, 0)
 
     {
-      result: { kind: :success, type: :continued, value: [4, 0] },
+      result: { kind: :success, type: :_continue_, value: [4, 0] },
       and_then: ->(value) { value.is_a?(::Hash) && value.empty? }
     }.then { |spec| assert_division_transition(result3, 0, spec) }
 
@@ -142,7 +142,7 @@ class BCDD::Result::TransitionsEnabledWithSourceInstanceFlatTest < Minitest::Tes
     result4 = division4.call(0, 2)
 
     {
-      result: { kind: :success, type: :continued, value: [0, 2] },
+      result: { kind: :success, type: :_continue_, value: [0, 2] },
       and_then: ->(value) { value.is_a?(::Hash) && value.empty? }
     }.then { |spec| assert_division_transition(result4, 0, spec) }
 
@@ -158,12 +158,12 @@ class BCDD::Result::TransitionsEnabledWithSourceInstanceFlatTest < Minitest::Tes
     result5 = division5.call(4, 2)
 
     {
-      result: { kind: :success, type: :continued, value: [4, 2] },
+      result: { kind: :success, type: :_continue_, value: [4, 2] },
       and_then: ->(value) { value.is_a?(::Hash) && value.empty? }
     }.then { |spec| assert_division_transition(result5, 0, spec) }
 
     {
-      result: { kind: :success, type: :continued, value: [4, 2], source: division5 },
+      result: { kind: :success, type: :_continue_, value: [4, 2], source: division5 },
       and_then: { type: :method, arg: nil, method_name: :check_for_zeros }
     }.then { |spec| assert_division_transition(result5, 1, spec) }
 

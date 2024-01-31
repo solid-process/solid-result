@@ -68,7 +68,7 @@ class BCDD::Result
         root: root,
         parent: root,
         current: root,
-        result: { kind: :success, type: :given, value: { a: 1 }, source: root_process }
+        result: { kind: :success, type: :_given_, value: { a: 1 }, source: root_process }
       }.then { assert_transition_record(result, 0, _1) }
 
       {

@@ -5,6 +5,7 @@ require 'singleton'
 
 require_relative 'result/version'
 require_relative 'result/error'
+require_relative 'result/ignored_types'
 require_relative 'result/transitions'
 require_relative 'result/callable_and_then'
 require_relative 'result/data'
@@ -41,7 +42,7 @@ class BCDD::Result
 
     @type_checker = Contract.evaluate(data, expectations)
     @source = source
-    @terminal = terminal || kind == :failure
+    @terminal = kind == :failure || (terminal && !IgnoredTypes.include?(type))
     @data = data
 
     self.unknown = true

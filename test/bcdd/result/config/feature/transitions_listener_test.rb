@@ -132,7 +132,7 @@ class BCDD::Result::Config
       on_record = InspectListener.memo[:on_record]
 
       assert_equal(3, on_record.size)
-      assert_equal(:given, on_record.dig(0, :result, :type))
+      assert_equal(:_given_, on_record.dig(0, :result, :type))
       assert_equal(:require_numbers, on_record.dig(1, :and_then, :method_name))
       assert_equal(:check_for_zeros, on_record.dig(2, :and_then, :method_name))
 

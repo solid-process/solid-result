@@ -90,7 +90,7 @@ class BCDD::Result
         root: root,
         parent: root,
         current: root,
-        result: { kind: :success, type: :given, value: { input: 1 }, source: source }
+        result: { kind: :success, type: :_given_, value: { input: 1 }, source: source }
       }.then { assert_transition_record(result1, 0, _1) }
 
       source = -> { _1 == NormalizeEmail }
@@ -99,7 +99,7 @@ class BCDD::Result
         root: root,
         parent: root,
         current: { id: 1, name: 'NormalizeEmail', desc: nil },
-        result: { kind: :success, type: :given, value: { input: 1 }, source: source }
+        result: { kind: :success, type: :_given_, value: { input: 1 }, source: source }
       }.then { assert_transition_record(result1, 1, _1) }
 
       {
@@ -126,7 +126,7 @@ class BCDD::Result
         root: root,
         parent: root,
         current: root,
-        result: { kind: :success, type: :given, value: { input: " FOO@bAr.com  \n" }, source: source }
+        result: { kind: :success, type: :_given_, value: { input: " FOO@bAr.com  \n" }, source: source }
       }.then { assert_transition_record(result2, 0, _1) }
 
       source = -> { _1 == NormalizeEmail }
@@ -135,7 +135,7 @@ class BCDD::Result
         root: root,
         parent: root,
         current: { id: 1, name: 'NormalizeEmail', desc: nil },
-        result: { kind: :success, type: :given, value: { input: " FOO@bAr.com  \n" }, source: source }
+        result: { kind: :success, type: :_given_, value: { input: " FOO@bAr.com  \n" }, source: source }
       }.then { assert_transition_record(result2, 1, _1) }
 
       {
@@ -150,7 +150,7 @@ class BCDD::Result
         root: root,
         parent: root,
         current: { id: 2, name: 'EmailValidation', desc: nil },
-        result: { kind: :success, type: :given, value: { input: 'foo@bar.com' }, source: EmailValidation }
+        result: { kind: :success, type: :_given_, value: { input: 'foo@bar.com' }, source: EmailValidation }
       }.then { assert_transition_record(result2, 3, _1) }
 
       {
