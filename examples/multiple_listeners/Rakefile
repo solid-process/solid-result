@@ -1,0 +1,55 @@
+# frozen_string_literal: true
+
+if RUBY_VERSION <= '3.1'
+  puts 'This example requires Ruby 3.1 or higher.'
+  exit! 1
+end
+
+# Usage:
+#
+# rake DISABLE_TRANSITIONS=t
+# rake DISABLE_LISTENER=t
+#
+# rake HIDE_GIVEN_AND_CONTINUE=t
+#
+# rake BREAK_ACCOUNT_CREATION=t
+# rake BREAK_USER_CREATION=t
+# rake BREAK_USER_TOKEN_CREATION=t
+#
+# rake BREAK_ACCOUNT_CREATION=t HIDE_GIVEN_AND_CONTINUE=t
+task default: %i[bcdd_result_transitions]
+
+desc 'creates an account and an owner user through BCDD::Result'
+task :bcdd_result_transitions do
+  require_relative 'config'
+
+  BCDD::Result.configuration do |config|
+    config.feature.disable!(:transitions) if ENV['DISABLE_TRANSITIONS']
+
+    unless ENV['DISABLE_LISTENER']
+      config.transitions.listener = BCDD::Result::Transitions::Listeners[
+        TransitionsListener::Stdout,
+        BCDD::Result::TransitionsRecord::Listener
+      ]
+    end
+  end
+
+  result = nil
+
+  bench = Benchmark.measure do
+    result = Account::OwnerCreation.new.call(
+      owner: {
+        name: "\tJohn     Doe \n",
+        email: '   JOHN.doe@email.com',
+        password: '123123123',
+        password_confirmation: '123123123'
+      }
+    )
+  rescue RuntimeBreaker::Interruption => e
+    nil
+  end
+
+  puts "\nBCDD::Result::TransitionsRecord.count: #{BCDD::Result::TransitionsRecord.count}"
+
+  puts "\nBenchmark: #{bench}"
+end
