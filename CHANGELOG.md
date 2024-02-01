@@ -1,4 +1,5 @@
 - [\[Unreleased\]](#unreleased)
+- [\[1.0.0.beta1\] - 2024-01-31](#100beta1---2024-01-31)
   - [Added](#added)
   - [Changed](#changed)
 - [\[0.12.0\] - 2024-01-07](#0120---2024-01-07)
@@ -40,6 +41,8 @@
   - [Added](#added-12)
 
 ## [Unreleased]
+
+## [1.0.0.beta1] - 2024-01-31
 
 ### Added
 
