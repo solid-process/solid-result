@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 module BCDD::Result::Transitions
-  require_relative 'listener'
-
   class Config
     include ::Singleton
 
@@ -14,9 +12,7 @@ module BCDD::Result::Transitions
     end
 
     def listener=(arg)
-      unless (arg.is_a?(::Class) && arg < Listener) || arg.is_a?(Listener)
-        raise ::ArgumentError, "#{arg.inspect} must be a #{Listener}"
-      end
+      Listener.kind?(arg) or raise ::ArgumentError, "#{arg.inspect} must be a #{Listener}"
 
       @listener = arg
     end

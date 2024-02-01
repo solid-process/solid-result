@@ -76,6 +76,10 @@ Metrics/ClassLength:
     - lib/bcdd/result.rb
     - test/**/*.rb
 
+Metrics/AbcSize:
+  Exclude:
+    - lib/bcdd/result/transitions/tracking/enabled.rb
+
 Minitest/MultipleAssertions:
   Enabled: false
 

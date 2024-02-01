@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class MyBCDDResultTransitionsListener
+class SingleTransitionsListener
   include BCDD::Result::Transitions::Listener
 
   # A listener will be initialized before the first transition, and it is discarded after the last one.
@@ -56,12 +56,12 @@ class MyBCDDResultTransitionsListener
     @buffer << [id, " * #{kind}(#{type}) from method: #{method_name}".chomp('from method: ')]
   end
 
-  MapNestedMessages = ->(transitions, buffer, hide_given_and_continued) do
+  MapNestedMessages = ->(transitions, buffer, hide_given_and_continue) do
     ids_matrix = transitions.dig(:metadata, :ids_matrix)
 
     messages = buffer.filter_map { |(id, msg)| "#{'   ' * ids_matrix[id].last}#{msg}" if ids_matrix[id] }
 
-    messages.reject! { _1.match?(/\(given|continued\)/) } if hide_given_and_continued
+    messages.reject! { _1.match?(/\(_(given|continue)_\)/) } if hide_given_and_continue
 
     messages
   end
@@ -82,7 +82,7 @@ class MyBCDDResultTransitionsListener
   #   ]
   # }
   def on_finish(transitions:)
-    messages = MapNestedMessages[transitions, @buffer, ENV['HIDE_GIVEN_AND_CONTINUED']]
+    messages = MapNestedMessages[transitions, @buffer, ENV['HIDE_GIVEN_AND_CONTINUE']]
 
     puts messages.join("\n")
   end
@@ -92,7 +92,7 @@ class MyBCDDResultTransitionsListener
   # @param exception: Exception
   # @param transitions: Hash
   def before_interruption(exception:, transitions:)
-    messages = MapNestedMessages[transitions, @buffer, ENV['HIDE_GIVEN_AND_CONTINUED']]
+    messages = MapNestedMessages[transitions, @buffer, ENV['HIDE_GIVEN_AND_CONTINUE']]
 
     puts messages.join("\n")
 

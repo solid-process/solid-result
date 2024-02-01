@@ -78,6 +78,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [Turning on/off](#turning-onoff)
     - [Setting a `trace_id` fetcher](#setting-a-trace_id-fetcher)
     - [Setting a `listener`](#setting-a-listener)
+    - [Setting multiple `listeners`](#setting-multiple-listeners)
 - [`BCDD::Result.configuration`](#bcddresultconfiguration)
   - [`BCDD::Result.config`](#bcddresultconfig)
 - [`BCDD::Result#and_then!`](#bcddresultand_then)
@@ -1949,7 +1950,7 @@ The matrix rows are the direct transitions from the root transition block, and t
 
 Use these data structures to build your own visualization of the transitions.
 
-> Check out [Transitions Listener example](examples/transitions_listener/lib/my_bcdd_result_transitions_listener.rb) to see how a listener can be used to build a visualization of the transitions, using these properties.
+> Check out [Transitions Listener example](examples/single_listener/lib/single_transitions_listener.rb) to see how a listener can be used to build a visualization of the transitions, using these properties.
 
 ```ruby
 # ids_tree         #
@@ -2013,7 +2014,7 @@ BCDD::Result.config.transitions.trace_id = -> { Thread.current[:bcdd_result_tran
 
 #### Setting a `listener`
 
-You can define a listener to be called during the result transitions tracking (check out [this example](examples/transitions_listener/lib/my_bcdd_result_transitions_listener.rb)). It must be a class that includes `BCDD::Result::Transitions::Listener`.
+You can define a listener to be called during the result transitions tracking (check out [this example](examples/single_listener/lib/single_transitions_listener.rb)). It must be a class that includes `BCDD::Result::Transitions::Listener`.
 
 Use it to build your additional logic on top of the transitions tracking. Examples:
   - Log the transitions.
@@ -2103,6 +2104,61 @@ class MyTransitionsListener
   end
 end
 ```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### Setting multiple `listeners`
+
+You can use `BCDD::Result::Transitions::Listeners[]` to creates a listener of listeners (check out [this example](examples/multiple_listeners/Rakefile)), which will be called in the order they were added.
+
+**Attention:** It only allows one listener to handle `around_and_then` and another `around_transitions` events.
+
+> The example below defines different listeners to handle `around_and_then` and `around_transitions,` but it is also possible to define a listener to handle both.
+
+```ruby
+class AroundAndThenListener
+  include BCDD::Result::Transitions::Listener
+
+  # It must be a static/singleton method.
+  def self.around_and_then?
+    true
+  end
+
+  def around_and_then(scope:, and_then:)
+    #...
+  end
+end
+
+class AroundTransitionsListener
+  include BCDD::Result::Transitions::Listener
+
+  # It must be a static/singleton method.
+  def self.around_transitions?
+    true
+  end
+
+  def around_transitions(scope:)
+    #...
+  end
+end
+
+class MyTransitionsListener
+  include BCDD::Result::Transitions::Listener
+end
+```
+
+How to use it:
+
+```ruby
+# The listeners will be called in the order they were added.
+BCDD::Result.config.transitions.listener = BCDD::Result::Transitions::Listeners[
+  MyTransitionsListener,
+  AroundAndThenListener,
+  AroundTransitionsListener
+]
+```
+
+> Check out [this example](examples/multiple_listeners) to see a listener to print the transitions and another to store them in the database.
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 

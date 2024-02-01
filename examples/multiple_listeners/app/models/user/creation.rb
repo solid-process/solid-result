@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module User
+class User
   class Creation
     include BCDD::Context.mixin
     include BCDD::Result::RollbackOnFailure
@@ -46,13 +46,13 @@ module User
     end
 
     def validate_email_uniqueness(email:, **)
-      Record.exists?(email:) ? Failure(:email_already_taken) : Continue()
+      ::User.exists?(email:) ? Failure(:email_already_taken) : Continue()
     end
 
     def create_user(uuid:, name:, email:, password:, password_confirmation:)
       ::RuntimeBreaker.try_to_interrupt(env: 'BREAK_USER_CREATION')
 
-      user = Record.create(uuid:, name:, email:, password:, password_confirmation:)
+      user = ::User.create(uuid:, name:, email:, password:, password_confirmation:)
 
       user.persisted? ? Continue(user:) : Failure(:invalid_record, **user.errors.messages)
     end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Account
+class Account
   class OwnerCreation
     include BCDD::Context.mixin
     include BCDD::Result::RollbackOnFailure
@@ -48,13 +48,13 @@ module Account
     def create_account(uuid:, **)
       ::RuntimeBreaker.try_to_interrupt(env: 'BREAK_ACCOUNT_CREATION')
 
-      account = Record.create(uuid:)
+      account = ::Account.create(uuid:)
 
       account.persisted? ? Continue(account:) : Failure(:invalid_record, **account.errors.messages)
     end
 
     def link_owner_to_account(account:, user:, **)
-      Member::Record.create!(account:, user: user.fetch(:record), role: :owner)
+      Member.create!(account:, user: user.fetch(:record), role: :owner)
 
       Continue()
     end

@@ -2,9 +2,11 @@
 
 class BCDD::Result
   module Transitions
+    require_relative 'transitions/listener'
+    require_relative 'transitions/listeners'
+    require_relative 'transitions/config'
     require_relative 'transitions/tree'
     require_relative 'transitions/tracking'
-    require_relative 'transitions/config'
 
     THREAD_VAR_NAME = :bcdd_result_transitions_tracking
 

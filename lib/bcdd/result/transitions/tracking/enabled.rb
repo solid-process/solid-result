@@ -44,7 +44,7 @@ module BCDD::Result::Transitions
       track(result, time: ::Time.now.getutc)
     end
 
-    def record_and_then(type_arg, arg, &block)
+    def record_and_then(type_arg, arg)
       return yield if tree.frozen?
 
       type = type_arg.instance_of?(::Method) ? :method : type_arg
@@ -56,7 +56,11 @@ module BCDD::Result::Transitions
 
       scope, and_then = tree.current_value
 
-      listener.around_and_then(scope: scope, and_then: and_then, &block)
+      result = nil
+
+      listener.around_and_then(scope: scope, and_then: and_then) { result = yield }
+
+      result
     end
 
     def reset_and_then!

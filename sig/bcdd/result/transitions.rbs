@@ -1,27 +1,60 @@
 class BCDD::Result
   module Transitions
     module Listener
-      def around_transitions: (
-        scope: Hash[Symbol, untyped]
-      ) { () -> untyped } -> untyped
+      module ClassMethods
+        def around_and_then?: () -> bool
+        def around_transitions?: () -> bool
+      end
 
-      def on_start: (
-        scope: Hash[Symbol, untyped]
-      ) { () -> untyped } -> untyped
+      extend ClassMethods
 
-      def around_and_then: (
-        scope: Hash[Symbol, untyped],
-        and_then: Hash[Symbol, untyped],
-      ) { () -> untyped } -> untyped
+      def around_transitions: (scope: Hash[Symbol, untyped]) { () -> untyped } -> untyped
+
+      def on_start: (scope: Hash[Symbol, untyped]) -> untyped
+
+      def around_and_then: (scope: Hash[Symbol, untyped], and_then: Hash[Symbol, untyped]) { () -> untyped } -> untyped
 
       def on_record: (record: Hash[Symbol, untyped] ) -> untyped
 
       def on_finish: (transitions: Hash[Symbol, untyped] ) -> untyped
 
-      def before_interruption: (
-        exception: ::Exception,
-        transitions: Hash[Symbol, untyped]
-      ) -> untyped
+      def before_interruption: (exception: ::Exception, transitions: Hash[Symbol, untyped]) -> untyped
+    end
+
+    class Listeners
+      class Chain
+        include Listener
+
+        attr_reader listeners: Hash[Symbol, untyped]
+
+        def initialize: (Array[untyped]) -> void
+
+        def new: () -> Listeners
+
+        private
+
+        def listener?: (untyped, untyped) -> bool
+      end
+
+      def self.[]: (*untyped) -> Chain
+
+      private attr_reader listeners: Array[Listener]
+      private attr_reader around_and_then_listener: untyped
+      private attr_reader around_transitions_listener: untyped
+
+      def initialize: (Array[Listener], untyped, untyped) -> void
+
+      def around_transitions: (scope: Hash[Symbol, untyped]) { () -> untyped } -> untyped
+
+      def on_start: (scope: Hash[Symbol, untyped]) -> untyped
+
+      def around_and_then: (scope: Hash[Symbol, untyped], and_then: Hash[Symbol, untyped]) { () -> untyped } -> untyped
+
+      def on_record: (record: Hash[Symbol, untyped] ) -> untyped
+
+      def on_finish: (transitions: Hash[Symbol, untyped] ) -> untyped
+
+      def before_interruption: (exception: ::Exception, transitions: Hash[Symbol, untyped]) -> untyped
     end
 
     module Listener::Null
@@ -108,7 +141,7 @@ class BCDD::Result
         def err!: (::Exception, untyped) -> void
         def reset!: () -> void
         def record: (BCDD::Result) -> void
-        def record_and_then: ((untyped), untyped) { () -> BCDD::Result } -> BCDD::Result
+        def record_and_then: ((untyped), untyped) { () -> untyped } -> untyped
         def reset_and_then!: () -> void
 
         private
