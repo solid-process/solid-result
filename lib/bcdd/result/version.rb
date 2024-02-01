@@ -2,6 +2,6 @@
 
 module BCDD
   class Result
-    VERSION = '1.0.0.beta1'
+    VERSION = '0.13.0'
   end
 end

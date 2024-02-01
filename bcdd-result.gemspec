@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ['Rodrigo Serradura']
   spec.email = ['rodrigo.serradura@gmail.com']
 
-  'Empower Ruby apps with pragmatic use of Result pattern, Railway Oriented Programming, and B/CDD.'
+  'Unleash a pragmatic and observable use of Result Pattern and Railway-Oriented Programming in Ruby.'
     .then do |summary|
       spec.summary     = summary
       spec.description = summary
