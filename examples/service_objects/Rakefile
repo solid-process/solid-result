@@ -13,62 +13,24 @@ end
 
 desc 'creates an account and an owner user through BCDD::Result'
 task bcdd_result_transitions: %i[config] do
-  result = nil
+  result1 = Account::OwnerCreation.call(
+    owner: {
+      name: "\tJohn     Doe \n",
+      email: '   JOHN.doe@email.com',
+      password: '123123123',
+      password_confirmation: '123123123'
+    }
+  )
 
-  bench = Benchmark.measure do
-    result = Account::OwnerCreation.call(
-      owner: {
-        name: "\tJohn     Doe \n",
-        email: '   JOHN.doe@email.com',
-        password: '123123123',
-        password_confirmation: '123123123'
-      }
-    )
-  end
+  puts result1.inspect
+  puts
 
-  p result
-
-  puts "\nBenchmark: #{bench}"
-end
-
-desc 'creates an account and an owner user directly through ActiveRecord'
-task raw_active_record: %i[config] do
-  require_relative 'config'
-
-  result = nil
-
-  bench = Benchmark.measure do
-    email = 'john.doe@email.com'
-
-    ActiveRecord::Base.transaction do
-      User.exists?(email:) and raise "User with email #{email} already exists"
-
-      user = User.create!(
-        uuid: ::SecureRandom.uuid,
-        name: 'John Doe',
-        email:,
-        password: '123123123',
-        password_confirmation: '123123123'
-      )
-
-      executed_at = ::Time.current
-
-      user.token.nil? or raise "User with email #{email} already has a token"
-
-      user.create_token!(
-        access_token: ::SecureRandom.hex(24),
-        refresh_token: ::SecureRandom.hex(24),
-        access_token_expires_at: executed_at + 15.days,
-        refresh_token_expires_at: executed_at + 30.days
-      )
-
-      account = Account.create!(uuid: ::SecureRandom.uuid)
-
-      Account::Member.create!(account: account, user: user, role: :owner)
-
-      result = { account: account, user: user }
+  result2 = Account::OwnerCreation.call(
+    uuid: "",
+    owner: {}
+  ).on_failure(:invalid_input) do |output|
+    output[:input].errors.full_messages.each do |message|
+      puts message
     end
   end
-
-  puts "\nBenchmark: #{bench}"
 end

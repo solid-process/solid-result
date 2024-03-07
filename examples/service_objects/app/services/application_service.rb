@@ -16,8 +16,8 @@ class ApplicationService
     def input=(klass)
       const_defined?(:Input, false) and raise ArgumentError, 'Attributes class already defined'
 
-      unless klass.is_a?(::Class) && klass < (ApplicationService::Input)
-        raise ArgumentError, 'must be a ApplicationService::Attributes subclass'
+      unless klass.is_a?(::Class) && klass < Input
+        raise ArgumentError, 'must be a ApplicationService::Input subclass'
       end
 
       const_set(:Input, klass)
@@ -26,7 +26,7 @@ class ApplicationService
     def input(&block)
       return const_get(:Input, false) if const_defined?(:Input, false)
 
-      klass = ::Class.new(ApplicationService::Input)
+      klass = ::Class.new(Input)
       klass.class_eval(&block)
 
       self.input = klass
@@ -52,7 +52,7 @@ class ApplicationService
   def call!
     ::BCDD::Result.transitions(name: self.class.name) do
       if input.invalid?
-        Failure(:invalid_input, **input.errors.messages)
+        Failure(:invalid_input, input: input)
       else
         call(input.attributes.deep_symbolize_keys)
       end
