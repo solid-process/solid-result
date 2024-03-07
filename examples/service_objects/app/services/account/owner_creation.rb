@@ -27,7 +27,7 @@ class Account
 
     def create_owner(owner:, **)
       ::User::Creation.call(owner).handle do |on|
-        on.success { |output| Continue(user: { record: output[:user], token: output[:token] }) }
+        on.success { |output| Continue(user: output[:user], token: output[:token]) }
         on.failure { |output| Failure(:invalid_owner, **output) }
       end
     end
@@ -39,7 +39,7 @@ class Account
     end
 
     def link_owner_to_account(account:, user:, **)
-      Member.create!(account:, user: user.fetch(:record), role: :owner)
+      Member.create!(account:, user:, role: :owner)
 
       Continue()
     end
