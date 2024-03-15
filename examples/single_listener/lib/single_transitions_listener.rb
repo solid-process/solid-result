@@ -104,8 +104,14 @@ class SingleTransitionsListener
     bc.add_silencer { |line| /lib\/bcdd\/result/.match?(line) }
     bc.add_silencer { |line| line.include?(RUBY_VERSION) }
 
-    backtrace = bc.clean(exception.backtrace)
+    dir = "#{FileUtils.pwd[1..]}/"
 
-    puts "\nException: #{exception.message} (#{exception.class}); Backtrace: #{backtrace.join(", ")}"
+    listener_filename = File.basename(__FILE__).chomp('.rb')
+
+    cb = bc.clean(exception.backtrace)
+    cb.each { _1.sub!(dir, '') }
+    cb.reject! { _1.match?(/block \(\d levels?\) in|in `block in|internal:kernel|#{listener_filename}/) }
+
+    puts "\nException:\n  #{exception.message} (#{exception.class})\n\nBacktrace:\n  #{cb.join("\n  ")}"
   end
 end
