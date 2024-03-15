@@ -115,19 +115,21 @@ class BCDD::Result
       def move_down!: (?Integer level) -> Tree
       def move_to_root!: () -> Tree
 
-      NestedIds: ^(Node) -> Array[untyped]
-
-      def nested_ids: () -> Array[untyped]
-
+      Ids: ^(Node) -> Array[untyped]
       IdsMatrix: ::Proc
+      IdsLevelParent: ::Proc
 
+      def ids: () -> Array[untyped]
+      def ids_list: () -> Array[Integer]
       def ids_matrix: () -> untyped
+      def ids_level_parent: () -> untyped
     end
 
     module Tracking
       EMPTY_ARRAY: Array[untyped]
       EMPTY_HASH: Hash[untyped, untyped]
       EMPTY_TREE: Transitions::Tree
+      EMPTY_IDS: Hash[untyped, untyped]
       VERSION: Integer
       EMPTY: Hash[Symbol, untyped]
 

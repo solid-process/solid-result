@@ -89,13 +89,17 @@ class BCDD::Result
         move_to!(root)
       end
 
-      NestedIds = ->(node) { [node.id, node.children.map(&NestedIds)] }
+      Ids = ->(node) { [node.id, node.children.map(&Ids)] }
 
-      def nested_ids
-        NestedIds[root]
+      def ids
+        Ids[root]
       end
 
-      IdsMatrix = ->(tree, row, col, ids, previous) do
+      def ids_list
+        ids.flatten
+      end
+
+      IdsMatrix = ->(tree, row, col, memo, previous) do
         last_row = previous[0]
 
         tree.each_with_index do |node, index|
@@ -103,22 +107,34 @@ class BCDD::Result
 
           id, leaf = node
 
-          ids[id] = previous == [row, col] ? [row, col + 1] : [row, col]
+          memo[id] = previous == [row, col] ? [row, col + 1] : [row, col]
 
-          previous = ids[id]
+          previous = memo[id]
 
-          IdsMatrix[leaf, row, col + 1, ids, previous]
+          IdsMatrix[leaf, row, col + 1, memo, previous]
         end
       end
 
       def ids_matrix
         current = [0, 0]
 
-        ids = { 0 => current }
+        memo = { 0 => current }
 
-        IdsMatrix[nested_ids[1], 1, 1, ids, current]
+        IdsMatrix[ids[1], 1, 1, memo, current]
 
-        ids
+        memo
+      end
+
+      IdsLevelParent = ->((id, node), parent = 0, level = 0, memo = {}) do
+        memo[id] = [level, parent]
+
+        node.each { |leaf| IdsLevelParent[leaf, id, level + 1, memo] }
+
+        memo
+      end
+
+      def ids_level_parent
+        IdsLevelParent[ids]
       end
     end
   end

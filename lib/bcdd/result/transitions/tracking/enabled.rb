@@ -141,7 +141,9 @@ module BCDD::Result::Transitions
 
       trace_id = Config.instance.trace_id.call
 
-      metadata = { duration: duration, ids_tree: tree.nested_ids, ids_matrix: tree.ids_matrix, trace_id: trace_id }
+      ids = { tree: tree.ids, matrix: tree.ids_matrix, level_parent: tree.ids_level_parent }
+
+      metadata = { duration: duration, trace_id: trace_id, ids: ids }
 
       { version: Tracking::VERSION, records: records, metadata: metadata }
     end

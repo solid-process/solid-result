@@ -128,7 +128,7 @@ module BCDD::Result::Transitions
       assert_equal('child', tree.current_value)
     end
 
-    test '#nested_ids' do
+    test '#ids' do
       tree = Tree.new('root')
       tree.insert!('child')
       tree.insert!('grandchild')
@@ -156,7 +156,7 @@ module BCDD::Result::Transitions
           ]],
           [7, []]
         ]],
-        tree.nested_ids
+        tree.ids
       )
 
       tree.move_to_root!
@@ -217,6 +217,66 @@ module BCDD::Result::Transitions
       assert_equal(
         { 0 => [0, 0], 1 => [1, 1], 2 => [1, 2], 3 => [1, 3], 4 => [2, 1], 5 => [2, 2], 6 => [2, 3], 7 => [3, 1] },
         tree.ids_matrix
+      )
+    end
+
+    test '#ids_list' do
+      tree = Tree.new('root')
+
+      tree.insert!('child')
+      tree.insert!('grandchild')
+      tree.insert!('great-grandchild')
+
+      tree.move_to_root!
+
+      tree.insert!('new-child')
+      tree.insert!('new-grandchild')
+
+      tree.move_up!
+
+      tree.insert!('new-grandchild__child')
+
+      tree.move_to_root!
+
+      tree.insert!('new-new-child')
+
+      assert_equal(
+        [0, 1, 2, 3, 4, 5, 6, 7],
+        tree.ids_list
+      )
+    end
+
+    test '#ids_level_parent' do
+      tree = Tree.new('root')
+      tree.insert!('child')
+      tree.insert!('grandchild')
+      tree.insert!('great-grandchild')
+
+      tree.move_to_root!
+
+      tree.insert!('new-child')
+      tree.insert!('new-grandchild')
+
+      tree.move_up!
+
+      tree.insert!('new-grandchild__child')
+
+      tree.move_to_root!
+
+      tree.insert!('new-new-child')
+
+      assert_equal(
+        {
+          0 => [0, 0],
+          1 => [1, 0],
+          2 => [2, 1],
+          3 => [3, 2],
+          4 => [1, 0],
+          5 => [2, 4],
+          6 => [2, 4],
+          7 => [1, 0]
+        },
+        tree.ids_level_parent
       )
     end
   end

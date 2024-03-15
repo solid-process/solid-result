@@ -80,7 +80,7 @@ class BCDD::Result
 
       assert_transitions(result1, size: 3)
 
-      assert_equal([0, [[1, []]]], result1.transitions[:metadata][:ids_tree])
+      assert_equal([0, [[1, []]]], result1.transitions[:metadata][:ids][:tree])
 
       root = { id: 0, name: 'NormalizeAndValidateEmail', desc: nil }
 
@@ -116,7 +116,7 @@ class BCDD::Result
 
       assert_transitions(result2, size: 5)
 
-      assert_equal([0, [[1, []], [2, []]]], result2.transitions[:metadata][:ids_tree])
+      assert_equal([0, [[1, []], [2, []]]], result2.transitions[:metadata][:ids][:tree])
 
       root = { id: 0, name: 'NormalizeAndValidateEmail', desc: nil }
 
