@@ -73,7 +73,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`BCDD::Result::Context::Expectations`](#bcddresultcontextexpectations)
     - [Mixin add-ons](#mixin-add-ons)
 - [`BCDD::Result.transitions`](#bcddresulttransitions)
-  - [`ids_tree` *versus* `ids_matrix`](#ids_tree-versus-ids_matrix)
+  - [`metadata: {ids:}`](#metadata-ids)
   - [Configuration](#configuration)
     - [Turning on/off](#turning-onoff)
     - [Setting a `trace_id` fetcher](#setting-a-trace_id-fetcher)
@@ -1860,8 +1860,11 @@ result.transitions
   :metadata => {
     :duration => 0,   # milliseconds
     :trace_id => nil, # can be set through configuration
-    :ids_tree => [0, [[1, []], [2, []]]],
-    :ids_matrix => {0 => [0, 0], 1 => [1, 1], 2 => [2, 1]}
+    :ids => {
+      :tree => [0, [[1, []], [2, []]]],
+      :matrix => { 0 => [0, 0], 1 => [1, 1], 2 => [2, 1]},
+      :level_parent => { 0 => [0, 0], 1 => [1, 0], 2 => [1, 0]}
+    }
   },
   :records=> [
     {
@@ -1942,18 +1945,21 @@ result.transitions
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-### `ids_tree` *versus* `ids_matrix`
+### `metadata: {ids:}`
 
-The `:ids_matrix`. It is a simplification of the `:ids_tree` property (a graph/tree representation of the transitions ids).
+The `:ids` metadata property is a hash with three properties:
+- `:tree`, a graph/tree representation of the transitions ids.
+- `:level_parent`, a hash with the level (depth) of each transition and its parent id.
+- `:matrix`, a matrix representation of the transitions ids. It is a simplification of the `:tree` property.
 
-The matrix rows are the direct transitions from the root transition block, and the columns are the transitions nested from the direct transitions.
-
-Use these data structures to build your own visualization of the transitions.
+Use these data structures to build your own visualization.
 
 > Check out [Transitions Listener example](examples/single_listener/lib/single_transitions_listener.rb) to see how a listener can be used to build a visualization of the transitions, using these properties.
 
 ```ruby
-# ids_tree         #
+# tree:
+# A graph representation (array of arrays) of the transitions ids.
+#
 0                  # [0, [
 |- 1               #   [1, [[2, []]]],
 |  |- 2            #   [3, []],
@@ -1964,7 +1970,24 @@ Use these data structures to build your own visualization of the transitions.
 |     |- 7         #   [8, []]
 |- 8               # ]]
 
-# ids_matrix       # {
+# level_parent:
+# Transition ids are the keys, and the level (depth) and parent id the values.
+                   # {
+0                  #   0 => [0, 0],
+|- 1               #   1 => [1, 0],
+|  |- 2            #   2 => [2, 1],
+|- 3               #   3 => [1, 0],
+|- 4               #   4 => [1, 0],
+|  |- 5            #   5 => [2, 4],
+|  |- 6            #   6 => [2, 4],
+|     |- 7         #   7 => [3, 6],
+|- 8               #   8 => [1, 0]
+                   # }
+
+# matrix:
+# The rows are the direct transitions from the root transition block,
+# and the columns are the nested transitions from the direct ones.
+                   # {
 0 | 1 | 2 | 3 | 4  #   0 => [0, 0],
 - | - | - | - | -  #   1 => [1, 1],
 0 |   |   |   |    #   2 => [1, 2],
@@ -1994,8 +2017,14 @@ result = SumDivisionsByTwo.call(20, 10)
 # => #<BCDD::Result::Success type=:sum value=15>
 
 result.transitions
-
-{:version=>1, :records=>[], :metadata=>{:duration=>0, :ids_tree=>[]}}
+{
+  :version=>1,
+  :records=>[],
+  :metadata=>{
+    :duration=>0,
+    :ids=>{:tree=>[], :matrix=>{}, :level_parent=>{}}, :trace_id=>nil
+  }
+}
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
@@ -2020,7 +2049,7 @@ Use it to build your additional logic on top of the transitions tracking. Exampl
   - Log the transitions.
   - Perform a trace of the transitions.
   - Instrument the transitions (measure/report).
-  - Build a visualization of the transitions (Diagrams, using the `records` + `:ids_tree` and `:ids_matrix` properties).
+  - Build a visualization of the transitions (Diagrams, using the `records` + `metadata: {ids:}` properties).
 
 After implementing your listener, you can set it to the `BCDD::Result.config.transitions.listener=`:
 
@@ -2086,8 +2115,11 @@ class MyTransitionsListener
   #   :metadata => {
   #     :duration => 0,
   #     :trace_id => nil,
-  #     :ids_tree => [0, [[1, []], [2, []]]],
-  #     :ids_matrix => {0 => [0, 0], 1 => [1, 1], 2 => [2, 1]}
+  #     :ids => {
+  #       :tree => [0, [[1, []], [2, []]]],
+  #       :matrix => { 0 => [0, 0], 1 => [1, 1], 2 => [2, 1]},
+  #       :level_parent => { 0 => [0, 0], 1 => [1, 0], 2 => [1, 0]}
+  #     }
   #   },
   #   :records => [
   #     # ...
