@@ -57,9 +57,9 @@ class SingleTransitionsListener
   end
 
   MapNestedMessages = ->(transitions, buffer, hide_given_and_continue) do
-    ids_matrix = transitions.dig(:metadata, :ids_matrix)
+    ids_level_parent = transitions.dig(:metadata, :ids, :level_parent)
 
-    messages = buffer.filter_map { |(id, msg)| "#{'   ' * ids_matrix[id].last}#{msg}" if ids_matrix[id] }
+    messages = buffer.filter_map { |(id, msg)| "#{'   ' * ids_level_parent[id].first}#{msg}" if ids_level_parent[id] }
 
     messages.reject! { _1.match?(/\(_(given|continue)_\)/) } if hide_given_and_continue
 
@@ -74,8 +74,11 @@ class SingleTransitionsListener
   #   :metadata => {
   #     :duration => 0,
   #     :trace_id => nil,
-  #     :ids_tree => [0, [[1, []], [2, []]]],
-  #     :ids_matrix => {0 => [0, 0], 1 => [1, 1], 2 => [2, 1]}
+  #     :ids => {
+  #       :tree => [0, [[1, []], [2, []]]],
+  #       :matrix => { 0 => [0, 0], 1 => [1, 1], 2 => [2, 1]},
+  #       :level_parent => { 0 => [0, 0], 1 => [1, 0], 2 => [1, 0]}
+  #     }
   #   },
   #   :records => [
   #     # ...

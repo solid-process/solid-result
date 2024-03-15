@@ -15,8 +15,7 @@ class BCDD::Result::TransitionsRecord < ActiveRecord::Base
           trace_id: metadata[:trace_id],
           version: transitions[:version],
           duration: metadata[:duration],
-          ids_tree: metadata[:ids_tree],
-          ids_matrix: metadata[:ids_matrix],
+          ids: metadata[:ids],
           records: transitions[:records]
         )
     rescue ::StandardError => e
