@@ -49,9 +49,11 @@ class TransitionsListener::Stdout
 
     dir = "#{FileUtils.pwd[1..]}/"
 
+    listener_filename = File.basename(__FILE__).chomp('.rb')
+
     cb = bc.clean(exception.backtrace)
     cb.each { _1.sub!(dir, '') }
-    cb.reject! { _1.match?(/block \(\d levels?\) in|in `block in|internal:kernel/) }
+    cb.reject! { _1.match?(/block \(\d levels?\) in|in `block in|internal:kernel|#{listener_filename}/) }
 
     puts "\nException:\n  #{exception.message} (#{exception.class})\n\nBacktrace:\n  #{cb.join("\n  ")}"
   end
