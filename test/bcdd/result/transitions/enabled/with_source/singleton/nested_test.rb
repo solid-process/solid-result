@@ -108,7 +108,7 @@ class BCDD::Result::TransitionsEnabledWithSourceSingletonNestedTest < Minitest::
 
     assert_equal(
       [0, [[1, []], [2, []], [3, []]]],
-      result1.transitions[:metadata][:ids_tree]
+      result1.transitions[:metadata][:ids][:tree]
     )
 
     {
@@ -120,7 +120,7 @@ class BCDD::Result::TransitionsEnabledWithSourceSingletonNestedTest < Minitest::
 
     assert_equal(
       [0, [[1, [[2, []]]], [3, []], [4, []]]],
-      result2.transitions[:metadata][:ids_tree]
+      result2.transitions[:metadata][:ids][:tree]
     )
 
     {
@@ -132,7 +132,7 @@ class BCDD::Result::TransitionsEnabledWithSourceSingletonNestedTest < Minitest::
 
     assert_equal(
       [0, [[1, [[2, []]]], [3, [[4, []]]], [5, []]]],
-      result3.transitions[:metadata][:ids_tree]
+      result3.transitions[:metadata][:ids][:tree]
     )
 
     {
@@ -144,7 +144,7 @@ class BCDD::Result::TransitionsEnabledWithSourceSingletonNestedTest < Minitest::
 
     assert_equal(
       [0, [[1, [[2, []]]], [3, [[4, []]]], [5, [[6, []]]]]],
-      result4.transitions[:metadata][:ids_tree]
+      result4.transitions[:metadata][:ids][:tree]
     )
 
     assert_predicate(result1.transitions[:records][0][:and_then], :empty?)

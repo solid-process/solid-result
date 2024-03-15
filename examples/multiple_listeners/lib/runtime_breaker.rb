@@ -6,6 +6,6 @@ module RuntimeBreaker
   def self.try_to_interrupt(env:)
     return unless String(ENV[env]).strip.start_with?(/1|t/)
 
-    raise Interruption, "Runtime breaker activated (#{env})"
+    raise Interruption, "#{env}"
   end
 end

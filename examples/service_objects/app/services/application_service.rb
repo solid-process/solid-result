@@ -14,7 +14,7 @@ class ApplicationService
 
   class << self
     def input=(klass)
-      const_defined?(:Input, false) and raise ArgumentError, 'Attributes class already defined'
+      const_defined?(:Input, false) and raise ArgumentError, "#{self}::Input class already defined"
 
       unless klass.is_a?(::Class) && klass < Input
         raise ArgumentError, 'must be a ApplicationService::Input subclass'

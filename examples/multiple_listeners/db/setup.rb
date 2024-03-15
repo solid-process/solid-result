@@ -15,8 +15,7 @@ ActiveRecord::Schema.define do
       t.string :trace_id, index: true
       t.integer :version, null: false
       t.integer :duration, null: false, index: true
-      t.json :ids_tree, null: false, default: []
-      t.json :ids_matrix, null: false, default: {}
+      t.json :ids, null: false, default: {}
       t.json :records, null: false, default: []
 
       t.timestamps

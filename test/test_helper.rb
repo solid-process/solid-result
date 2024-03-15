@@ -116,11 +116,11 @@ module BCDDResultTransitionAssertions
 
     metadata = transitions[:metadata]
 
-    assert_equal(%i[duration ids_matrix ids_tree trace_id], metadata.keys.sort)
+    assert_equal(%i[duration ids trace_id], metadata.keys.sort)
 
     assert_instance_of(Integer, metadata[:duration])
-    assert_instance_of(Array, metadata[:ids_tree])
-    assert_instance_of(Hash, metadata[:ids_matrix])
+
+    assert_transitions_metadata_ids(metadata)
 
     assert_transitions_metadata_trace_id(metadata, trace_id)
   end
@@ -129,6 +129,13 @@ module BCDDResultTransitionAssertions
     metadata_trace_id = metadata[:trace_id]
 
     trace_id.nil? ? assert_nil(metadata_trace_id) : assert_equal(trace_id, metadata_trace_id)
+  end
+
+  def assert_transitions_metadata_ids(metadata)
+    assert_instance_of(Hash, metadata[:ids])
+    assert_instance_of(Array, metadata[:ids][:tree])
+    assert_instance_of(Hash, metadata[:ids][:matrix])
+    assert_instance_of(Hash, metadata[:ids][:level_parent])
   end
 
   TimeValue = ->(value) { value.is_a?(::Time) && value.utc? }
