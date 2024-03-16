@@ -24,7 +24,8 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
 - [Usage](#usage)
     - [`BCDD::Result` *versus* `Result`](#bcddresult-versus-result)
 - [Reference](#reference)
-  - [Result Attributes](#result-attributes)
+  - [Basic methods](#basic-methods)
+    - [Checking types with `result.is?` or `method missing`](#checking-types-with-resultis-or-method-missing)
     - [Checking types with `result.success?` or `result.failure?`](#checking-types-with-resultsuccess-or-resultfailure)
   - [Result Hooks](#result-hooks)
     - [`result.on`](#resulton)
@@ -37,9 +38,6 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`result.value_or`](#resultvalue_or)
   - [Result Data](#result-data)
     - [`result.data`](#resultdata)
-  - [Pattern Matching](#pattern-matching)
-    - [`Array`/`Find` patterns](#arrayfind-patterns)
-    - [`Hash` patterns](#hash-patterns)
   - [Railway Oriented Programming](#railway-oriented-programming)
     - [`result.and_then`](#resultand_then)
     - [`BCDD::Result.mixin`](#bcddresultmixin)
@@ -72,6 +70,14 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
       - [Module example (Singleton Methods)](#module-example-singleton-methods-1)
     - [`BCDD::Context::Expectations`](#bcddcontextexpectations)
     - [Mixin add-ons](#mixin-add-ons)
+- [Pattern Matching](#pattern-matching)
+  - [`BCDD::Result`](#bcddresult)
+    - [`Array`/`Find` patterns](#arrayfind-patterns)
+    - [`Hash` patterns](#hash-patterns)
+  - [`BCDD::Context`](#bcddcontext-1)
+    - [`Array`/`Find` patterns](#arrayfind-patterns-1)
+    - [`Hash` patterns](#hash-patterns-1)
+  - [How to pattern match without the concept of success and failure](#how-to-pattern-match-without-the-concept-of-success-and-failure)
 - [`BCDD::Result.transitions`](#bcddresulttransitions)
   - [`metadata: {ids:}`](#metadata-ids)
   - [Configuration](#configuration)
@@ -171,7 +177,7 @@ There are other aliases and configurations available. Check the [BCDD::Result.co
 
 ## Reference
 
-### Result Attributes
+### Basic methods
 
 Both `BCDD::Result::Success` and `BCDD::Result::Failure` are composed of the same methods. Look at the basic ones:
 
@@ -183,20 +189,22 @@ Both `BCDD::Result::Success` and `BCDD::Result::Failure` are composed of the sam
 ################
 result = BCDD::Result::Success(:ok, my: 'value')
 
-result.success? # true
-result.failure? # false
-result.type     # :ok
-result.value    # {:my => "value"}
+result.success?   # true
+result.failure?   # false
+result.type?(:ok) # true
+result.type       # :ok
+result.value      # {:my => "value"}
 
 ###################
 # Without a value #
 ###################
 result = BCDD::Result::Success(:yes)
 
-result.success? # true
-result.failure? # false
-result.type     # :yes
-result.value    # nil
+result.success?    # true
+result.failure?    # false
+result.type?(:yes) # true
+result.type        # :yes
+result.value       # nil
 ```
 
 **BCDD::Result::Failure**
@@ -207,23 +215,43 @@ result.value    # nil
 ################
 result = BCDD::Result::Failure(:err, 'my_value')
 
-result.success? # false
-result.failure? # true
-result.type     # :err
-result.value    # "my_value"
+result.success?    # false
+result.failure?    # true
+result.type?(:err) # true
+result.type        # :err
+result.value       # "my_value"
 
 ###################
 # Without a value #
 ###################
 result = BCDD::Result::Failure(:no)
 
-result.success? # false
-result.failure? # true
-result.type     # :no
-result.value    # nil
+result.success?   # false
+result.failure?   # true
+result.type?(:no) # true
+result.type       # :no
+result.value      # nil
 ```
 
 In both cases, the `type` must be a symbol, and the `value` can be any kind of object.
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### Checking types with `result.is?` or `method missing`
+
+Beyond the `type?` method, you can also use the `is?` method to check the result type. If you want to check the type directly, you can write the type using a method that ends with a question mark.
+
+```ruby
+result = BCDD::Result::Success(:ok)
+
+result.is?(:ok) # true
+result.ok?      # true
+
+result = BCDD::Result::Failure(:err)
+
+result.is?(:err) # true
+result.err?      # true
+```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
@@ -534,67 +562,6 @@ print_to_hash(**success_data) # [:success, :ok, 1]
 ```
 
 > **NOTE:** The example above uses a success result, but the same is valid for a failure result.
-
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
-
-### Pattern Matching
-
-The `BCDD::Result` also provides support to pattern matching.
-
-In the further examples, I will use the `Divide` lambda to exemplify its usage.
-
-```ruby
-Divide = lambda do |arg1, arg2|
-  arg1.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg1 must be numeric')
-  arg2.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg2 must be numeric')
-
-  return BCDD::Result::Failure(:division_by_zero, 'arg2 must not be zero') if arg2.zero?
-
-  BCDD::Result::Success(:division_completed, arg1 / arg2)
-end
-```
-
-#### `Array`/`Find` patterns
-
-```ruby
-case Divide.call(4, 2)
-in BCDD::Result::Failure[:invalid_arg, msg] then puts msg
-in BCDD::Result::Failure[:division_by_zero, msg] then puts msg
-in BCDD::Result::Success[:division_completed, value] then puts value
-end
-
-# The code above will print: 2
-
-case Divide.call(4, 0)
-in BCDD::Result::Failure[:invalid_arg, msg] then puts msg
-in BCDD::Result::Failure[:division_by_zero, msg] then puts msg
-in BCDD::Result::Success[:division_completed, value] then puts value
-end
-
-# The code above will print: arg2 must not be zero
-```
-
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
-
-#### `Hash` patterns
-
-```ruby
-case Divide.call(10, 2)
-in { failure: { invalid_arg: msg } } then puts msg
-in { failure: { division_by_zero: msg } } then puts msg
-in { success: { division_completed: value } } then puts value
-end
-
-# The code above will print: 5
-
-case Divide.call('10', 2)
-in { failure: { invalid_arg: msg } } then puts msg
-in { failure: { division_by_zero: msg } } then puts msg
-in { success: { division_completed: value } } then puts value
-end
-
-# The code above will print: arg1 must be numeric
-```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
@@ -1789,6 +1756,164 @@ Division.call(14, '2')
 Division.call(14, 0)
 #<BCDD::Context::Failure type=:division_by_zero value={:message=>"arg2 must not be zero"}>
 ```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+## Pattern Matching
+
+The `BCDD::Result` and `BCDD::Context` also provides support to pattern matching.
+
+### `BCDD::Result`
+
+In the further examples, I will use the `Divide` lambda to exemplify its usage.
+
+```ruby
+Divide = lambda do |arg1, arg2|
+  arg1.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg1 must be numeric')
+  arg2.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg2 must be numeric')
+
+  return BCDD::Result::Failure(:division_by_zero, 'arg2 must not be zero') if arg2.zero?
+
+  BCDD::Result::Success(:division_completed, arg1 / arg2)
+end
+```
+
+#### `Array`/`Find` patterns
+
+```ruby
+case Divide.call(4, 2)
+in BCDD::Failure[:invalid_arg, msg] then puts msg
+in BCDD::Failure[:division_by_zero, msg] then puts msg
+in BCDD::Success[:division_completed, num] then puts num
+end
+
+# The code above will print: 2
+
+case Divide.call(4, 0)
+in BCDD::Failure[:invalid_arg, msg] then puts msg
+in BCDD::Failure[:division_by_zero, msg] then puts msg
+in BCDD::Success[:division_completed, num] then puts num
+end
+
+# The code above will print: arg2 must not be zero
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### `Hash` patterns
+
+```ruby
+case Divide.call(10, 2)
+in BCDD::Failure(type: :invalid_arg, value: msg) then puts msg
+in BCDD::Failure(type: :division_by_zero, value: msg) then puts msg
+in BCDD::Success(type: :division_completed, value: num) then puts num
+end
+
+# The code above will print: 5
+
+case Divide.call('10', 2)
+in BCDD::Failure(type: :invalid_arg, value: msg) then puts msg
+in BCDD::Failure(type: :division_by_zero, value: msg) then puts msg
+in BCDD::Success(type: :division_completed, value: num) then puts num
+end
+
+# The code above will print: arg1 must be numeric
+```
+
+You can also use `BCDD::Result::Success` and `BCDD::Result::Failure` as patterns.
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+
+### `BCDD::Context`
+
+In the further examples, I will use the `Divide` lambda to exemplify its usage.
+
+```ruby
+Divide = lambda do |arg1, arg2|
+  arg1.is_a?(::Numeric) or return BCDD::Context::Failure(:invalid_arg, err: 'arg1 must be numeric')
+  arg2.is_a?(::Numeric) or return BCDD::Context::Failure(:invalid_arg, err: 'arg2 must be numeric')
+
+  return BCDD::Context::Failure(:division_by_zero, err: 'arg2 must not be zero') if arg2.zero?
+
+  BCDD::Context::Success(:division_completed, num: arg1 / arg2)
+end
+```
+
+#### `Array`/`Find` patterns
+
+```ruby
+case Divide.call(4, 2)
+in BCDD::Failure[:invalid_arg, {msg:}] then puts msg
+in BCDD::Failure[:division_by_zero, {msg:}] then puts msg
+in BCDD::Success[:division_completed, {num:}] then puts num
+end
+
+# The code above will print: 2
+
+case Divide.call(4, 0)
+in BCDD::Failure[:invalid_arg, {msg:}] then puts msg
+in BCDD::Failure[:division_by_zero, {msg:}] then puts msg
+in BCDD::Success[:division_completed, {num:}] then puts num
+end
+
+# The code above will print: arg2 must not be zero
+```
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+#### `Hash` patterns
+
+If you don't provide the keys :type and :value, the pattern will match the result value.
+
+```ruby
+case Divide.call(10, 2)
+in BCDD::Failure({msg:}) then puts msg
+in BCDD::Success({num:}) then puts num
+end
+```
+
+```ruby
+case Divide.call(10, 2)
+in BCDD::Failure(type: :invalid_arg, value: {msg:}) then puts msg
+in BCDD::Failure(type: :division_by_zero, value: {msg:}) then puts msg
+in BCDD::Success(type: :division_completed, value: {num:}) then puts num
+end
+
+# The code above will print: 5
+
+case Divide.call('10', 2)
+in BCDD::Failure(type: :invalid_arg, value: {msg:}) then puts {msg:}
+in BCDD::Failure(type: :division_by_zero, value: {msg:}) then puts msg
+in BCDD::Success(type: :division_completed, value: {num:}) then puts num
+end
+
+# The code above will print: arg1 must be numeric
+```
+
+You can also use `BCDD::Context::Success` and `BCDD::Context::Failure` as patterns.
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+### How to pattern match without the concept of success and failure
+
+You can use the classes `BCDD::Result` and `BCDD::Context` as patterns, and the pattern matching will work without the concept of success and failure.
+
+```ruby
+case Divide.call(10, 2)
+in BCDD::Context(:invalid_arg, {msg:}) then puts msg
+in BCDD::Context(:division_by_zero, {msg:}) then puts msg
+in BCDD::Context(:division_completed, {num:}) then puts num
+end
+
+case Divide.call(10, 2)
+in BCDD::Result(:invalid_arg, msg) then puts msg
+in BCDD::Result(:division_by_zero, msg) then puts msg
+in BCDD::Result(:division_completed, num) then puts num
+end
+```
+
+The `BCDD::Result` will also work with the `BCDD::Context`, but the opposite won't.
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 

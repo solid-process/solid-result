@@ -18,6 +18,13 @@ class BCDD::Result::PatternMatchingDeconstructTest < Minitest::Test
     assert_equal [:division_completed, 5], result.deconstruct
 
     case result
+    in BCDD::Failure[_, _]
+      raise
+    in BCDD::Success[:division_completed, value]
+      assert_equal 5, value
+    end
+
+    case result
     in BCDD::Result::Failure[_, _]
       raise
     in BCDD::Result::Success[:division_completed, value]
@@ -29,6 +36,13 @@ class BCDD::Result::PatternMatchingDeconstructTest < Minitest::Test
     result = Divide.call(10, 0)
 
     assert_equal [:division_by_zero, 'arg2 must not be zero'], result.deconstruct
+
+    case result
+    in BCDD::Success[_, _]
+      raise
+    in BCDD::Failure[:division_by_zero, msg]
+      assert_equal 'arg2 must not be zero', msg
+    end
 
     case result
     in BCDD::Result::Success[_, _]

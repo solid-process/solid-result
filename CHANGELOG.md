@@ -1,56 +1,68 @@
 - [\[Unreleased\]](#unreleased)
+  - [Added](#added)
   - [Changed](#changed)
 - [\[0.13.0\] - 2024-02-01](#0130---2024-02-01)
-  - [Added](#added)
+  - [Added](#added-1)
   - [Changed](#changed-1)
 - [\[0.12.0\] - 2024-01-07](#0120---2024-01-07)
-  - [Added](#added-1)
+  - [Added](#added-2)
   - [Changed](#changed-2)
 - [\[0.11.0\] - 2024-01-02](#0110---2024-01-02)
-  - [Added](#added-2)
+  - [Added](#added-3)
   - [Changed](#changed-3)
 - [\[0.10.0\] - 2023-12-31](#0100---2023-12-31)
-  - [Added](#added-3)
+  - [Added](#added-4)
 - [\[0.9.1\] - 2023-12-12](#091---2023-12-12)
   - [Changed](#changed-4)
   - [Fixed](#fixed)
 - [\[0.9.0\] - 2023-12-12](#090---2023-12-12)
-  - [Added](#added-4)
+  - [Added](#added-5)
   - [Changed](#changed-5)
 - [\[0.8.0\] - 2023-12-11](#080---2023-12-11)
-  - [Added](#added-5)
+  - [Added](#added-6)
   - [Changed](#changed-6)
   - [Removed](#removed)
 - [\[0.7.0\] - 2023-10-27](#070---2023-10-27)
-  - [Added](#added-6)
+  - [Added](#added-7)
   - [Changed](#changed-7)
 - [\[0.6.0\] - 2023-10-11](#060---2023-10-11)
-  - [Added](#added-7)
+  - [Added](#added-8)
   - [Changed](#changed-8)
 - [\[0.5.0\] - 2023-10-09](#050---2023-10-09)
-  - [Added](#added-8)
-- [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
   - [Added](#added-9)
+- [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
+  - [Added](#added-10)
   - [Changed](#changed-9)
   - [Removed](#removed-1)
 - [\[0.3.0\] - 2023-09-26](#030---2023-09-26)
-  - [Added](#added-10)
-- [\[0.2.0\] - 2023-09-26](#020---2023-09-26)
   - [Added](#added-11)
+- [\[0.2.0\] - 2023-09-26](#020---2023-09-26)
+  - [Added](#added-12)
   - [Removed](#removed-2)
 - [\[0.1.0\] - 2023-09-25](#010---2023-09-25)
-  - [Added](#added-12)
+  - [Added](#added-13)
 
 ## [Unreleased]
 
+### Added
+
+- Add the `BCDD::Success` and `BCDD::Failure` modules. They are key to checking whether a result is a success or a failure independently of whether it is a `BCDD::Result` or a `BCDD::Context`.
+- Add `BCDD::Result#type?` to check if the given type is the result type.
+- Add `BCDD::Result#is?` as an alias for `BCDD::Result#type?`.
+- Add `BCDD::Result#method_missing` to allow the type checking through method calls. For example, `result.ok?` will check if the result type is `:ok`.
+
+> Note: All the methods above are available for the `BCDD::Context` as well.
+
 ### Changed
 
-- Transform `BCDD::Result::Context` into `BCDD::Context`. But a constant alias was added to keep the old name. You can use `BCDD::Result::Context` or `BCDD::Context` to access the same class.
+- **(BREAKING)** Change `BCDD::Result#deconstruct_keys` to return a hash with the keys `:type` and `:value` when one of these keys is present. Otherwise, it will return the value itself.
 
 - **(BREAKING)** Replace trasitions metadata `:ids_tree`, and `:ids_matrix` with `:ids` property. This property is a hash with the following keys:
   - `:tree`, a graph/tree representation of the transitions ids.
   - `:level_parent`, a hash with the level (depth) of each transition and its parent id.
   - `:matrix`, a matrix representation of the transitions ids. It is a simplification of the `:tree` property.
+
+- Transform `BCDD::Result::Context` into `BCDD::Context`. But a constant alias was added to keep the old name. You can use `BCDD::Result::Context` or `BCDD::Context` to access the same class.
 
 ## [0.13.0] - 2024-02-01
 

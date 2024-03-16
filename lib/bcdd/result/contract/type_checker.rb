@@ -10,6 +10,10 @@ module BCDD::Result::Contract
       @expectations = expectations
     end
 
+    def allow!(type)
+      expectations.type!(type)
+    end
+
     def allow?(types)
       validate(types, expected: expectations, allow_empty: false)
     end

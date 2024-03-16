@@ -8,8 +8,8 @@ class BCDD::Result
       assert Success < BCDD::Result
     end
 
-    test 'has BCDD::Result::Success::Methods' do
-      assert Success < BCDD::Result::Success::Methods
+    test 'is a BCDD::Success' do
+      assert Success < BCDD::Success
     end
 
     test '#terminal?' do
@@ -38,6 +38,40 @@ class BCDD::Result
       refute_predicate result, :failure?
 
       refute result.failure?(:ok)
+    end
+
+    test '#type?' do
+      result = Success.new(type: :good, value: nil)
+
+      assert result.type?(:good)
+
+      refute result.type?(:ok)
+    end
+
+    test '#is?' do
+      result = Success.new(type: :good, value: nil)
+
+      assert result.is?(:good)
+
+      refute result.is?(:ok)
+    end
+
+    test '#method_missing' do
+      result = Success.new(type: :good, value: nil)
+
+      assert_predicate result, :good?
+
+      refute_predicate result, :bad?
+
+      assert_raises(NoMethodError) { result.good }
+    end
+
+    test '#respond_to_missing?' do
+      result = Success.new(type: :good, value: nil)
+
+      assert_respond_to result, :good?
+
+      assert_respond_to result, :bad?
     end
 
     test '#value_or' do

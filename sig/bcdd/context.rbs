@@ -37,7 +37,7 @@ end
 
 class BCDD::Context
   class Success < BCDD::Context
-    include BCDD::Result::Success::Methods
+    include BCDD::Success
 
     FetchValues: Proc
 
@@ -96,7 +96,7 @@ end
 
 class BCDD::Context
   class Failure < BCDD::Context
-    include BCDD::Result::Failure::Methods
+    include BCDD::Failure
 
     def and_expose: (Symbol, Array[Symbol], **untyped) -> BCDD::Context::Failure
   end

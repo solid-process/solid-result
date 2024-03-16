@@ -2,9 +2,7 @@
 
 class BCDD::Result
   class Failure < self
-    require_relative 'failure/methods'
-
-    include Methods
+    include ::BCDD::Failure
   end
 
   def self.Failure(type, value = nil)

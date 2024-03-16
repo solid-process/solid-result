@@ -15,12 +15,19 @@ class BCDD::Result::PatternMatchingDeconstructKeysTest < Minitest::Test
   test '#deconstruct_keys success' do
     result = Divide.call(10, 2)
 
-    assert_equal({ success: { division_completed: 5 } }, result.deconstruct_keys([]))
+    assert_equal(5, result.deconstruct_keys([]))
 
     case result
-    in { failure: _ }
+    in BCDD::Failure(type: _, value: _)
       raise
-    in { success: { division_completed: value } }
+    in BCDD::Success(type: :division_completed, value: value)
+      assert_equal 5, value
+    end
+
+    case result
+    in BCDD::Result::Failure(type: _, value: _)
+      raise
+    in BCDD::Result::Success(type: :division_completed, value: value)
       assert_equal 5, value
     end
   end
@@ -28,15 +35,19 @@ class BCDD::Result::PatternMatchingDeconstructKeysTest < Minitest::Test
   test '#deconstruct_keys failure' do
     result = Divide.call(10, 0)
 
-    assert_equal(
-      { failure: { division_by_zero: 'arg2 must not be zero' } },
-      result.deconstruct_keys([])
-    )
+    assert_equal('arg2 must not be zero', result.deconstruct_keys([]))
 
     case result
-    in { success: _ }
+    in BCDD::Success(type: _, value: _)
       raise
-    in { failure: { division_by_zero: msg } }
+    in BCDD::Failure(type: :division_by_zero, value: msg)
+      assert_equal 'arg2 must not be zero', msg
+    end
+
+    case result
+    in BCDD::Result::Success(type: _, value: _)
+      raise
+    in BCDD::Result::Failure(type: :division_by_zero, value: msg)
       assert_equal 'arg2 must not be zero', msg
     end
   end
