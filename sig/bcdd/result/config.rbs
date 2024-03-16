@@ -13,7 +13,7 @@ class BCDD::Result::Config
   def initialize: -> void
 
   def and_then!: () -> BCDD::Result::CallableAndThen::Config
-  def transitions: () -> BCDD::Result::Transitions::Config
+  def event_logs: () -> BCDD::Result::EventLogs::Config
 
   def freeze: -> BCDD::Result::Config
   def options: -> Hash[Symbol, BCDD::Result::Config::Switcher]

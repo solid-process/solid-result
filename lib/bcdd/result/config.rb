@@ -19,8 +19,8 @@ class BCDD::Result
       @and_then_ = CallableAndThen::Config.new
     end
 
-    def transitions
-      Transitions::Config.instance
+    def event_logs
+      EventLogs::Config.instance
     end
 
     def and_then!
@@ -33,7 +33,7 @@ class BCDD::Result
       constant_alias.freeze
       pattern_matching.freeze
       and_then!.freeze
-      transitions.freeze
+      event_logs.freeze
 
       super
     end

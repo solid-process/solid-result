@@ -1,0 +1,189 @@
+class BCDD::Result
+  module EventLogs
+    module Listener
+      module ClassMethods
+        def around_and_then?: () -> bool
+        def around_event_logs?: () -> bool
+      end
+
+      extend ClassMethods
+
+      def around_event_logs: (scope: Hash[Symbol, untyped]) { () -> untyped } -> untyped
+
+      def on_start: (scope: Hash[Symbol, untyped]) -> untyped
+
+      def around_and_then: (scope: Hash[Symbol, untyped], and_then: Hash[Symbol, untyped]) { () -> untyped } -> untyped
+
+      def on_record: (record: Hash[Symbol, untyped] ) -> untyped
+
+      def on_finish: (event_logs: Hash[Symbol, untyped] ) -> untyped
+
+      def before_interruption: (exception: ::Exception, event_logs: Hash[Symbol, untyped]) -> untyped
+    end
+
+    class Listeners
+      class Chain
+        include Listener
+
+        attr_reader listeners: Hash[Symbol, untyped]
+
+        def initialize: (Array[untyped]) -> void
+
+        def new: () -> Listeners
+
+        private
+
+        def listener?: (untyped, untyped) -> bool
+      end
+
+      def self.[]: (*untyped) -> Chain
+
+      private attr_reader listeners: Array[Listener]
+      private attr_reader around_and_then_listener: untyped
+      private attr_reader around_event_logs_listener: untyped
+
+      def initialize: (Array[Listener], untyped, untyped) -> void
+
+      def around_event_logs: (scope: Hash[Symbol, untyped]) { () -> untyped } -> untyped
+
+      def on_start: (scope: Hash[Symbol, untyped]) -> untyped
+
+      def around_and_then: (scope: Hash[Symbol, untyped], and_then: Hash[Symbol, untyped]) { () -> untyped } -> untyped
+
+      def on_record: (record: Hash[Symbol, untyped] ) -> untyped
+
+      def on_finish: (event_logs: Hash[Symbol, untyped] ) -> untyped
+
+      def before_interruption: (exception: ::Exception, event_logs: Hash[Symbol, untyped]) -> untyped
+    end
+
+    module Listener::Null
+      extend Listener
+
+      def self.new: () -> untyped
+    end
+
+    class Config
+      attr_reader listener: untyped
+      attr_reader trace_id: ::Proc
+
+      def self.instance: -> Config
+
+      def initialize: -> void
+
+      def listener=: (Listener) -> void
+      def trace_id=: (::Proc) -> void
+    end
+
+    class Tree
+      class Node
+        attr_reader id: Integer
+        attr_reader value: untyped
+        attr_reader parent: (Node | nil)
+        attr_reader normalizer: ^(Integer, Array[untyped]) -> untyped
+        attr_reader children: Array[Node]
+
+        def initialize: (
+          untyped value,
+          parent: (Node | nil),
+          id: Integer,
+          normalizer: ^(Integer, Array[untyped]) -> untyped
+        ) -> void
+
+        def insert: (untyped, id: Integer) -> Node
+
+        def root?: () -> bool
+        def leaf?: () -> bool
+        def node?: () -> bool
+        def inspect: () -> String
+      end
+
+      attr_reader size: Integer
+      attr_reader root: Node
+      attr_reader current: Node
+
+      def initialize: (untyped, ?normalizer: ^(Integer, Array[untyped]) -> untyped) -> void
+      def root_value: () -> untyped
+      def parent_value: () -> untyped
+      def current_value: () -> untyped
+      def insert: (untyped) -> Node
+      def insert!: (untyped) -> Tree
+      def move_to!: (Node) -> Tree
+      def move_up!: (?Integer level) -> Tree
+      def move_down!: (?Integer level) -> Tree
+      def move_to_root!: () -> Tree
+
+      Ids: ^(Node) -> Array[untyped]
+      IdsMatrix: ::Proc
+      IdsLevelParent: ::Proc
+
+      def ids: () -> Array[untyped]
+      def ids_list: () -> Array[Integer]
+      def ids_matrix: () -> untyped
+      def ids_level_parent: () -> untyped
+    end
+
+    module Tracking
+      EMPTY_ARRAY: Array[untyped]
+      EMPTY_HASH: Hash[untyped, untyped]
+      EMPTY_TREE: EventLogs::Tree
+      EMPTY_IDS: Hash[untyped, untyped]
+      VERSION: Integer
+      EMPTY: Hash[Symbol, untyped]
+
+      class Enabled
+        private attr_accessor tree: EventLogs::Tree
+        private attr_accessor records: Array[Hash[Symbol, untyped]]
+        private attr_accessor listener: untyped
+        private attr_accessor root_started_at: Integer
+
+        def exec: (untyped, untyped) { () -> untyped } -> untyped
+        def err!: (::Exception, untyped) -> void
+        def reset!: () -> void
+        def record: (BCDD::Result) -> void
+        def record_and_then: ((untyped), untyped) { () -> untyped } -> untyped
+        def reset_and_then!: () -> void
+
+        private
+
+        def start: (String, String) -> [EventLogs::Tree::Node, Hash[Symbol, untyped]]
+        def finish: (untyped) -> untyped
+
+        TreeNodeValueNormalizer: ^(Integer, Array[untyped]) -> untyped
+
+        def root_start: (Array[untyped]) -> void
+
+        def track: (BCDD::Result, time: Time) -> void
+        def track_record: (BCDD::Result, Time) -> Hash[Symbol, untyped]
+
+        def now_in_milliseconds: () -> Integer
+
+        def map_event_logs: () -> Hash[Symbol, untyped]
+
+        def build_listener: () -> Listener
+      end
+
+      module Disabled
+        def self.exec: (untyped, untyped) { () -> untyped } -> untyped
+        def self.err!: (::Exception) -> void
+        def self.reset!: () -> void
+        def self.record: (BCDD::Result) -> void
+        def self.record_and_then: ((untyped), untyped) { () -> BCDD::Result } -> BCDD::Result
+        def self.reset_and_then!: () -> void
+
+        private
+
+        def self.start: (String, String) -> void
+        def self.finish: (untyped) -> untyped
+      end
+
+      def self.instance: () -> (Enabled | singleton(Disabled))
+    end
+
+    THREAD_VAR_NAME: Symbol
+
+    EnsureResult: ^(untyped) -> BCDD::Result
+
+    def self.tracking: () -> (Tracking::Enabled | singleton(Tracking::Disabled))
+  end
+end

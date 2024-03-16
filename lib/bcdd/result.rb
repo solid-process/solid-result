@@ -10,7 +10,7 @@ module BCDD
     require_relative 'result/version'
     require_relative 'result/error'
     require_relative 'result/ignored_types'
-    require_relative 'result/transitions'
+    require_relative 'result/event_logs'
     require_relative 'result/callable_and_then'
     require_relative 'result/data'
     require_relative 'result/handler'

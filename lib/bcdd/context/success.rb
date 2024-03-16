@@ -23,7 +23,7 @@ class BCDD::Context
         raise ::ArgumentError, 'keys must be an Array of Symbols'
       end
 
-      Transitions.tracking.reset_and_then!
+      EventLogs.tracking.reset_and_then!
 
       acc_values = acc.merge(value)
 

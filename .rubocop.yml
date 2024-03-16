@@ -18,7 +18,7 @@ AllCops:
 
 Lint/RescueException:
   Exclude:
-    - lib/bcdd/result/transitions/tracking/enabled.rb
+    - lib/bcdd/result/event_logs/tracking/enabled.rb
 
 Layout/LineLength:
   Max: 120
@@ -34,7 +34,7 @@ Lint/UnderscorePrefixedVariableName:
 
 Lint/UnusedMethodArgument:
   Exclude:
-    - lib/bcdd/result/transitions/listener.rb
+    - lib/bcdd/result/event_logs/listener.rb
 
 Style/AccessModifierDeclarations:
   Enabled: false
@@ -78,7 +78,7 @@ Metrics/ClassLength:
 
 Metrics/AbcSize:
   Exclude:
-    - lib/bcdd/result/transitions/tracking/enabled.rb
+    - lib/bcdd/result/event_logs/tracking/enabled.rb
 
 Minitest/MultipleAssertions:
   Enabled: false

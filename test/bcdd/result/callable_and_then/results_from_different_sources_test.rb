@@ -4,13 +4,13 @@ require 'test_helper'
 
 class BCDD::Result
   class CallableAndThenResultFromDifferentSourcesTest < Minitest::Test
-    include BCDDResultTransitionAssertions
+    include BCDDResultEventLogAssertions
 
     module NormalizeEmail
       extend BCDD::Result.mixin
 
       def self.call(input)
-        BCDD::Result.transitions(name: 'NormalizeEmail') do
+        BCDD::Result.event_logs(name: 'NormalizeEmail') do
           Given(input).and_then(:normalize)
         end
       end
@@ -30,7 +30,7 @@ class BCDD::Result
       end
 
       def call(input)
-        BCDD::Result.transitions(name: 'EmailValidation') do
+        BCDD::Result.event_logs(name: 'EmailValidation') do
           Given(input).and_then(:validate)
         end
       end
@@ -44,7 +44,7 @@ class BCDD::Result
       extend BCDD::Result.mixin
 
       def self.call(email)
-        BCDD::Result.transitions(name: 'NormalizeAndValidateEmail') do
+        BCDD::Result.event_logs(name: 'NormalizeAndValidateEmail') do
           Given(email)
             .and_then!(NormalizeEmail)
             .and_then!(EmailValidation.new)
@@ -75,12 +75,12 @@ class BCDD::Result
       assert_equal('foo@bar.com', result3.value)
     end
 
-    test 'the transitions tracking' do
+    test 'the event_logs tracking' do
       result1 = NormalizeAndValidateEmail.call(1)
 
-      assert_transitions(result1, size: 3)
+      assert_event_logs(result1, size: 3)
 
-      assert_equal([0, [[1, []]]], result1.transitions[:metadata][:ids][:tree])
+      assert_equal([0, [[1, []]]], result1.event_logs[:metadata][:ids][:tree])
 
       root = { id: 0, name: 'NormalizeAndValidateEmail', desc: nil }
 
@@ -91,7 +91,7 @@ class BCDD::Result
         parent: root,
         current: root,
         result: { kind: :success, type: :_given_, value: 1, source: source }
-      }.then { assert_transition_record(result1, 0, _1) }
+      }.then { assert_event_log_record(result1, 0, _1) }
 
       source = -> { _1 == NormalizeEmail }
 
@@ -100,7 +100,7 @@ class BCDD::Result
         parent: root,
         current: { id: 1, name: 'NormalizeEmail', desc: nil },
         result: { kind: :success, type: :_given_, value: 1, source: source }
-      }.then { assert_transition_record(result1, 1, _1) }
+      }.then { assert_event_log_record(result1, 1, _1) }
 
       {
         root: root,
@@ -108,15 +108,15 @@ class BCDD::Result
         current: { id: 1, name: 'NormalizeEmail', desc: nil },
         result: { kind: :failure, type: :invalid_input, value: 'input must be a String', source: source },
         and_then: { type: :method, arg: nil, method_name: :normalize }
-      }.then { assert_transition_record(result1, 2, _1) }
+      }.then { assert_event_log_record(result1, 2, _1) }
 
       # ---
 
       result2 = NormalizeAndValidateEmail.call(" FOO@bAr.com  \n")
 
-      assert_transitions(result2, size: 5)
+      assert_event_logs(result2, size: 5)
 
-      assert_equal([0, [[1, []], [2, []]]], result2.transitions[:metadata][:ids][:tree])
+      assert_equal([0, [[1, []], [2, []]]], result2.event_logs[:metadata][:ids][:tree])
 
       root = { id: 0, name: 'NormalizeAndValidateEmail', desc: nil }
 
@@ -127,7 +127,7 @@ class BCDD::Result
         parent: root,
         current: root,
         result: { kind: :success, type: :_given_, value: " FOO@bAr.com  \n", source: source }
-      }.then { assert_transition_record(result2, 0, _1) }
+      }.then { assert_event_log_record(result2, 0, _1) }
 
       source = -> { _1 == NormalizeEmail }
 
@@ -136,7 +136,7 @@ class BCDD::Result
         parent: root,
         current: { id: 1, name: 'NormalizeEmail', desc: nil },
         result: { kind: :success, type: :_given_, value: " FOO@bAr.com  \n", source: source }
-      }.then { assert_transition_record(result2, 1, _1) }
+      }.then { assert_event_log_record(result2, 1, _1) }
 
       {
         root: root,
@@ -144,14 +144,14 @@ class BCDD::Result
         current: { id: 1, name: 'NormalizeEmail', desc: nil },
         result: { kind: :success, type: :normalized_input, value: 'foo@bar.com', source: source },
         and_then: { type: :method, arg: nil, method_name: :normalize }
-      }.then { assert_transition_record(result2, 2, _1) }
+      }.then { assert_event_log_record(result2, 2, _1) }
 
       {
         root: root,
         parent: root,
         current: { id: 2, name: 'EmailValidation', desc: nil },
         result: { kind: :success, type: :_given_, value: 'foo@bar.com', source: EmailValidation }
-      }.then { assert_transition_record(result2, 3, _1) }
+      }.then { assert_event_log_record(result2, 3, _1) }
 
       {
         root: root,
@@ -159,7 +159,7 @@ class BCDD::Result
         current: { id: 2, name: 'EmailValidation', desc: nil },
         result: { kind: :success, type: :valid_email, value: 'foo@bar.com', source: EmailValidation },
         and_then: { type: :method, arg: nil, method_name: :validate }
-      }.then { assert_transition_record(result2, 4, _1) }
+      }.then { assert_event_log_record(result2, 4, _1) }
     end
   end
 end

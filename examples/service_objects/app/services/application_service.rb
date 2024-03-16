@@ -50,7 +50,7 @@ class ApplicationService
   end
 
   def call!
-    ::BCDD::Result.transitions(name: self.class.name) do
+    ::BCDD::Result.event_logs(name: self.class.name) do
       if input.invalid?
         Failure(:invalid_input, input: input)
       else

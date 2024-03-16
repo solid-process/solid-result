@@ -15,7 +15,7 @@ Rake::TestTask.new(:test_configuration) do |t|
   t.test_files = FileList.new('test/**/configuration_test.rb')
 end
 
-Rake::TestTask.new(:test_transitions_duration) do |t|
+Rake::TestTask.new(:test_event_logs_duration) do |t|
   t.libs += %w[lib test]
 
   t.test_files = FileList.new('test/**/duration_test.rb')

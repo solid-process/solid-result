@@ -15,7 +15,7 @@ class BCDD::Result::Config
             enabled: true,
             affects: ['BCDD::Result::Expectations', 'BCDD::Context::Expectations']
           },
-          transitions: { enabled: true, affects: %w[
+          event_logs: { enabled: true, affects: %w[
             BCDD::Result BCDD::Context BCDD::Result::Expectations BCDD::Context::Expectations
           ] },
           and_then!: { enabled: false, affects: %w[
