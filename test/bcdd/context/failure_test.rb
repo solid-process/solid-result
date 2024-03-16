@@ -1,0 +1,24 @@
+# frozen_string_literal: true
+
+require 'test_helper'
+
+module BCDD
+  class ContextFailureTest < Minitest::Test
+    test 'is a BCDD::Context' do
+      assert Context::Failure < BCDD::Context
+    end
+
+    test 'has BCDD::Result::Failure::Methods' do
+      assert Context::Failure < BCDD::Result::Failure::Methods
+    end
+
+    test '#inspect' do
+      result = Context::Failure(:err, number: 0)
+
+      assert_equal(
+        '#<BCDD::Context::Failure type=:err value={:number=>0}>',
+        result.inspect
+      )
+    end
+  end
+end

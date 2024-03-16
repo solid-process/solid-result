@@ -50,7 +50,7 @@ class BCDD::Result::Config
       assert_equal({ continue: false, given: true }, config_values[:addon])
       assert_equal({ expectations: true, transitions: true, and_then!: false }, config_values[:feature])
       assert_equal({ nil_as_valid_value_checking: false }, config_values[:pattern_matching])
-      assert_equal({ 'Result' => false, 'Context' => false, 'BCDD::Context' => false }, config_values[:constant_alias])
+      assert_equal({ 'Result' => false }, config_values[:constant_alias])
 
       BCDD::Result.config.options.each do |key, switcher|
         assert_equal(switcher.to_h, config_values[key])

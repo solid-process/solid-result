@@ -11,9 +11,7 @@ class BCDD::Result::Config
 
       assert_equal(
         {
-          'Result' => { enabled: false, affects: ['Object'] },
-          'Context' => { enabled: false, affects: ['Object'] },
-          'BCDD::Context' => { enabled: false, affects: ['BCDD'] }
+          'Result' => { enabled: false, affects: ['Object'] }
         },
         config.options
       )

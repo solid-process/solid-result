@@ -6,7 +6,7 @@ class BCDD::Result
       OPTIONS = {
         nil_as_valid_value_checking: {
           default: false,
-          affects: %w[BCDD::Result::Expectations BCDD::Result::Context::Expectations]
+          affects: %w[BCDD::Result::Expectations BCDD::Context::Expectations]
         }
       }.transform_values!(&:freeze).freeze
 

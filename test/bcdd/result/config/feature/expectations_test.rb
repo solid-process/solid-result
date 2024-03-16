@@ -16,13 +16,13 @@ class BCDD::Result::Config
       class1b.class_eval { def call; self.class.const_get(:Result, false)::Success(:ok, '1'); end }
 
       class1c = Class.new do
-        include BCDD::Result::Context::Expectations.mixin(success: { ok: ->(v) { v[:one] == 1 } })
+        include BCDD::Context::Expectations.mixin(success: { ok: ->(v) { v[:one] == 1 } })
 
         def call; Success(:yes, one: 1); end
       end
 
       class1d = Class.new
-      class1d.const_set(:Result, BCDD::Result::Context::Expectations.new(success: { ok: ->(v) { v[:one] == 1 } }))
+      class1d.const_set(:Result, BCDD::Context::Expectations.new(success: { ok: ->(v) { v[:one] == 1 } }))
       class1d.class_eval { def call; self.class.const_get(:Result, false)::Success(:yes, one: 1); end }
 
       assert_raises(BCDD::Result::Contract::Error::UnexpectedValue) { class1a.new.call }
@@ -48,13 +48,13 @@ class BCDD::Result::Config
       class2b.class_eval { def call; self.class.const_get(:Result, false)::Success(:ok, '1'); end }
 
       class2c = Class.new do
-        include BCDD::Result::Context::Expectations.mixin(success: { ok: ->(v) { v[:one] == 1 } })
+        include BCDD::Context::Expectations.mixin(success: { ok: ->(v) { v[:one] == 1 } })
 
         def call; Success(:yes, one: 1); end
       end
 
       class2d = Class.new
-      class2d.const_set(:Result, BCDD::Result::Context::Expectations.new(success: { ok: ->(v) { v[:one] == 1 } }))
+      class2d.const_set(:Result, BCDD::Context::Expectations.new(success: { ok: ->(v) { v[:one] == 1 } }))
       class2d.class_eval { def call; self.class.const_get(:Result, false)::Success(:yes, one: 1); end }
 
       assert(class2a.new.call.then { _1.success?(:ok) && _1.value == '1' })
@@ -80,13 +80,13 @@ class BCDD::Result::Config
       class3b.class_eval { def call; self.class.const_get(:Result, false)::Success(:ok, '1'); end }
 
       class3c = Class.new do
-        include BCDD::Result::Context::Expectations.mixin(success: { ok: ->(v) { v[:one] == 1 } })
+        include BCDD::Context::Expectations.mixin(success: { ok: ->(v) { v[:one] == 1 } })
 
         def call; Success(:yes, one: 1); end
       end
 
       class3d = Class.new
-      class3d.const_set(:Result, BCDD::Result::Context::Expectations.new(success: { ok: ->(v) { v[:one] == 1 } }))
+      class3d.const_set(:Result, BCDD::Context::Expectations.new(success: { ok: ->(v) { v[:one] == 1 } }))
       class3d.class_eval { def call; self.class.const_get(:Result, false)::Success(:yes, one: 1); end }
 
       assert_raises(BCDD::Result::Contract::Error::UnexpectedValue) { class3a.new.call }
