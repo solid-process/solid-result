@@ -2,8 +2,6 @@
 
 module BCDD::Result::Transitions
   class Config
-    include ::Singleton
-
     attr_reader :listener, :trace_id
 
     def initialize
@@ -22,5 +20,9 @@ module BCDD::Result::Transitions
 
       @trace_id = arg
     end
+
+    @instance = new
+
+    singleton_class.send(:attr_reader, :instance)
   end
 end

@@ -9,8 +9,6 @@ require_relative 'config/switchers/pattern_matching'
 
 class BCDD::Result
   class Config
-    include ::Singleton
-
     attr_reader :addon, :feature, :constant_alias, :pattern_matching
 
     def initialize
@@ -58,5 +56,9 @@ class BCDD::Result
         "options=#{options.keys.sort.inspect} " \
         "and_then!=#{and_then!.options.inspect}>"
     end
+
+    @instance = new
+
+    singleton_class.send(:attr_reader, :instance)
   end
 end

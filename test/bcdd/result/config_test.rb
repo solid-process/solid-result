@@ -5,7 +5,7 @@ require 'test_helper'
 class BCDD::Result::Config
   class Test < Minitest::Test
     test '.instance' do
-      assert BCDD::Result::Config.instance.is_a?(Singleton)
+      assert BCDD::Result::Config.instance.is_a?(BCDD::Result::Config)
 
       assert_same(BCDD::Result::Config.instance, BCDD::Result.config)
     end

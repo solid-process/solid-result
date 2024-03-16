@@ -10,7 +10,7 @@ target :lib do
   # check 'app/models/**/*.rb'        # Glob
   # ignore 'lib/templates/*.rb'
 
-  library 'singleton'                 # Standard libraries
+  # library 'singleton'               # Standard libraries
   # library 'strong_json'             # Gems
 
   # configure_code_diagnostics(D::Ruby.default)      # `default` diagnostics setting (applies by default)
