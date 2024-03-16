@@ -64,8 +64,6 @@ class BCDD::Result
     end
 
     class Config
-      include ::Singleton
-
       attr_reader listener: untyped
       attr_reader trace_id: ::Proc
 

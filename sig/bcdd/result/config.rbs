@@ -1,6 +1,4 @@
 class BCDD::Result::Config
-  include Singleton
-
   ADDON: Hash[Symbol, Hash[Symbol, untyped]]
   FEATURE: Hash[Symbol, Hash[Symbol, untyped]]
   PATTERN_MATCHING: Hash[Symbol, Hash[Symbol, untyped]]
