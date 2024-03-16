@@ -5,7 +5,7 @@ class BCDD::Result
     def self.call(source, value:, injected_value:, method_name:)
       method = callable_method(source, method_name)
 
-      Transitions.tracking.record_and_then(method, injected_value) do
+      EventLogs.tracking.record_and_then(method, injected_value) do
         result =
           if source.is_a?(::Proc)
             call_proc!(source, value, injected_value)

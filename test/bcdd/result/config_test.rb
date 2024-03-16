@@ -48,7 +48,7 @@ class BCDD::Result::Config
       config_values = BCDD::Result.config.to_h
 
       assert_equal({ continue: false, given: true }, config_values[:addon])
-      assert_equal({ expectations: true, transitions: true, and_then!: false }, config_values[:feature])
+      assert_equal({ expectations: true, event_logs: true, and_then!: false }, config_values[:feature])
       assert_equal({ nil_as_valid_value_checking: false }, config_values[:pattern_matching])
       assert_equal({ 'Result' => false }, config_values[:constant_alias])
 
@@ -67,9 +67,9 @@ class BCDD::Result::Config
     end
 
     test '#freeze' do
-      transitions_config_instance = BCDD::Result::Transitions::Config.send(:new)
+      event_logs_config_instance = BCDD::Result::EventLogs::Config.send(:new)
 
-      BCDD::Result::Transitions::Config.expects(:instance).returns(transitions_config_instance)
+      BCDD::Result::EventLogs::Config.expects(:instance).returns(event_logs_config_instance)
 
       instance = BCDD::Result::Config.send(:new)
 
@@ -84,7 +84,7 @@ class BCDD::Result::Config
       assert_predicate(instance.feature, :frozen?)
       assert_predicate(instance.constant_alias, :frozen?)
       assert_predicate(instance.pattern_matching, :frozen?)
-      assert_predicate(transitions_config_instance, :frozen?)
+      assert_predicate(event_logs_config_instance, :frozen?)
     end
   end
 end

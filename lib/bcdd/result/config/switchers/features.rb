@@ -8,7 +8,7 @@ class BCDD::Result
           default: true,
           affects: %w[BCDD::Result::Expectations BCDD::Context::Expectations]
         },
-        transitions: {
+        event_logs: {
           default: true,
           affects: %w[BCDD::Result BCDD::Context BCDD::Result::Expectations BCDD::Context::Expectations]
         },
@@ -19,7 +19,7 @@ class BCDD::Result
       }.transform_values!(&:freeze).freeze
 
       Listener = ->(option_name, _bool) do
-        Thread.current[Transitions::THREAD_VAR_NAME] = nil if option_name == :transitions
+        Thread.current[EventLogs::THREAD_VAR_NAME] = nil if option_name == :event_logs
       end
 
       def self.switcher

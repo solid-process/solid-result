@@ -1,16 +1,16 @@
 class BCDD::Result
   private attr_accessor unknown: bool
-  private attr_writer transitions: Hash[Symbol, untyped]
+  private attr_writer event_logs: Hash[Symbol, untyped]
   private attr_reader type_checker: BCDD::Result::Contract::TypeChecker
 
   attr_reader data: BCDD::Result::Data
   attr_reader source: untyped
   attr_reader terminal: bool
-  attr_reader transitions: Hash[Symbol, untyped]
+  attr_reader event_logs: Hash[Symbol, untyped]
 
   def self.config: -> BCDD::Result::Config
   def self.configuration: (freeze: bool) { (BCDD::Result::Config) -> void } -> (bool | BCDD::Result::Config)
-  def self.transitions: (name: untyped, desc: untyped) { () -> untyped } -> BCDD::Result
+  def self.event_logs: (name: untyped, desc: untyped) { () -> untyped } -> BCDD::Result
 
   def initialize: (
     type: Symbol,

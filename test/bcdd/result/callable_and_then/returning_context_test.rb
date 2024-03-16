@@ -4,13 +4,13 @@ require 'test_helper'
 
 class BCDD::Result
   class CallableAndThenReturninContextTest < Minitest::Test
-    include BCDDResultTransitionAssertions
+    include BCDDResultEventLogAssertions
 
     module NormalizeEmail
       extend ::BCDD::Context.mixin
 
       def self.call(arg)
-        BCDD::Result.transitions(name: 'NormalizeEmail') do
+        BCDD::Result.event_logs(name: 'NormalizeEmail') do
           input = arg[:input]
 
           input.is_a?(::String) or return Failure(:invalid_input, message: 'input must be a String')
@@ -24,7 +24,7 @@ class BCDD::Result
       extend BCDD::Result.mixin
 
       def self.call(input)
-        BCDD::Result.transitions(name: 'EmailNormalization') do
+        BCDD::Result.event_logs(name: 'EmailNormalization') do
           Given(input: input)
             .and_then!(NormalizeEmail)
         end
@@ -36,7 +36,7 @@ class BCDD::Result
 
       result1 = EmailNormalization.call(nil)
 
-      assert_transitions(result1, size: 2)
+      assert_event_logs(result1, size: 2)
 
       assert(result1.failure?(:invalid_input))
       assert_equal({ message: 'input must be a String' }, result1.value)
@@ -44,7 +44,7 @@ class BCDD::Result
 
       result2 = EmailNormalization.call(' foo@BAR.com')
 
-      assert_transitions(result1, size: 2)
+      assert_event_logs(result1, size: 2)
 
       assert(result2.success?(:normalized_input))
       assert_equal({ input: 'foo@bar.com' }, result2.value)

@@ -87,51 +87,51 @@ module HashSchemaAssertions
   end
 end
 
-module BCDDResultTransitionAssertions
+module BCDDResultEventLogAssertions
   include HashSchemaAssertions
 
-  def assert_empty_transitions(result, version: 1)
-    assert_transitions(result, size: 0, version: version)
+  def assert_empty_event_logs(result, version: 1)
+    assert_event_logs(result, size: 0, version: version)
 
-    assert_predicate(result.transitions, :frozen?)
-    assert_predicate(result.transitions[:records], :frozen?)
+    assert_predicate(result.event_logs, :frozen?)
+    assert_predicate(result.event_logs[:records], :frozen?)
   end
 
-  def assert_transitions(result, size:, version: 1, trace_id: nil)
-    assert_transitions!(result.transitions, size: size, version: version, trace_id: trace_id)
+  def assert_event_logs(result, size:, version: 1, trace_id: nil)
+    assert_event_logs!(result.event_logs, size: size, version: version, trace_id: trace_id)
   end
 
-  def assert_transitions!(transitions, size:, version: 1, trace_id: nil)
-    assert_instance_of(Hash, transitions)
-    assert_equal(%i[metadata records version], transitions.keys.sort)
+  def assert_event_logs!(event_logs, size:, version: 1, trace_id: nil)
+    assert_instance_of(Hash, event_logs)
+    assert_equal(%i[metadata records version], event_logs.keys.sort)
 
-    assert_equal(version, transitions[:version])
-    assert_equal(size, transitions[:records].size)
+    assert_equal(version, event_logs[:version])
+    assert_equal(size, event_logs[:records].size)
 
-    assert_transitions_metadata(transitions, trace_id)
+    assert_event_logs_metadata(event_logs, trace_id)
   end
 
-  def assert_transitions_metadata(transitions, trace_id)
-    assert_instance_of(Hash, transitions[:metadata])
+  def assert_event_logs_metadata(event_logs, trace_id)
+    assert_instance_of(Hash, event_logs[:metadata])
 
-    metadata = transitions[:metadata]
+    metadata = event_logs[:metadata]
 
     assert_equal(%i[duration ids trace_id], metadata.keys.sort)
 
     assert_instance_of(Integer, metadata[:duration])
 
-    assert_transitions_metadata_ids(metadata)
+    assert_event_logs_metadata_ids(metadata)
 
-    assert_transitions_metadata_trace_id(metadata, trace_id)
+    assert_event_logs_metadata_trace_id(metadata, trace_id)
   end
 
-  def assert_transitions_metadata_trace_id(metadata, trace_id)
+  def assert_event_logs_metadata_trace_id(metadata, trace_id)
     metadata_trace_id = metadata[:trace_id]
 
     trace_id.nil? ? assert_nil(metadata_trace_id) : assert_equal(trace_id, metadata_trace_id)
   end
 
-  def assert_transitions_metadata_ids(metadata)
+  def assert_event_logs_metadata_ids(metadata)
     assert_instance_of(Hash, metadata[:ids])
     assert_instance_of(Array, metadata[:ids][:tree])
     assert_instance_of(Hash, metadata[:ids][:matrix])
@@ -141,8 +141,8 @@ module BCDDResultTransitionAssertions
   TimeValue = ->(value) { value.is_a?(::Time) && value.utc? }
   AndThenValue = ->(value) { value.is_a?(::Hash) && value.empty? }
 
-  def assert_transition_record(result, index, options)
-    transition = result.transitions[:records][index]
+  def assert_event_log_record(result, index, options)
+    event_log = result.event_logs[:records][index]
 
     root, parent, current, result_data = options.fetch_values(:root, :parent, :current, :result)
 
@@ -154,7 +154,7 @@ module BCDDResultTransitionAssertions
 
     assert_hash_schema!(
       { root: root, parent: parent, current: current, result: result_data, and_then: and_then, time: time },
-      transition
+      event_log
     )
   end
 end

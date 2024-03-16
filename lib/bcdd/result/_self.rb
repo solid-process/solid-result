@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class BCDD::Result
-  attr_accessor :unknown, :transitions
+  attr_accessor :unknown, :event_logs
 
   attr_reader :source, :data, :type_checker, :terminal
 
   protected :source
 
-  private :unknown, :unknown=, :type_checker, :transitions=
+  private :unknown, :unknown=, :type_checker, :event_logs=
 
   def self.config
     Config.instance
@@ -28,9 +28,9 @@ class BCDD::Result
     @data = data
 
     self.unknown = true
-    self.transitions = Transitions::Tracking::EMPTY
+    self.event_logs = EventLogs::Tracking::EMPTY
 
-    Transitions.tracking.record(self)
+    EventLogs.tracking.record(self)
   end
 
   def terminal?
@@ -156,7 +156,7 @@ class BCDD::Result
   def call_and_then_source_method(method_name, injected_value)
     method = source.method(method_name)
 
-    Transitions.tracking.record_and_then(method, injected_value) do
+    EventLogs.tracking.record_and_then(method, injected_value) do
       result = call_and_then_source_method!(method, injected_value)
 
       ensure_result_object(result, origin: :method)
@@ -173,7 +173,7 @@ class BCDD::Result
   end
 
   def call_and_then_block(block)
-    Transitions.tracking.record_and_then(:block, nil) do
+    EventLogs.tracking.record_and_then(:block, nil) do
       result = call_and_then_block!(block)
 
       ensure_result_object(result, origin: :block)

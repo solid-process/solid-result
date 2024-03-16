@@ -8,7 +8,7 @@ module BCDD
       extend Context.mixin
 
       def self.call(input:)
-        BCDD::Result.transitions(name: 'NormalizeEmail') do
+        BCDD::Result.event_logs(name: 'NormalizeEmail') do
           Given(input: input).and_then(:normalize)
         end
       end
@@ -24,7 +24,7 @@ module BCDD
       extend Context.mixin
 
       def self.call(input)
-        BCDD::Result.transitions(name: 'EmailNormalization') do
+        BCDD::Result.event_logs(name: 'EmailNormalization') do
           Given(input: input)
             .and_then!(NormalizeEmail)
         end
