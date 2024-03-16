@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-class SingleTransitionsListener
-  include BCDD::Result::Transitions::Listener
+class SingleEventLogsListener
+  include BCDD::Result::EventLogs::Listener
 
-  # A listener will be initialized before the first transition, and it is discarded after the last one.
+  # A listener will be initialized before the first event log, and it is discarded after the last one.
   def initialize
     @buffer = []
   end
 
-  # This method will be called before each transition block.
-  # The parent transition block will be called first in the case of nested transition blocks.
+  # This method will be called before each event log block.
+  # The parent event log block will be called first in the case of nested blocks.
   #
   # @param scope: {:id=>1, :name=>"SomeOperation", :desc=>"Optional description"}
   def on_start(scope:)
@@ -18,11 +18,11 @@ class SingleTransitionsListener
     @buffer << [id, "##{id} #{name} - #{desc}".chomp('- ')]
   end
 
-  # This method will wrap all the transitions in the same block.
-  # It can be used to perform an instrumentation (measure/report) of the transitions.
+  # This method will wrap all the event_logs in the same block.
+  # It can be used to perform an instrumentation (measure/report) of the event_logs.
   #
   # @param scope: {:id=>1, :name=>"SomeOperation", :desc=>"Optional description"}
-  def around_transitions(scope:)
+  def around_event_logs(scope:)
     yield
   end
 
@@ -56,8 +56,8 @@ class SingleTransitionsListener
     @buffer << [id, " * #{kind}(#{type}) from method: #{method_name}".chomp('from method: ')]
   end
 
-  MapNestedMessages = ->(transitions, buffer, hide_given_and_continue) do
-    ids_level_parent = transitions.dig(:metadata, :ids, :level_parent)
+  MapNestedMessages = ->(event_logs, buffer, hide_given_and_continue) do
+    ids_level_parent = event_logs.dig(:metadata, :ids, :level_parent)
 
     messages = buffer.filter_map { |(id, msg)| "#{'   ' * ids_level_parent[id].first}#{msg}" if ids_level_parent[id] }
 
@@ -66,9 +66,9 @@ class SingleTransitionsListener
     messages
   end
 
-  # This method will be called at the end of the transitions tracking.
+  # This method will be called at the end of the event_logs tracking.
   #
-  # @param transitions:
+  # @param event_logs:
   # {
   #   :version => 1,
   #   :metadata => {
@@ -84,18 +84,18 @@ class SingleTransitionsListener
   #     # ...
   #   ]
   # }
-  def on_finish(transitions:)
-    messages = MapNestedMessages[transitions, @buffer, ENV['HIDE_GIVEN_AND_CONTINUE']]
+  def on_finish(event_logs:)
+    messages = MapNestedMessages[event_logs, @buffer, ENV['HIDE_GIVEN_AND_CONTINUE']]
 
     puts messages.join("\n")
   end
 
-  # This method will be called when an exception is raised during the transitions tracking.
+  # This method will be called when an exception is raised during the event_logs tracking.
   #
   # @param exception: Exception
-  # @param transitions: Hash
-  def before_interruption(exception:, transitions:)
-    messages = MapNestedMessages[transitions, @buffer, ENV['HIDE_GIVEN_AND_CONTINUE']]
+  # @param event_logs: Hash
+  def before_interruption(exception:, event_logs:)
+    messages = MapNestedMessages[event_logs, @buffer, ENV['HIDE_GIVEN_AND_CONTINUE']]
 
     puts messages.join("\n")
 

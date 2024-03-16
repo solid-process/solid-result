@@ -10,7 +10,7 @@ require_relative 'config/initializers/bcdd'
 require 'db/setup'
 
 require 'lib/bcdd/result/rollback_on_failure'
-require 'lib/single_transitions_listener'
+require 'lib/single_event_logs_listener'
 require 'lib/runtime_breaker'
 
 require 'app/models/account'

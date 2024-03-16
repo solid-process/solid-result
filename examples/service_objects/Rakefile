@@ -5,14 +5,14 @@ if RUBY_VERSION <= '3.1'
   exit! 1
 end
 
-task default: %i[bcdd_result_transitions]
+task default: %i[bcdd_result_event_logs]
 
 task :config do
   require_relative 'config'
 end
 
 desc 'creates an account and an owner user through BCDD::Result'
-task bcdd_result_transitions: %i[config] do
+task bcdd_result_event_logs: %i[config] do
   result1 = Account::OwnerCreation.call(
     owner: {
       name: "\tJohn     Doe \n",

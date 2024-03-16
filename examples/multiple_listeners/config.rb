@@ -10,11 +10,11 @@ require_relative 'config/initializers/bcdd'
 require 'db/setup'
 
 require 'lib/bcdd/result/rollback_on_failure'
-require 'lib/bcdd/result/transitions_record'
+require 'lib/bcdd/result/event_logs_record'
 require 'lib/runtime_breaker'
 
-module TransitionsListener
-  require 'lib/transitions_listener/stdout'
+module EventLogsListener
+  require 'lib/event_logs_listener/stdout'
 end
 
 require 'app/models/account'

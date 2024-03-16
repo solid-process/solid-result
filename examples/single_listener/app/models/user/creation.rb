@@ -6,7 +6,7 @@ class User
     include BCDD::Result::RollbackOnFailure
 
     def call(**input)
-      BCDD::Result.transitions(name: self.class.name) do
+      BCDD::Result.event_logs(name: self.class.name) do
         Given(input)
           .and_then(:normalize_input)
           .and_then(:validate_input)

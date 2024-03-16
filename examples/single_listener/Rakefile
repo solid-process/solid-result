@@ -7,7 +7,7 @@ end
 
 # Usage:
 #
-# rake DISABLE_TRANSITIONS=t
+# rake DISABLE_EVENT_LOGS=t
 # rake DISABLE_LISTENER=t
 #
 # rake HIDE_GIVEN_AND_CONTINUE=t
@@ -17,18 +17,18 @@ end
 # rake BREAK_USER_TOKEN_CREATION=t
 #
 # rake BREAK_ACCOUNT_CREATION=t HIDE_GIVEN_AND_CONTINUE=t
-task default: %i[bcdd_result_transitions]
+task default: %i[bcdd_result_event_logs]
 
 task :config do
   require_relative 'config'
 end
 
 desc 'creates an account and an owner user through BCDD::Result'
-task bcdd_result_transitions: %i[config] do
+task bcdd_result_event_logs: %i[config] do
   BCDD::Result.configuration do |config|
-    config.feature.disable!(:transitions) if ENV['DISABLE_TRANSITIONS']
+    config.feature.disable!(:event_logs) if ENV['DISABLE_EVENT_LOGS']
 
-    config.transitions.listener = SingleTransitionsListener unless ENV['DISABLE_LISTENER']
+    config.event_logs.listener = SingleEventLogsListener unless ENV['DISABLE_LISTENER']
   end
 
   result = nil

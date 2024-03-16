@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-class TransitionsListener::Stdout
-  include BCDD::Result::Transitions::Listener
+class EventLogsListener::Stdout
+  include BCDD::Result::EventLogs::Listener
 
   def initialize
     @buffer = []
@@ -21,8 +21,8 @@ class TransitionsListener::Stdout
     @buffer << [id, " * #{kind}(#{type}) from method: #{method_name}".chomp('from method: ')]
   end
 
-  MapNestedMessages = ->(transitions, buffer, hide_given_and_continue) do
-    ids_level_parent = transitions.dig(:metadata, :ids, :level_parent)
+  MapNestedMessages = ->(event_logs, buffer, hide_given_and_continue) do
+    ids_level_parent = event_logs.dig(:metadata, :ids, :level_parent)
 
     messages = buffer.filter_map { |(id, msg)| "#{'   ' * ids_level_parent[id].first}#{msg}" if ids_level_parent[id] }
 
@@ -31,14 +31,14 @@ class TransitionsListener::Stdout
     messages
   end
 
-  def on_finish(transitions:)
-    messages = MapNestedMessages[transitions, @buffer, ENV['HIDE_GIVEN_AND_CONTINUE']]
+  def on_finish(event_logs:)
+    messages = MapNestedMessages[event_logs, @buffer, ENV['HIDE_GIVEN_AND_CONTINUE']]
 
     puts messages.join("\n")
   end
 
-  def before_interruption(exception:, transitions:)
-    messages = MapNestedMessages[transitions, @buffer, ENV['HIDE_GIVEN_AND_CONTINUE']]
+  def before_interruption(exception:, event_logs:)
+    messages = MapNestedMessages[event_logs, @buffer, ENV['HIDE_GIVEN_AND_CONTINUE']]
 
     puts messages.join("\n")
 
