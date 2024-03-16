@@ -8,8 +8,8 @@ module BCDD
       assert Context::Success < BCDD::Context
     end
 
-    test 'has BCDD::Result::Success::Methods' do
-      assert Context::Success < BCDD::Result::Success::Methods
+    test 'is a BCDD::Success' do
+      assert Context::Success < BCDD::Success
     end
 
     test '#inspect' do

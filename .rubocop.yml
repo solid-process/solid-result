@@ -73,7 +73,7 @@ Metrics/BlockLength:
 
 Metrics/ClassLength:
   Exclude:
-    - lib/bcdd/result.rb
+    - lib/bcdd/result/_self.rb
     - test/**/*.rb
 
 Metrics/AbcSize:

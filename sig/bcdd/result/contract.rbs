@@ -26,6 +26,7 @@ module BCDD::Result::Contract
       expectations: BCDD::Result::Contract::Evaluator
     ) -> void
 
+    def allow!: (Symbol) -> Symbol
     def allow?: (Array[Symbol]) -> bool
     def allow_success?: (Array[Symbol]) -> bool
     def allow_failure?: (Array[Symbol]) -> bool

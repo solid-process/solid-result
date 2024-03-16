@@ -6,7 +6,7 @@ class BCDD::Context
   end
 
   class Success < self
-    include ::BCDD::Result::Success::Methods
+    include ::BCDD::Success
 
     FetchValues = ->(acc_values, keys) do
       fetched_values = acc_values.fetch_values(*keys)

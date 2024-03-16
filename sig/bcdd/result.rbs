@@ -23,6 +23,7 @@ class BCDD::Result
   def type: -> Symbol
   def value: -> untyped
 
+  def type?: (Symbol | String) -> bool
   def terminal?: -> bool
   def success?: (?Symbol type) -> bool
   def failure?: (?Symbol type) -> bool
@@ -47,6 +48,11 @@ class BCDD::Result
   def deconstruct: -> [Symbol, [Symbol, untyped]]
   def deconstruct_keys: (Array[Symbol]) -> Hash[Symbol, Hash[Symbol, untyped]]
 
+  TYPE_AND_VALUE: Array[Symbol]
+
+  def method_missing: (Symbol, *untyped) { (untyped) -> untyped } -> untyped
+
+  alias is? type?
   alias eql? ==
   alias on_type on
 
@@ -64,40 +70,16 @@ end
 
 class BCDD::Result
   class Success < BCDD::Result
-    module Methods
-      def success?: (?Symbol type) -> bool
-      def failure?: (?Symbol type) -> bool
-      def value_or: { () -> untyped } -> untyped
-      def value: -> untyped
-
-      private
-
-      def kind: -> Symbol
-      def type_checker: -> BCDD::Result::Contract::TypeChecker
-    end
-
-    include Methods
+    include BCDD::Success
   end
 
-  def self.Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
+  def self.Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
 end
 
 class BCDD::Result
   class Failure < BCDD::Result
-    module Methods
-      def success?: (?Symbol type) -> bool
-      def failure?: (?Symbol type) -> bool
-      def value_or: { (untyped) -> untyped } -> untyped
-      def value: -> untyped
-
-      private
-
-      def kind: -> Symbol
-      def type_checker: -> BCDD::Result::Contract::TypeChecker
-    end
-
-    include Methods
+    include BCDD::Failure
   end
 
-  def self.Success: (Symbol type, ?untyped value) -> BCDD::Result::Success
+  def self.Failure: (Symbol type, ?untyped value) -> BCDD::Result::Failure
 end

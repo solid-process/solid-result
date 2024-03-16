@@ -2,9 +2,7 @@
 
 class BCDD::Result
   class Success < self
-    require_relative 'success/methods'
-
-    include Methods
+    include ::BCDD::Success
   end
 
   def self.Success(type, value = nil)
