@@ -15,8 +15,8 @@ require_relative 'result/success'
 require_relative 'result/mixin'
 require_relative 'result/contract'
 require_relative 'result/expectations'
-require_relative 'result/context'
 require_relative 'result/config'
+require_relative 'result/context'
 
 class BCDD::Result
   attr_accessor :unknown, :transitions

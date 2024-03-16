@@ -4,9 +4,7 @@ class BCDD::Result
   class Config
     module ConstantAliases
       MAPPING = {
-        'Result' => { target: ::Object, name: :Result, value: ::BCDD::Result },
-        'Context' => { target: ::Object, name: :Context, value: ::BCDD::Result::Context },
-        'BCDD::Context' => { target: ::BCDD, name: :Context, value: ::BCDD::Result::Context }
+        'Result' => { target: ::Object, name: :Result, value: ::BCDD::Result }
       }.transform_values!(&:freeze).freeze
 
       OPTIONS = MAPPING.to_h do |option_name, mapping|

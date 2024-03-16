@@ -33,7 +33,7 @@ class ApplicationService
     end
 
     def inherited(subclass)
-      subclass.include ::BCDD::Result::Context.mixin(config: { addon: { continue: true } })
+      subclass.include ::BCDD::Context.mixin(config: { addon: { continue: true } })
     end
 
     def call(arg)

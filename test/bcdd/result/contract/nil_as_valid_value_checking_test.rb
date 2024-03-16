@@ -31,7 +31,7 @@ class BCDD::Result
       BCDD::Result.config.pattern_matching.disable!(:nil_as_valid_value_checking)
     end
 
-    test 'BCDD::Result::Context::Expectations' do
+    test 'BCDD::Context::Expectations' do
       contract = {
         ok: ->(value) {
           case value
@@ -40,7 +40,7 @@ class BCDD::Result
         }
       }
 
-      _Result1 = BCDD::Result::Context::Expectations.new(success: contract)
+      _Result1 = BCDD::Context::Expectations.new(success: contract)
 
       assert_raises(Contract::Error::UnexpectedValue) do
         _Result1::Success(:ok, number: 1)
@@ -48,7 +48,7 @@ class BCDD::Result
 
       BCDD::Result.config.pattern_matching.enable!(:nil_as_valid_value_checking)
 
-      _Result2 = BCDD::Result::Context::Expectations.new(success: contract)
+      _Result2 = BCDD::Context::Expectations.new(success: contract)
 
       result = _Result2::Success(:ok, number: 1)
 

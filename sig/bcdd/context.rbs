@@ -1,0 +1,175 @@
+class BCDD::Context < BCDD::Result
+  EXPECTED_OUTCOME: String
+
+  SourceMethodArity: ^(Method) -> Integer
+
+  attr_reader acc: Hash[Symbol, untyped]
+
+  def initialize: (
+    type: Symbol,
+    value: untyped,
+    ?source: untyped,
+    ?expectations: BCDD::Result::Contract::Evaluator,
+    ?terminal: bool
+  ) -> void
+
+  def and_then: (?Symbol, **untyped) ?{ (Hash[Symbol, untyped]) -> untyped } -> untyped
+
+  def and_then!: (untyped, **untyped) -> untyped
+
+  private
+
+  def call_and_then_source_method: (Symbol, Hash[Symbol, untyped]) -> BCDD::Context
+
+  def call_and_then_callable!: (untyped, value: untyped, injected_value: untyped, method_name: (Symbol | nil)) -> BCDD::Context
+
+  def ensure_result_object: (untyped, origin: Symbol) -> BCDD::Context
+
+  def raise_unexpected_outcome_error: (BCDD::Context | untyped, Symbol) -> void
+end
+
+class BCDD::Context
+  class Error < BCDD::Result::Error
+    class InvalidExposure < BCDD::Context::Error
+    end
+  end
+end
+
+class BCDD::Context
+  class Success < BCDD::Context
+    include BCDD::Result::Success::Methods
+
+    FetchValues: Proc
+
+    def and_expose: (Symbol, Array[Symbol], terminal: bool) -> BCDD::Context::Success
+  end
+
+  def self.Success: (Symbol, **untyped) -> BCDD::Context::Success
+end
+
+module BCDD::Context::CallableAndThen
+  class Caller < BCDD::Result::CallableAndThen::Caller
+    module KeyArgs
+      def self.parameters?: (untyped) -> bool
+
+      def self.invalid_arity: (untyped, Symbol) -> BCDD::Result::CallableAndThen::Error::InvalidArity
+    end
+
+    def self.call: (
+      untyped source,
+      value: untyped,
+      injected_value: untyped,
+      method_name: (Symbol | nil),
+    ) -> BCDD::Context
+
+    private
+
+    def self.call_proc!: (
+      untyped source,
+      Hash[Symbol, untyped] value,
+      nil injected_value
+    ) -> BCDD::Context
+
+    def self.call_method!: (
+      untyped source,
+      Method method,
+      Hash[Symbol, untyped] value,
+      nil injected_value
+    ) -> BCDD::Context
+
+    def self.callable_method: (
+      untyped source,
+      (Symbol | nil) method_name
+    ) -> ::Method
+
+    def self.ensure_result_object: (
+      untyped source,
+      untyped value,
+      BCDD::Context result
+    ) -> BCDD::Context
+
+    def self.expected_result_object: () -> singleton(BCDD::Context)
+
+    def self.expected_outcome: () -> String
+  end
+end
+
+class BCDD::Context
+  class Failure < BCDD::Context
+    include BCDD::Result::Failure::Methods
+
+    def and_expose: (Symbol, Array[Symbol], **untyped) -> BCDD::Context::Failure
+  end
+
+  def self.Failure: (Symbol, **untyped) -> BCDD::Context::Failure
+end
+
+class BCDD::Context
+  module Mixin
+    Factory: singleton(BCDD::Result::Mixin::Factory)
+
+    module Methods
+      def Success: (Symbol, **untyped) -> BCDD::Context::Success
+
+      def Failure: (Symbol, **untyped) -> BCDD::Context::Failure
+
+      private
+
+      def _ResultAs: (singleton(BCDD::Context), Symbol, untyped, ?terminal: bool) -> untyped
+    end
+
+    module Addons
+      module Continue
+        include BCDD::Context::Mixin::Methods
+
+        private
+
+        def Continue: (**untyped) -> BCDD::Context::Success
+      end
+
+      module Given
+        include BCDD::Context::Mixin::Methods
+
+        private
+
+        def Given: (*untyped) -> BCDD::Context::Success
+      end
+
+      OPTIONS: Hash[Symbol, Module]
+
+      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
+    end
+  end
+
+  def self.mixin_module: -> singleton(BCDD::Context::Mixin)
+
+  def self.result_factory: -> singleton(BCDD::Context)
+end
+
+class BCDD::Context::Expectations < BCDD::Result::Expectations
+  def self.mixin_module: -> singleton(BCDD::Context::Expectations::Mixin)
+
+  def self.result_factory_without_expectations: -> singleton(BCDD::Result)
+
+  def Success: (Symbol, **untyped) -> BCDD::Context::Success
+  def Failure: (Symbol, **untyped) -> BCDD::Context::Failure
+end
+
+module BCDD::Context::Expectations::Mixin
+  Methods: singleton(BCDD::Result::Expectations::Mixin::Methods)
+  Factory: singleton(BCDD::Result::Expectations::Mixin::Factory)
+
+  module Addons
+    module Continue
+      private def Continue: (**untyped) -> BCDD::Context::Success
+    end
+
+    module Given
+      private def Given: (*untyped) -> BCDD::Context::Success
+    end
+
+    OPTIONS: Hash[Symbol, Module]
+
+    def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
+  end
+end

@@ -15,7 +15,7 @@ class BCDD::Result::Config
             enabled: false,
             affects: [
               'BCDD::Result::Expectations',
-              'BCDD::Result::Context::Expectations'
+              'BCDD::Context::Expectations'
             ]
           }
         },

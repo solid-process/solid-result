@@ -5,9 +5,9 @@ class BCDD::Result
     module Addons
       AFFECTS = %w[
         BCDD::Result.mixin
-        BCDD::Result::Context.mixin
+        BCDD::Context.mixin
         BCDD::Result::Expectations.mixin
-        BCDD::Result::Context::Expectations.mixin
+        BCDD::Context::Expectations.mixin
       ].freeze
 
       OPTIONS = {

@@ -27,7 +27,7 @@ class BCDD::Result::Config
     end
 
     class AddC
-      include BCDD::Result::Context.mixin
+      include BCDD::Context.mixin
 
       def call(number1:, number2:)
         Success(:ok, number: number1 + number2)

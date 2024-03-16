@@ -24,7 +24,7 @@ class BCDD::Result::Config
       end
 
       class3a = Class.new do
-        include BCDD::Result::Context.mixin
+        include BCDD::Context.mixin
 
         def call
           Given(msg: "this method won't exist as the default config is disabled")
@@ -32,7 +32,7 @@ class BCDD::Result::Config
       end
 
       class4a = Class.new do
-        include BCDD::Result::Context::Expectations.mixin
+        include BCDD::Context::Expectations.mixin
 
         def call
           Given(msg: "this method won't exist as the default config is disabled")
@@ -68,7 +68,7 @@ class BCDD::Result::Config
       end
 
       class3b = Class.new do
-        include BCDD::Result::Context.mixin
+        include BCDD::Context.mixin
 
         def call
           part1 = { part1: 'this method will exist' }
@@ -80,7 +80,7 @@ class BCDD::Result::Config
       end
 
       class4b = Class.new do
-        include BCDD::Result::Context::Expectations.mixin
+        include BCDD::Context::Expectations.mixin
 
         def call
           part1 = { part1: 'this method will exist' }
@@ -127,7 +127,7 @@ class BCDD::Result::Config
       end
 
       class3 = Class.new do
-        include BCDD::Result::Context.mixin(config: { addon: { given: false } })
+        include BCDD::Context.mixin(config: { addon: { given: false } })
 
         def call
           Given(msg: "this method won't exist as the default config was overwritten")
@@ -135,7 +135,7 @@ class BCDD::Result::Config
       end
 
       class4 = Class.new do
-        include BCDD::Result::Context::Expectations.mixin(config: { addon: { given: false } })
+        include BCDD::Context::Expectations.mixin(config: { addon: { given: false } })
 
         def call
           Given(msg: "this method won't exist as the default config was overwritten")

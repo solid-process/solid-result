@@ -6,15 +6,15 @@ class BCDD::Result
       OPTIONS = {
         expectations: {
           default: true,
-          affects: %w[BCDD::Result::Expectations BCDD::Result::Context::Expectations]
+          affects: %w[BCDD::Result::Expectations BCDD::Context::Expectations]
         },
         transitions: {
           default: true,
-          affects: %w[BCDD::Result BCDD::Result::Context BCDD::Result::Expectations BCDD::Result::Context::Expectations]
+          affects: %w[BCDD::Result BCDD::Context BCDD::Result::Expectations BCDD::Context::Expectations]
         },
         and_then!: {
           default: false,
-          affects: %w[BCDD::Result BCDD::Result::Context BCDD::Result::Expectations BCDD::Result::Context::Expectations]
+          affects: %w[BCDD::Result BCDD::Context BCDD::Result::Expectations BCDD::Context::Expectations]
         }
       }.transform_values!(&:freeze).freeze
 

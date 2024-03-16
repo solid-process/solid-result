@@ -32,13 +32,13 @@ class BCDD::Result::Config
       class1b.class_eval { def call; self.class.const_get(:Result, false)::Success(:ok, 1); end }
 
       class1c = Class.new do
-        include BCDD::Result::Context::Expectations.mixin(success: { ok: is_hash_numeric })
+        include BCDD::Context::Expectations.mixin(success: { ok: is_hash_numeric })
 
         def call; Success(:ok, number: 1); end
       end
 
       class1d = Class.new
-      class1d.const_set(:Result, BCDD::Result::Context::Expectations.new(success: { ok: is_hash_numeric }))
+      class1d.const_set(:Result, BCDD::Context::Expectations.new(success: { ok: is_hash_numeric }))
       class1d.class_eval { def call; self.class.const_get(:Result, false)::Success(:ok, number: 1); end }
 
       assert_raises(BCDD::Result::Contract::Error::UnexpectedValue) { class1a.new.call }
@@ -64,13 +64,13 @@ class BCDD::Result::Config
       class2b.class_eval { def call; self.class.const_get(:Result, false)::Success(:ok, 1); end }
 
       class2c = Class.new do
-        include BCDD::Result::Context::Expectations.mixin(success: { ok: is_hash_numeric })
+        include BCDD::Context::Expectations.mixin(success: { ok: is_hash_numeric })
 
         def call; Success(:ok, number: 1); end
       end
 
       class2d = Class.new
-      class2d.const_set(:Result, BCDD::Result::Context::Expectations.new(success: { ok: is_hash_numeric }))
+      class2d.const_set(:Result, BCDD::Context::Expectations.new(success: { ok: is_hash_numeric }))
       class2d.class_eval { def call; self.class.const_get(:Result, false)::Success(:ok, number: 1); end }
 
       assert(class2a.new.call.then { _1.success?(:ok) && _1.value == 1 })
@@ -101,13 +101,13 @@ class BCDD::Result::Config
       class3b.class_eval { def call; self.class.const_get(:Result, false)::Success(:ok, 1); end }
 
       class3c = Class.new do
-        include BCDD::Result::Context::Expectations.mixin(success: { ok: is_hash_numeric })
+        include BCDD::Context::Expectations.mixin(success: { ok: is_hash_numeric })
 
         def call; Success(:ok, number: 1); end
       end
 
       class3d = Class.new
-      class3d.const_set(:Result, BCDD::Result::Context::Expectations.new(success: { ok: is_hash_numeric }))
+      class3d.const_set(:Result, BCDD::Context::Expectations.new(success: { ok: is_hash_numeric }))
       class3d.class_eval { def call; self.class.const_get(:Result, false)::Success(:ok, number: 1); end }
 
       assert_raises(BCDD::Result::Contract::Error::UnexpectedValue) { class3a.new.call }
@@ -160,7 +160,7 @@ class BCDD::Result::Config
       class2.class_eval { def call; self.class.const_get(:Result, false)::Success(:ok, 1); end }
 
       class3 = Class.new do
-        include BCDD::Result::Context::Expectations.mixin(
+        include BCDD::Context::Expectations.mixin(
           config: { pattern_matching: { nil_as_valid_value_checking: false } },
           success: { ok: is_hash_numeric }
         )
@@ -171,7 +171,7 @@ class BCDD::Result::Config
       class4 = Class.new
       class4.const_set(
         :Result,
-        BCDD::Result::Context::Expectations.new(
+        BCDD::Context::Expectations.new(
           config: { pattern_matching: { nil_as_valid_value_checking: false } },
           success: { ok: is_hash_numeric }
         )

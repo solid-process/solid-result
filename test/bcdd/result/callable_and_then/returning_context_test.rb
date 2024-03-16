@@ -7,7 +7,7 @@ class BCDD::Result
     include BCDDResultTransitionAssertions
 
     module NormalizeEmail
-      extend Context.mixin
+      extend ::BCDD::Context.mixin
 
       def self.call(arg)
         BCDD::Result.transitions(name: 'NormalizeEmail') do
@@ -40,7 +40,7 @@ class BCDD::Result
 
       assert(result1.failure?(:invalid_input))
       assert_equal({ message: 'input must be a String' }, result1.value)
-      assert_kind_of(::BCDD::Result::Context, result1)
+      assert_kind_of(::BCDD::Context, result1)
 
       result2 = EmailNormalization.call(' foo@BAR.com')
 
@@ -48,7 +48,7 @@ class BCDD::Result
 
       assert(result2.success?(:normalized_input))
       assert_equal({ input: 'foo@bar.com' }, result2.value)
-      assert_kind_of(::BCDD::Result::Context, result2)
+      assert_kind_of(::BCDD::Context, result2)
     ensure
       BCDD::Result.config.feature.disable!(:and_then!)
     end
