@@ -78,7 +78,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`Array`/`Find` patterns](#arrayfind-patterns-1)
     - [`Hash` patterns](#hash-patterns-1)
   - [How to pattern match without the concept of success and failure](#how-to-pattern-match-without-the-concept-of-success-and-failure)
-- [`BCDD::Result.transitions`](#bcddresulttransitions)
+- [`BCDD::Result.event_logs`](#bcddresultevent_logs)
   - [`metadata: {ids:}`](#metadata-ids)
   - [Configuration](#configuration)
     - [Turning on/off](#turning-onoff)
@@ -1917,18 +1917,18 @@ The `BCDD::Result` will also work with the `BCDD::Context`, but the opposite won
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-## `BCDD::Result.transitions`
+## `BCDD::Result.event_logs`
 
-Use `BCDD::Result.transitions(&block)` to track all transitions in the same or between different operations (it works with `BCDD::Result` and `BCDD::Context`). When there is a nesting of transition blocks, this mechanism will be able to correlate parent and child blocks and present the duration of all operations in milliseconds.
+Use `BCDD::Result.event_logs(&block)` to track all the results produced in the same or between different operations (it works with `BCDD::Result` and `BCDD::Context`). When there is a nesting of `event_logs` blocks, this mechanism will be able to correlate parent and child blocks and present the duration of all operations in milliseconds.
 
-When you wrap the creation of the result with `BCDD::Result.transitions`, the final result will expose all the transition records through the `BCDD::Result#transitions` method.
+When you wrap the creation of the result with `BCDD::Result.event_logs`, the final one will expose all the event log records through the `BCDD::Result#event_logs` method.
 
 ```ruby
 class Division
   include BCDD::Result.mixin(config: { addon: { continue: true } })
 
   def call(arg1, arg2)
-    BCDD::Result.transitions(name: 'Division', desc: 'divide two numbers') do
+    BCDD::Result.event_logs(name: 'Division', desc: 'divide two numbers') do
       Given([arg1, arg2])
         .and_then(:require_numbers)
         .and_then(:check_for_zeros)
@@ -1964,7 +1964,7 @@ module SumDivisionsByTwo
   extend self, BCDD::Result.mixin
 
   def call(*numbers)
-    BCDD::Result.transitions(name: 'SumDivisionsByTwo') do
+    BCDD::Result.event_logs(name: 'SumDivisionsByTwo') do
       divisions = numbers.map { |number| Division.new.call(number, 2) }
 
       if divisions.any?(&:failure?)
@@ -1983,7 +1983,7 @@ Let's see the result of the `SumDivisionsByTwo` call:
 result = SumDivisionsByTwo.call(20, 10)
 # => #<BCDD::Result::Success type=:sum value=15>
 
-result.transitions
+result.event_logs
 {
   :version => 1,
   :metadata => {
@@ -2077,17 +2077,17 @@ result.transitions
 ### `metadata: {ids:}`
 
 The `:ids` metadata property is a hash with three properties:
-- `:tree`, a graph/tree representation of the transitions ids.
-- `:level_parent`, a hash with the level (depth) of each transition and its parent id.
-- `:matrix`, a matrix representation of the transitions ids. It is a simplification of the `:tree` property.
+- `:tree`, a graph/tree representation of the id of each `event_logs` block.
+- `:level_parent`, a hash with the level (depth) of each block and its parent id.
+- `:matrix`, a matrix representation of the event logs ids. It is a simplification of the `:tree` property.
 
 Use these data structures to build your own visualization.
 
-> Check out [Transitions Listener example](examples/single_listener/lib/single_transitions_listener.rb) to see how a listener can be used to build a visualization of the transitions, using these properties.
+> Check out [Event Logs Listener example](examples/single_listener/lib/single_event_logs_listener.rb) to see how a listener can be used to build a STDOUT visualization, using these properties.
 
 ```ruby
 # tree:
-# A graph representation (array of arrays) of the transitions ids.
+# A graph representation (array of arrays) of the each event logs block id.
 #
 0                  # [0, [
 |- 1               #   [1, [[2, []]]],
@@ -2100,7 +2100,7 @@ Use these data structures to build your own visualization.
 |- 8               # ]]
 
 # level_parent:
-# Transition ids are the keys, and the level (depth) and parent id the values.
+# The event logs ids are the keys, and the level (depth) and parent id the values.
                    # {
 0                  #   0 => [0, 0],
 |- 1               #   1 => [1, 0],
@@ -2114,8 +2114,8 @@ Use these data structures to build your own visualization.
                    # }
 
 # matrix:
-# The rows are the direct transitions from the root transition block,
-# and the columns are the nested transitions from the direct ones.
+# The rows are the direct blocks from the root block,
+# and the columns are the nested blocks from the direct ones.
                    # {
 0 | 1 | 2 | 3 | 4  #   0 => [0, 0],
 - | - | - | - | -  #   1 => [1, 1],
@@ -2135,17 +2135,17 @@ Use these data structures to build your own visualization.
 
 #### Turning on/off
 
-You can use `BCDD::Result.config.feature.disable!(:transitions)` and `BCDD::Result.config.feature.enable!(:transitions)` to turn on/off the `BCDD::Result.transitions` feature.
+You can use `BCDD::Result.config.feature.disable!(event_logs)` and `BCDD::Result.config.feature.enable!(event_logs)` to turn on/off the `BCDD::Result.event_logs` feature.
 
 ```ruby
 BCDD::Result.configuration do |config|
-  config.feature.disable!(:transitions)
+  config.feature.disable!(event_logs)
 end
 
 result = SumDivisionsByTwo.call(20, 10)
 # => #<BCDD::Result::Success type=:sum value=15>
 
-result.transitions
+result.event_logs
 {
   :version=>1,
   :records=>[],
@@ -2160,59 +2160,59 @@ result.transitions
 
 #### Setting a `trace_id` fetcher
 
-You can define a lambda (arity 0) to fetch the trace_id. This lambda will be called before the first transition and will be used to set the `:trace_id` in the `:metadata` property.
+You can define a lambda (arity 0) to fetch the trace_id. This lambda will be called before the first event logs block and will be used to set the `:trace_id` in the `:metadata` property.
 
 Use to correlate different or the same operation (executed multiple times).
 
 ```ruby
-BCDD::Result.config.transitions.trace_id = -> { Thread.current[:bcdd_result_transitions_trace_id] }
+BCDD::Result.config.event_logs.trace_id = -> { Thread.current[:bcdd_result_event_logs_trace_id] }
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 #### Setting a `listener`
 
-You can define a listener to be called during the result transitions tracking (check out [this example](examples/single_listener/lib/single_transitions_listener.rb)). It must be a class that includes `BCDD::Result::Transitions::Listener`.
+You can define a listener to be called during the event logs tracking (check out [this example](examples/single_listener/lib/single_event_logs_listener.rb)). It must be a class that includes `BCDD::Result::EventLogs::Listener`.
 
-Use it to build your additional logic on top of the transitions tracking. Examples:
-  - Log the transitions.
-  - Perform a trace of the transitions.
-  - Instrument the transitions (measure/report).
-  - Build a visualization of the transitions (Diagrams, using the `records` + `metadata: {ids:}` properties).
+Use it to build your additional logic on top of the tracking. Examples:
+  - Log the event  logs.
+  - Perform the tracing.
+  - Instrument the event logs (measure/report).
+  - Build a visualization (Diagrams, using the `records:` + `metadata: {ids:}` properties).
 
-After implementing your listener, you can set it to the `BCDD::Result.config.transitions.listener=`:
+After implementing your listener, you can set it to the `BCDD::Result.config.event_logs.listener=`:
 
 ```ruby
-BCDD::Result.config.transitions.listener = MyTransitionsListener
+BCDD::Result.config.event_logs.listener = MyEventLogsListener
 ```
 
 See the example below to understand how to implement one:
 
 ```ruby
-class MyTransitionsListener
-  include BCDD::Result::Transitions::Listener
+class MyEventLogsListener
+  include BCDD::Result::EventLogs::Listener
 
-  # A listener will be initialized before the first transition, and it is discarded after the last one.
+  # A listener will be initialized before the first event logs block, and it is discarded after the last one.
   def initialize
   end
 
-  # This method will be called before each transition block.
-  # The parent transition block will be called first in the case of nested transition blocks.
+  # This method will be called before each event logs block.
+  # The parent block will be called first in the case of nested ones.
   #
   # @param scope: {:id=>1, :name=>"SomeOperation", :desc=>"Optional description"}
   def on_start(scope:)
   end
 
-  # This method will wrap all the transitions in the same block.
-  # It can be used to perform an instrumentation (measure/report) of the transitions.
+  # This method will wrap all the event logs in the same block.
+  # It can be used to perform an instrumentation (measure/report).
   #
   # @param scope: {:id=>1, :name=>"SomeOperation", :desc=>"Optional description"}
-  def around_transitions(scope:)
+  def around_event_logs(scope:)
     yield
   end
 
   # This method will wrap each and_then call.
-  # It can be used to perform an instrumentation (measure/report) of the and_then calls.
+  # It can be used to perform an instrumentation of the and_then calls.
   #
   # @param scope: {:id=>1, :name=>"SomeOperation", :desc=>"Optional description"}
   # @param and_then:
@@ -2236,9 +2236,9 @@ class MyTransitionsListener
   def on_record(record:)
   end
 
-  # This method will be called at the end of the transitions tracking.
+  # This method will be called at the end of the event logs tracking.
   #
-  # @param transitions:
+  # @param event_logs:
   # {
   #   :version => 1,
   #   :metadata => {
@@ -2254,14 +2254,14 @@ class MyTransitionsListener
   #     # ...
   #   ]
   # }
-  def on_finish(transitions:)
+  def on_finish(event_logs:)
   end
 
-  # This method will be called when an exception is raised during the transitions tracking.
+  # This method will be called when an exception is raised during the event logs tracking.
   #
   # @param exception: Exception
-  # @param transitions: Hash
-  def before_interruption(exception:, transitions:)
+  # @param event_logs: Hash
+  def before_interruption(exception:, event_logs:)
   end
 end
 ```
@@ -2270,15 +2270,15 @@ end
 
 #### Setting multiple `listeners`
 
-You can use `BCDD::Result::Transitions::Listeners[]` to creates a listener of listeners (check out [this example](examples/multiple_listeners/Rakefile)), which will be called in the order they were added.
+You can use `BCDD::Result::EventLogs::Listeners[]` to creates a listener of listeners (check out [this example](examples/multiple_listeners/Rakefile)), which will be called in the order they were added.
 
-**Attention:** It only allows one listener to handle `around_and_then` and another `around_transitions` events.
+**Attention:** It only allows one listener to handle `around_and_then` and another `around_event_logs` records.
 
-> The example below defines different listeners to handle `around_and_then` and `around_transitions,` but it is also possible to define a listener to handle both.
+> The example below defines different listeners to handle `around_and_then` and `around_event_logs,` but it is also possible to define a listener to handle both.
 
 ```ruby
 class AroundAndThenListener
-  include BCDD::Result::Transitions::Listener
+  include BCDD::Result::EventLogs::Listener
 
   # It must be a static/singleton method.
   def self.around_and_then?
@@ -2290,21 +2290,21 @@ class AroundAndThenListener
   end
 end
 
-class AroundTransitionsListener
-  include BCDD::Result::Transitions::Listener
+class AroundEventLogsListener
+  include BCDD::Result::EventLogs::Listener
 
   # It must be a static/singleton method.
-  def self.around_transitions?
+  def self.around_event_logs?
     true
   end
 
-  def around_transitions(scope:)
+  def around_event_logs(scope:)
     #...
   end
 end
 
-class MyTransitionsListener
-  include BCDD::Result::Transitions::Listener
+class MyEventLogsListener
+  include BCDD::Result::EventLogs::Listener
 end
 ```
 
@@ -2312,14 +2312,14 @@ How to use it:
 
 ```ruby
 # The listeners will be called in the order they were added.
-BCDD::Result.config.transitions.listener = BCDD::Result::Transitions::Listeners[
-  MyTransitionsListener,
+BCDD::Result.config.event_logs.listener = BCDD::Result::EventLogs::Listeners[
+  MyEventLogsListener,
   AroundAndThenListener,
-  AroundTransitionsListener
+  AroundEventLogsListener
 ]
 ```
 
-> Check out [this example](examples/multiple_listeners) to see a listener to print the transitions and another to store them in the database.
+> Check out [this example](examples/multiple_listeners) to see a listener to print the event logs and another to store them in the database.
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
@@ -2450,7 +2450,7 @@ BCDD::Result.config.feature.options
 #       "BCDD::Context::Expectations"
 #     ]
 #   },
-#   :transitions=>{
+#   event_logs=>{
 #     :enabled=>true,
 #     :affects=>[
 #       "BCDD::Result",

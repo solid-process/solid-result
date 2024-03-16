@@ -55,6 +55,10 @@
 
 ### Changed
 
+- **(BREAKING)** Replace transitions with event_logs concept.
+  - The `BCDD::Result::Transitions` module was renamed to `BCDD::Result::EventLogs`
+  - The `BCDD::Result.transitions` to `BCDD::Result.event_logs`.
+
 - **(BREAKING)** Change `BCDD::Result#deconstruct_keys` to return a hash with the keys `:type` and `:value` when one of these keys is present. Otherwise, it will return the value itself.
 
 - **(BREAKING)** Replace trasitions metadata `:ids_tree`, and `:ids_matrix` with `:ids` property. This property is a hash with the following keys:
