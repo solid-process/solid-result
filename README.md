@@ -2,7 +2,7 @@
   <h1 align="center" id="-bcddresult">🔀 BCDD::Result</h1>
   <p align="center"><i>Unleash a pragmatic and observable use of Result Pattern and Railway-Oriented Programming in Ruby.</i></p>
   <p align="center">
-    <img src="https://img.shields.io/badge/ruby->%3D%202.7.0-ruby.svg?colorA=99004d&colorB=cc0066" alt="Ruby">
+    <img src="https://img.shields.io/badge/Ruby%20%3E%3D%202.7%2C%20%3C%3D%20Head-ruby.svg?colorA=444&colorB=333" alt="Ruby">
     <a href="https://rubygems.org/gems/bcdd-result"><img src="https://badge.fury.io/rb/bcdd-result.svg" alt="bcdd-result gem version" height="18"></a>
     <a href="https://codeclimate.com/github/B-CDD/result/maintainability"><img src="https://api.codeclimate.com/v1/badges/aa8360f8f012d7dedd62/maintainability" /></a>
     <a href="https://codeclimate.com/github/B-CDD/result/test_coverage"><img src="https://api.codeclimate.com/v1/badges/aa8360f8f012d7dedd62/test_coverage" /></a>
@@ -19,7 +19,7 @@ Furthermore, this abstraction exposes several features that will be useful to ma
 
 Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofit.com/rop/) pattern (superpower) in your code.
 
-- [Ruby Version](#ruby-version)
+- [Supported Ruby](#supported-ruby)
 - [Installation](#installation)
 - [Usage](#usage)
     - [`BCDD::Result` *versus* `Result`](#bcddresult-versus-result)
@@ -63,14 +63,14 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
       - [Failure()](#failure)
       - [Pattern Matching Support](#pattern-matching-support)
     - [`BCDD::Result::Expectations.mixin` add-ons](#bcddresultexpectationsmixin-add-ons)
-  - [`BCDD::Result::Context`](#bcddresultcontext)
+  - [`BCDD::Context`](#bcddcontext)
     - [Defining successes and failures](#defining-successes-and-failures)
     - [Constant aliases](#constant-aliases)
-    - [`BCDD::Result::Context.mixin`](#bcddresultcontextmixin)
+    - [`BCDD::Context.mixin`](#bcddcontextmixin)
       - [Class example (Instance Methods)](#class-example-instance-methods-1)
       - [`and_expose`](#and_expose)
       - [Module example (Singleton Methods)](#module-example-singleton-methods-1)
-    - [`BCDD::Result::Context::Expectations`](#bcddresultcontextexpectations)
+    - [`BCDD::Context::Expectations`](#bcddcontextexpectations)
     - [Mixin add-ons](#mixin-add-ons)
 - [`BCDD::Result.transitions`](#bcddresulttransitions)
   - [`metadata: {ids:}`](#metadata-ids)
@@ -93,9 +93,13 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
 - [License](#license)
 - [Code of Conduct](#code-of-conduct)
 
-## Ruby Version
+## Supported Ruby
 
-`>= 2.7.0`
+This library is tested against:
+
+Version | 2.7 | 3.0 | 3.1 | 3.2 | 3.3 | Head
+---- | --- | --- | --- | --- | --- | ---
+100% Coverage | ✅  | ✅  | ✅  | ✅  | ✅  | ✅
 
 ## Installation
 
@@ -1429,45 +1433,45 @@ result.success?(:ok)
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-### `BCDD::Result::Context`
+### `BCDD::Context`
 
-The `BCDD::Result::Context` is a `BCDD::Result`, meaning it has all the features of the `BCDD::Result`. The main difference is that it only accepts keyword arguments as a value, which applies to the `and_then`: The called methods must receive keyword arguments, and the dependency injection will be performed through keyword arguments.
+The `BCDD::Context` is a `BCDD::Result`, meaning it has all the features of the `BCDD::Result`. The main difference is that it only accepts keyword arguments as a value, which applies to the `and_then`: The called methods must receive keyword arguments, and the dependency injection will be performed through keyword arguments.
 
-As the input/output are hashes, the results of each `and_then` call will automatically accumulate. This is useful in operations chaining, as the result of the previous operations will be automatically available for the next one. Because of this behavior, the `BCDD::Result::Context` has the `#and_expose` method to expose only the desired keys from the accumulated result.
+As the input/output are hashes, the results of each `and_then` call will automatically accumulate. This is useful in operations chaining, as the result of the previous operations will be automatically available for the next one. Because of this behavior, the `BCDD::Context` has the `#and_expose` method to expose only the desired keys from the accumulated result.
 
 #### Defining successes and failures
 
-As the `BCDD::Result`, you can declare success and failures directly from `BCDD::Result::Context`.
+As the `BCDD::Result`, you can declare success and failures directly from `BCDD::Context`.
 
 ```ruby
-BCDD::Result::Context::Success(:ok, a: 1, b: 2)
-#<BCDD::Result::Context::Success type=:ok value={:a=>1, :b=>2}>
+BCDD::Context::Success(:ok, a: 1, b: 2)
+#<BCDD::Context::Success type=:ok value={:a=>1, :b=>2}>
 
-BCDD::Result::Context::Failure(:err, message: 'something went wrong')
-#<BCDD::Result::Context::Failure type=:err value={:message=>"something went wrong"}>
+BCDD::Context::Failure(:err, message: 'something went wrong')
+#<BCDD::Context::Failure type=:err value={:message=>"something went wrong"}>
 ```
 
-But different from `BCDD::Result` that accepts any value, the `BCDD::Result::Context` only takes keyword arguments.
+But different from `BCDD::Result` that accepts any value, the `BCDD::Context` only takes keyword arguments.
 
 ```ruby
-BCDD::Result::Context::Success(:ok, [1, 2])
+BCDD::Context::Success(:ok, [1, 2])
 # wrong number of arguments (given 2, expected 1) (ArgumentError)
 
-BCDD::Result::Context::Failure(:err, { message: 'something went wrong' })
+BCDD::Context::Failure(:err, { message: 'something went wrong' })
 # wrong number of arguments (given 2, expected 1) (ArgumentError)
 
 #
 # Use ** to convert a hash to keyword arguments
 #
-BCDD::Result::Context::Success(:ok, **{ message: 'hashes can be converted to keyword arguments' })
-#<BCDD::Result::Context::Success type=:ok value={:message=>"hashes can be converted to keyword arguments"}>
+BCDD::Context::Success(:ok, **{ message: 'hashes can be converted to keyword arguments' })
+#<BCDD::Context::Success type=:ok value={:message=>"hashes can be converted to keyword arguments"}>
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 #### Constant aliases
 
-You can configure `Context` or `BCDD::Context` as an alias for `BCDD::Result::Context`. This is helpful to define a standard way to avoid the full constant name/path in your code.
+You can configure `Context` or `BCDD::Context` as an alias for `BCDD::Context`. This is helpful to define a standard way to avoid the full constant name/path in your code.
 
 ```ruby
 BCDD::Result.configuration do |config|
@@ -1481,9 +1485,9 @@ end
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-#### `BCDD::Result::Context.mixin`
+#### `BCDD::Context.mixin`
 
-As in the `BCDD::Result`, you can use the `BCDD::Result::Context.mixin` to add the `Success()` and `Failure()` methods to your classes/modules.
+As in the `BCDD::Result`, you can use the `BCDD::Context.mixin` to add the `Success()` and `Failure()` methods to your classes/modules.
 
 Let's see this feature and the data accumulation in action:
 
@@ -1493,7 +1497,7 @@ Let's see this feature and the data accumulation in action:
 require 'logger'
 
 class Divide
-  include BCDD::Result::Context.mixin
+  include BCDD::Context.mixin
 
   def call(arg1, arg2, logger: ::Logger.new(STDOUT))
     validate_numbers(arg1, arg2)
@@ -1530,29 +1534,29 @@ end
 
 Divide.new.call(10, 5)
 # I, [2023-10-27T01:51:46.905004 #76915]  INFO -- : The division result is 2
-#<BCDD::Result::Context::Success type=:ok value={:number=>2}>
+#<BCDD::Context::Success type=:ok value={:number=>2}>
 
 Divide.new.call('10', 5)
-#<BCDD::Result::Context::Failure type=:err value={:message=>"arg1 must be numeric"}>
+#<BCDD::Context::Failure type=:err value={:message=>"arg1 must be numeric"}>
 
 Divide.new.call(10, '5')
-#<BCDD::Result::Context::Failure type=:err value={:message=>"arg2 must be numeric"}>
+#<BCDD::Context::Failure type=:err value={:message=>"arg2 must be numeric"}>
 
 Divide.new.call(10, 0)
-#<BCDD::Result::Context::Failure type=:err value={:message=>"arg2 must not be zero"}>
+#<BCDD::Context::Failure type=:err value={:message=>"arg2 must not be zero"}>
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ##### `and_expose`
 
-This allows you to expose only the desired keys from the accumulated result. It can be used with any `BCDD::Result::Context` object.
+This allows you to expose only the desired keys from the accumulated result. It can be used with any `BCDD::Context` object.
 
 Let's add it to the previous example:
 
 ```ruby
 class Divide
-  include BCDD::Result::Context.mixin
+  include BCDD::Context.mixin
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
@@ -1582,7 +1586,7 @@ class Divide
 end
 
 Divide.new.call(10, 5)
-#<BCDD::Result::Context::Success type=:division_completed value={:number=>2}>
+#<BCDD::Context::Success type=:division_completed value={:number=>2}>
 ```
 
 As you can see, even with `divide` success exposing the division number with all the accumulated data (`**input`), the `#and_expose` could generate a new success with a new type and only with the desired keys.
@@ -1591,7 +1595,7 @@ Remove the `#and_expose` call to see the difference. This will be the outcome:
 
 ```ruby
 Divide.new.call(10, 5)
-#<BCDD::Result::Context::Success type=:ok value={:number=>2, :number1=>10, :number2=>5}>
+#<BCDD::Context::Success type=:ok value={:number=>2, :number1=>10, :number2=>5}>
 ```
 
 > PS: The `#and_expose` produces a terminal success by default. This means the next step will not be executed even if you call `#and_then` after `#and_expose`. To change this behavior, you can pass `terminal: false` to `#and_expose`.
@@ -1600,11 +1604,11 @@ Divide.new.call(10, 5)
 
 ##### Module example (Singleton Methods)
 
-`BCDD::Result::Context.mixin` can also produce singleton methods. Below is an example using a module (but it could be a class, too).
+`BCDD::Context.mixin` can also produce singleton methods. Below is an example using a module (but it could be a class, too).
 
 ```ruby
 module Divide
-  extend self, BCDD::Result::Context.mixin
+  extend self, BCDD::Context.mixin
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
@@ -1634,29 +1638,29 @@ module Divide
 end
 
 Divide.call(10, 5)
-#<BCDD::Result::Context::Success type=:division_completed value={:number=>2}>
+#<BCDD::Context::Success type=:division_completed value={:number=>2}>
 
 Divide.call('10', 5)
-#<BCDD::Result::Context::Failure type=:err value={:message=>"arg1 must be numeric"}>
+#<BCDD::Context::Failure type=:err value={:message=>"arg1 must be numeric"}>
 
 Divide.call(10, '5')
-#<BCDD::Result::Context::Failure type=:err value={:message=>"arg2 must be numeric"}>
+#<BCDD::Context::Failure type=:err value={:message=>"arg2 must be numeric"}>
 
 Divide.call(10, 0)
-#<BCDD::Result::Context::Failure type=:err value={:message=>"arg2 must not be zero"}>
+#<BCDD::Context::Failure type=:err value={:message=>"arg2 must not be zero"}>
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-#### `BCDD::Result::Context::Expectations`
+#### `BCDD::Context::Expectations`
 
-The `BCDD::Result::Context::Expectations` is a `BCDD::Result::Expectations` with the `BCDD::Result::Context` features.
+The `BCDD::Context::Expectations` is a `BCDD::Result::Expectations` with the `BCDD::Context` features.
 
 This is an example using the mixin mode, but the standalone mode is also supported.
 
 ```ruby
 class Divide
-  include BCDD::Result::Context::Expectations.mixin(
+  include BCDD::Context::Expectations.mixin(
     config: {
       pattern_matching: { nil_as_valid_value_checking: true }
     },
@@ -1680,16 +1684,16 @@ class Divide
 end
 
 Divide.new.call(10, 5)
-#<BCDD::Result::Context::Success type=:division_completed value={:number=>2}>
+#<BCDD::Context::Success type=:division_completed value={:number=>2}>
 ```
 
-As in the `BCDD::Result::Expectations.mixin`, the `BCDD::Result::Context::Expectations.mixin` will add a Result constant in the target class. It can generate success/failure results, which ensure the mixin expectations.
+As in the `BCDD::Result::Expectations.mixin`, the `BCDD::Context::Expectations.mixin` will add a Result constant in the target class. It can generate success/failure results, which ensure the mixin expectations.
 
 Let's see this using the previous example:
 
 ```ruby
 Divide::Result::Success(:division_completed, number: 2)
-#<BCDD::Result::Context::Success type=:division_completed value={:number=>2}>
+#<BCDD::Context::Success type=:division_completed value={:number=>2}>
 
 Divide::Result::Success(:division_completed, number: '2')
 # value {:number=>"2"} is not allowed for :division_completed type ({:number=>"2"}: Numeric === "2" does not return true) (BCDD::Result::Contract::Error::UnexpectedValue)
@@ -1699,7 +1703,7 @@ Divide::Result::Success(:division_completed, number: '2')
 
 #### Mixin add-ons
 
-The `BCDD::Result::Context.mixin` and `BCDD::Result::Context::Expectations.mixin` also accepts the `config:` argument. And it works the same way as the `BCDD::Result` mixins.
+The `BCDD::Context.mixin` and `BCDD::Context::Expectations.mixin` also accepts the `config:` argument. And it works the same way as the `BCDD::Result` mixins.
 
 **given**
 
@@ -1707,21 +1711,21 @@ This addon is enabled by default. It will create the `Given(*value)` method. Use
 
 You can turn it off by passing `given: false` to the `config:` argument or using the `BCDD::Result.configuration`.
 
-The `Given()` addon for a BCDD::Result::Context can be called with one or more arguments. The arguments will be converted to a hash (`to_h`) and merged to define the first value of the result chain.
+The `Given()` addon for a BCDD::Context can be called with one or more arguments. The arguments will be converted to a hash (`to_h`) and merged to define the first value of the result chain.
 
 **continue**
 
-The `BCDD::Result::Context.mixin(config: { addon: { continue: true } })` or `BCDD::Result::Context::Expectations.mixin(config: { addon: { continue: true } })` creates the `Continue(value)` method and change the `Success()` behavior to terminate the step chain.
+The `BCDD::Context.mixin(config: { addon: { continue: true } })` or `BCDD::Context::Expectations.mixin(config: { addon: { continue: true } })` creates the `Continue(value)` method and change the `Success()` behavior to terminate the step chain.
 
 So, if you want to advance to the next step, you must use `Continue(**value)` instead of `Success(type, **value)`. Otherwise, the step chain will be terminated.
 
-Let's use a mix of `BCDD::Result::Context` features to see in action with this add-on:
+Let's use a mix of `BCDD::Context` features to see in action with this add-on:
 
 ```ruby
 module Division
   require 'logger'
 
-  extend self, BCDD::Result::Context::Expectations.mixin(
+  extend self, BCDD::Context::Expectations.mixin(
     config: {
       addon:            { continue: true },
       pattern_matching: { nil_as_valid_value_checking: true }
@@ -1771,26 +1775,26 @@ end
 
 Division.call(14, 2)
 # I, [2023-10-27T02:01:05.812388 #77823]  INFO -- : The division result is 7
-#<BCDD::Result::Context::Success type=:division_completed value={:number=>7}>
+#<BCDD::Context::Success type=:division_completed value={:number=>7}>
 
 Division.call(0, 2)
-##<BCDD::Result::Context::Success type=:division_completed value={:number=>0}>
+##<BCDD::Context::Success type=:division_completed value={:number=>0}>
 
 Division.call('14', 2)
-#<BCDD::Result::Context::Failure type=:invalid_arg value={:message=>"arg1 must be numeric"}>
+#<BCDD::Context::Failure type=:invalid_arg value={:message=>"arg1 must be numeric"}>
 
 Division.call(14, '2')
-#<BCDD::Result::Context::Failure type=:invalid_arg value={:message=>"arg2 must be numeric"}>
+#<BCDD::Context::Failure type=:invalid_arg value={:message=>"arg2 must be numeric"}>
 
 Division.call(14, 0)
-#<BCDD::Result::Context::Failure type=:division_by_zero value={:message=>"arg2 must not be zero"}>
+#<BCDD::Context::Failure type=:division_by_zero value={:message=>"arg2 must not be zero"}>
 ```
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
 ## `BCDD::Result.transitions`
 
-Use `BCDD::Result.transitions(&block)` to track all transitions in the same or between different operations (it works with `BCDD::Result` and `BCDD::Result::Context`). When there is a nesting of transition blocks, this mechanism will be able to correlate parent and child blocks and present the duration of all operations in milliseconds.
+Use `BCDD::Result.transitions(&block)` to track all transitions in the same or between different operations (it works with `BCDD::Result` and `BCDD::Context`). When there is a nesting of transition blocks, this mechanism will be able to correlate parent and child blocks and present the duration of all operations in milliseconds.
 
 When you wrap the creation of the result with `BCDD::Result.transitions`, the final result will expose all the transition records through the `BCDD::Result#transitions` method.
 
@@ -2196,7 +2200,7 @@ BCDD::Result.config.transitions.listener = BCDD::Result::Transitions::Listeners[
 
 ## `BCDD::Result.configuration`
 
-The `BCDD::Result.configuration` allows you to configure default behaviors for `BCDD::Result` and `BCDD::Result::Context` through a configuration block. After using it, the configuration is frozen, ensuring the expected behaviors for your application.
+The `BCDD::Result.configuration` allows you to configure default behaviors for `BCDD::Result` and `BCDD::Context` through a configuration block. After using it, the configuration is frozen, ensuring the expected behaviors for your application.
 
 > Note: You can use `BCDD::Result.configuration(freeze: false) {}` to avoid the freezing. This can be useful in tests. Please be sure to use it with caution.
 
@@ -2218,13 +2222,13 @@ Let's see what each configuration in the example above does:
 
 ### `config.addon.enable!(:given, :continue)` <!-- omit in toc -->
 
-This configuration enables the `Continue()` method for `BCDD::Result.mixin`, `BCDD::Result::Context.mixin`, `BCDD::Result::Expectation.mixin`, and `BCDD::Result::Context::Expectation.mixin`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
+This configuration enables the `Continue()` method for `BCDD::Result.mixin`, `BCDD::Context.mixin`, `BCDD::Result::Expectation.mixin`, and `BCDD::Context::Expectation.mixin`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
 
 It is also enabling the `Given()` which is already enabled by default. Link to documentation: [(1)](#add-ons) [(2)](#mixin-add-ons).
 
 ### `config.constant_alias.enable!('Result', 'BCDD::Context')` <!-- omit in toc -->
 
-This configuration make `Result` a constant alias for `BCDD::Result`, and `BCDD::Context` a constant alias for `BCDD::Result::Context`.
+This configuration make `Result` a constant alias for `BCDD::Result`, and `BCDD::Context` a constant alias for `BCDD::Context`.
 
 Link to documentations:
 - [Result alias](#bcddresult-versus-result)
@@ -2232,11 +2236,11 @@ Link to documentations:
 
 ### `config.pattern_matching.disable!(:nil_as_valid_value_checking)` <!-- omit in toc -->
 
-This configuration disables the `nil_as_valid_value_checking` for `BCDD::Result` and `BCDD::Result::Context`. Link to [documentation](#pattern-matching-support).
+This configuration disables the `nil_as_valid_value_checking` for `BCDD::Result` and `BCDD::Context`. Link to [documentation](#pattern-matching-support).
 
 ### `config.feature.disable!(:expectations)` <!-- omit in toc -->
 
-This configuration turns off the expectations for `BCDD::Result` and `BCDD::Result::Context`. The expectations are helpful in development and test environments, but they can be disabled in production environments for performance gain.
+This configuration turns off the expectations for `BCDD::Result` and `BCDD::Context`. The expectations are helpful in development and test environments, but they can be disabled in production environments for performance gain.
 
 PS: I'm using `::Rails.env.production?` to check the environment, but you can use any logic you want.
 
@@ -2258,18 +2262,18 @@ BCDD::Result.config.addon.options
 #     :enabled=>false,
 #     :affects=>[
 #       "BCDD::Result.mixin",
-#       "BCDD::Result::Context.mixin",
+#       "BCDD::Context.mixin",
 #       "BCDD::Result::Expectations.mixin",
-#       "BCDD::Result::Context::Expectations.mixin"
+#       "BCDD::Context::Expectations.mixin"
 #     ]
 #   },
 #   :given=>{
 #     :enabled=>true,
 #     :affects=>[
 #       "BCDD::Result.mixin",
-#       "BCDD::Result::Context.mixin",
+#       "BCDD::Context.mixin",
 #       "BCDD::Result::Expectations.mixin",
-#       "BCDD::Result::Context::Expectations.mixin"
+#       "BCDD::Context::Expectations.mixin"
 #     ]
 #   }
 # }
@@ -2301,7 +2305,7 @@ BCDD::Result.config.pattern_matching.options
 #     :enabled=>false,
 #     :affects=>[
 #       "BCDD::Result::Expectations,
-#       "BCDD::Result::Context::Expectations"
+#       "BCDD::Context::Expectations"
 #     ]
 #   }
 # }
@@ -2318,21 +2322,21 @@ BCDD::Result.config.feature.options
 #     :enabled=>true,
 #     :affects=>[
 #       "BCDD::Result::Expectations,
-#       "BCDD::Result::Context::Expectations"
+#       "BCDD::Context::Expectations"
 #     ]
 #   },
 #   :transitions=>{
 #     :enabled=>true,
 #     :affects=>[
 #       "BCDD::Result",
-#       "BCDD::Result::Context"
+#       "BCDD::Context"
 #     ]
 #   },
 #   :and_then!=>{
 #     :enabled=>false,
 #     :affects=>[
 #       "BCDD::Result",
-#       "BCDD::Result::Context"
+#       "BCDD::Context"
 #     ]
 #   },
 # }
@@ -2375,7 +2379,7 @@ class PlaceOrder < Micro::Case
 end
 ```
 
-To facilitate migration for users accustomed to the above approaches, `bcdd-result` includes the `BCDD::Result#and_then!`/`BCDD::Result::Context#and_then!` methods, which will invoke the method `call` of the given operation and expect it to return a `BCDD::Result`/`BCDD::Result::Context` object.
+To facilitate migration for users accustomed to the above approaches, `bcdd-result` includes the `BCDD::Result#and_then!`/`BCDD::Context#and_then!` methods, which will invoke the method `call` of the given operation and expect it to return a `BCDD::Result`/`BCDD::Context` object.
 
 ```ruby
 BCDD::Result.configure do |config|
@@ -2383,7 +2387,7 @@ BCDD::Result.configure do |config|
 end
 
 class PlaceOrder
-  include BCDD::Result::Context.mixin
+  include BCDD::Context.mixin
 
   def call(**input)
     Given(input)
@@ -2415,11 +2419,11 @@ class PlaceOrder
 end
 ```
 
-**In BCDD::Result::Context**
+**In BCDD::Context**
 
 ```ruby
 class PlaceOrder
-  include BCDD::Result::Context.mixin
+  include BCDD::Context.mixin
 
   def call(logger:, **input)
     Given(input)
@@ -2473,7 +2477,7 @@ Attention: to ensure the correct behavior, do not mix `#and_then` and `#and_then
 
 #### Analysis: Why is `#and_then` the antidote/standard?
 
-The `BCDD::Result#and_then`/`BCDD::Result::Context#and_then` methods diverge from the above approach by requiring explicit invocation and mapping of the outcomes at each process step. This approach has the following advantages:
+The `BCDD::Result#and_then`/`BCDD::Context#and_then` methods diverge from the above approach by requiring explicit invocation and mapping of the outcomes at each process step. This approach has the following advantages:
 
 - **Clarity:** The input/output relationship between the steps is apparent and highly understandable.
 
@@ -2483,7 +2487,7 @@ See this example to understand what your code should look like:
 
 ```ruby
 class PlaceOrder
-  include BCDD::Result::Context.mixin(config: { addon: { continue: true } })
+  include BCDD::Context.mixin(config: { addon: { continue: true } })
 
   def call(**input)
     Given(input)

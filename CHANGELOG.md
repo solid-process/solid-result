@@ -45,6 +45,8 @@
 
 ### Changed
 
+- Transform `BCDD::Result::Context` into `BCDD::Context`. But a constant alias was added to keep the old name. You can use `BCDD::Result::Context` or `BCDD::Context` to access the same class.
+
 - **(BREAKING)** Replace trasitions metadata `:ids_tree`, and `:ids_matrix` with `:ids` property. This property is a hash with the following keys:
   - `:tree`, a graph/tree representation of the transitions ids.
   - `:level_parent`, a hash with the level (depth) of each transition and its parent id.
