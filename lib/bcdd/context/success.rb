@@ -8,12 +8,12 @@ class BCDD::Context
   class Success < self
     include ::BCDD::Success
 
-    FetchValues = ->(acc_values, keys) do
-      fetched_values = acc_values.fetch_values(*keys)
+    FetchValues = ->(memo_values, keys) do
+      fetched_values = memo_values.fetch_values(*keys)
 
       keys.zip(fetched_values).to_h
     rescue ::KeyError => e
-      message = "#{e.message}. Available to expose: #{acc_values.keys.map(&:inspect).join(', ')}"
+      message = "#{e.message}. Available to expose: #{memo_values.keys.map(&:inspect).join(', ')}"
 
       raise Error::InvalidExposure, message
     end
@@ -25,9 +25,9 @@ class BCDD::Context
 
       EventLogs.tracking.reset_and_then!
 
-      acc_values = acc.merge(value)
+      memo_values = memo.merge(value)
 
-      value_to_expose = FetchValues.call(acc_values, keys)
+      value_to_expose = FetchValues.call(memo_values, keys)
 
       expectations = type_checker.expectations
 

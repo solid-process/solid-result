@@ -3,7 +3,7 @@ class BCDD::Context < BCDD::Result
 
   SourceMethodArity: ^(Method) -> Integer
 
-  attr_reader acc: Hash[Symbol, untyped]
+  attr_reader memo: Hash[Symbol, untyped]
 
   def initialize: (
     type: Symbol,
