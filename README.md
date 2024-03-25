@@ -64,6 +64,8 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
   - [`BCDD::Context`](#bcddcontext)
     - [Defining successes and failures](#defining-successes-and-failures)
     - [Hash methods](#hash-methods)
+    - [`BCDD::Context.mixin`](#bcddcontextmixin)
+      - [Class example (Instance Methods)](#class-example-instance-methods-1)
       - [`and_expose`](#and_expose)
       - [Module example (Singleton Methods)](#module-example-singleton-methods-1)
     - [`BCDD::Context::Expectations`](#bcddcontextexpectations)
@@ -1456,10 +1458,6 @@ result.fetch_values(:a, :b) # [1, 2]
 ```
 
 These methods are available for `BCDD::Context::Success` and `BCDD::Context::Failure` instances.
-
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
-
-```ruby
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
