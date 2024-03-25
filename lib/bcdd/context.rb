@@ -37,6 +37,30 @@ class BCDD::Context < BCDD::Result
     super(source, injected_value, _call: _call)
   end
 
+  def [](key)
+    value[key]
+  end
+
+  def dig(...)
+    value.dig(...)
+  end
+
+  def fetch(...)
+    value.fetch(...)
+  end
+
+  def slice(...)
+    value.slice(...)
+  end
+
+  def values_at(...)
+    value.values_at(...)
+  end
+
+  def fetch_values(...)
+    value.fetch_values(...)
+  end
+
   protected
 
   attr_reader :memo
