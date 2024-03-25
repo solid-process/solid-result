@@ -63,9 +63,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`BCDD::Result::Expectations.mixin` add-ons](#bcddresultexpectationsmixin-add-ons)
   - [`BCDD::Context`](#bcddcontext)
     - [Defining successes and failures](#defining-successes-and-failures)
-    - [Constant aliases](#constant-aliases)
-    - [`BCDD::Context.mixin`](#bcddcontextmixin)
-      - [Class example (Instance Methods)](#class-example-instance-methods-1)
+    - [Hash methods](#hash-methods)
       - [`and_expose`](#and_expose)
       - [Module example (Singleton Methods)](#module-example-singleton-methods-1)
     - [`BCDD::Context::Expectations`](#bcddcontextexpectations)
@@ -1436,19 +1434,32 @@ BCDD::Context::Success(:ok, **{ message: 'hashes can be converted to keyword arg
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 
-#### Constant aliases
+#### Hash methods
 
-You can configure `Context` or `BCDD::Context` as an alias for `BCDD::Context`. This is helpful to define a standard way to avoid the full constant name/path in your code.
+The `BCDD::Context` only accepts hashes as its values. Because of this, its instances have some Hash's methods to query/access the values. The available methods are:
+
+- `#slice` to extract only the desired keys.
+- `#[]`, `#dig`, `#fetch` to access the values.
+- `#values_at` and `#fetch_values` to get the values of the desired keys.
 
 ```ruby
-BCDD::Result.configuration do |config|
-  config.context_alias.enable!('BCDD::Context')
+result = BCDD::Context::Success(:ok, a: 1, b: 2, c: {d: 4})
 
-  # or
+result[:a]         # 1
+result.fetch(:a)   # 1
+result.dig(:c, :d) # 4
 
-  config.context_alias.enable!('Context')
-end
+result.slice(:a, :b) # {:a=>1, :b=>2}
+
+result.values_at(:a, :b) # [1, 2]
+result.fetch_values(:a, :b) # [1, 2]
 ```
+
+These methods are available for `BCDD::Context::Success` and `BCDD::Context::Failure` instances.
+
+<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+
+```ruby
 
 <p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
 

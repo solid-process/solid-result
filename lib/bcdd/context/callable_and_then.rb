@@ -28,7 +28,7 @@ module BCDD
       end
 
       def self.ensure_result_object(source, value, result)
-        return result.tap { result.send(:acc).then { _1.merge!(value.merge(_1)) } } if result.is_a?(Context)
+        return result.tap { result.send(:memo).then { _1.merge!(value.merge(_1)) } } if result.is_a?(Context)
 
         raise Result::Error::UnexpectedOutcome.build(outcome: result, origin: source,
                                                      expected: Context::EXPECTED_OUTCOME)
