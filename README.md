@@ -1,15 +1,15 @@
 <p align="center">
-  <h1 align="center" id="-bcddresult">🔀 BCDD::Result</h1>
+  <h1 align="center" id="-solidresult">🔀 Solid::Result</h1>
   <p align="center"><i>Unleash a pragmatic and observable use of Result Pattern and Railway-Oriented Programming in Ruby.</i></p>
   <p align="center">
     <img src="https://img.shields.io/badge/Ruby%20%3E%3D%202.7%2C%20%3C%3D%20Head-ruby.svg?colorA=444&colorB=333" alt="Ruby">
-    <a href="https://rubygems.org/gems/bcdd-result"><img src="https://badge.fury.io/rb/bcdd-result.svg" alt="bcdd-result gem version" height="18"></a>
-    <a href="https://codeclimate.com/github/B-CDD/result/maintainability"><img src="https://api.codeclimate.com/v1/badges/aa8360f8f012d7dedd62/maintainability" /></a>
-    <a href="https://codeclimate.com/github/B-CDD/result/test_coverage"><img src="https://api.codeclimate.com/v1/badges/aa8360f8f012d7dedd62/test_coverage" /></a>
+    <a href="https://rubygems.org/gems/solid-result"><img src="https://badge.fury.io/rb/solid-result.svg" alt="solid-result gem version" height="18"></a>
+    <a href="https://codeclimate.com/github/solid-process/solid-result/maintainability"><img src="https://api.codeclimate.com/v1/badges/aa8360f8f012d7dedd62/maintainability" /></a>
+    <a href="https://codeclimate.com/github/solid-process/solid-result/test_coverage"><img src="https://api.codeclimate.com/v1/badges/aa8360f8f012d7dedd62/test_coverage" /></a>
   </p>
 </p>
 
-It's a general-purpose result monad that allows you to create objects representing a success (`BCDD::Result::Success`) or failure (`BCDD::Result::Failure`).
+It's a general-purpose result monad that allows you to create objects representing a success (`Solid::Result::Success`) or failure (`Solid::Result::Failure`).
 
 **What problem does it solve?**
 
@@ -22,7 +22,7 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
 - [Supported Ruby](#supported-ruby)
 - [Installation](#installation)
 - [Usage](#usage)
-    - [`BCDD::Result` *versus* `Result`](#bcddresult-versus-result)
+    - [`Solid::Result` *versus* `Result`](#solidresult-versus-result)
 - [Reference](#reference)
   - [Basic methods](#basic-methods)
     - [Checking types with `result.is?` or `method missing`](#checking-types-with-resultis-or-method-missing)
@@ -40,13 +40,13 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
     - [`result.data`](#resultdata)
   - [Railway Oriented Programming](#railway-oriented-programming)
     - [`result.and_then`](#resultand_then)
-    - [`BCDD::Result.mixin`](#bcddresultmixin)
+    - [`Solid::Result.mixin`](#solidresultmixin)
       - [Class example (Instance Methods)](#class-example-instance-methods)
       - [Module example (Singleton Methods)](#module-example-singleton-methods)
       - [Important Requirement](#important-requirement)
       - [Dependency Injection](#dependency-injection)
       - [Add-ons](#add-ons)
-  - [`BCDD::Result::Expectations`](#bcddresultexpectations)
+  - [`Solid::Result::Expectations`](#solidresultexpectations)
     - [Standalone *versus* Mixin mode](#standalone-versus-mixin-mode)
     - [Type checking - Result Hooks](#type-checking---result-hooks)
       - [`#success?` and `#failure?`](#success-and-failure)
@@ -60,34 +60,34 @@ Use it to enable the [Railway Oriented Programming](https://fsharpforfunandprofi
       - [Success()](#success)
       - [Failure()](#failure)
       - [Pattern Matching Support](#pattern-matching-support)
-    - [`BCDD::Result::Expectations.mixin` add-ons](#bcddresultexpectationsmixin-add-ons)
-  - [`BCDD::Context`](#bcddcontext)
+    - [`Solid::Result::Expectations.mixin` add-ons](#solidresultexpectationsmixin-add-ons)
+  - [`Solid::Output`](#solidoutput)
     - [Defining successes and failures](#defining-successes-and-failures)
     - [Hash methods](#hash-methods)
-    - [`BCDD::Context.mixin`](#bcddcontextmixin)
+    - [`Solid::Output.mixin`](#solidoutputmixin)
       - [Class example (Instance Methods)](#class-example-instance-methods-1)
       - [`and_expose`](#and_expose)
       - [Module example (Singleton Methods)](#module-example-singleton-methods-1)
-    - [`BCDD::Context::Expectations`](#bcddcontextexpectations)
+    - [`Solid::Output::Expectations`](#solidoutputexpectations)
     - [Mixin add-ons](#mixin-add-ons)
 - [Pattern Matching](#pattern-matching)
-  - [`BCDD::Result`](#bcddresult)
+  - [`Solid::Result`](#solidresult)
     - [`Array`/`Find` patterns](#arrayfind-patterns)
     - [`Hash` patterns](#hash-patterns)
-  - [`BCDD::Context`](#bcddcontext-1)
+  - [`Solid::Output`](#solidoutput-1)
     - [`Array`/`Find` patterns](#arrayfind-patterns-1)
     - [`Hash` patterns](#hash-patterns-1)
   - [How to pattern match without the concept of success and failure](#how-to-pattern-match-without-the-concept-of-success-and-failure)
-- [`BCDD::Result.event_logs`](#bcddresultevent_logs)
+- [`Solid::Result.event_logs`](#solidresultevent_logs)
   - [`metadata: {ids:}`](#metadata-ids)
   - [Configuration](#configuration)
     - [Turning on/off](#turning-onoff)
     - [Setting a `trace_id` fetcher](#setting-a-trace_id-fetcher)
     - [Setting a `listener`](#setting-a-listener)
     - [Setting multiple `listeners`](#setting-multiple-listeners)
-- [`BCDD::Result.configuration`](#bcddresultconfiguration)
-  - [`BCDD::Result.config`](#bcddresultconfig)
-- [`BCDD::Result#and_then!`](#bcddresultand_then)
+- [`Solid::Result.configuration`](#solidresultconfiguration)
+  - [`Solid::Result.config`](#solidresultconfig)
+- [`Solid::Result#and_then!`](#solidresultand_then)
     - [Dependency Injection](#dependency-injection-1)
     - [Configuration](#configuration-1)
     - [Analysis: Why is `and_then!` an Anti-pattern?](#analysis-why-is-and_then-an-anti-pattern)
@@ -112,7 +112,7 @@ Version | 2.7 | 3.0 | 3.1 | 3.2 | 3.3 | Head
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'bcdd-result'
+gem 'solid-result'
 ```
 
 And then execute:
@@ -121,73 +121,73 @@ And then execute:
 
 If bundler is not being used to manage dependencies, install the gem by executing:
 
-    $ gem install bcdd-result
+    $ gem install solid-result
 
 And require it in your code:
 
-    require 'bcdd/result'
+    require 'solid/result'
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ## Usage
 
 To create a result, you must define a type (symbol) and its value (any kind of object). e.g.,
 
 ```ruby
-BCDD::Result::Success(:ok, :1)           #
-                                         # The value can be any kind of object
-BCDD::Result::Failure(:err, 'the value') #
+Solid::Result::Success(:ok, :1)           #
+                                          # The value can be any kind of object
+Solid::Result::Failure(:err, 'the value') #
 ```
 
 The reason for defining a `type` is that it is very common for a method/operation to return different types of successes or failures. Because of this, the `type` will always be required. e,g.,
 
 ```ruby
-BCDD::Result::Success(:ok)  #
-                            # The type is mandatory and the value is optional
-BCDD::Result::Failure(:err) #
+Solid::Result::Success(:ok)  #
+                             # The type is mandatory and the value is optional
+Solid::Result::Failure(:err) #
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
-#### `BCDD::Result` *versus* `Result`
+#### `Solid::Result` *versus* `Result`
 
-This gem provides a way to create constant aliases for `BCDD::Result` and other classes/modules.
+This gem provides a way to create constant aliases for `Solid::Result` and other classes/modules.
 
-To enable it, you must call the `BCDD::Result.configuration` method and pass a block to it. You can turn the aliases you want on/off in this block.
+To enable it, you must call the `Solid::Result.configuration` method and pass a block to it. You can turn the aliases you want on/off in this block.
 
 ```ruby
-BCDD::Result.configuration do |config|
+Solid::Result.configuration do |config|
   config.constant_alias.enable!('Result')
 end
 ```
 
-So, instead of using `BCDD::Result` everywhere, you can use `Result` as an alias/shortcut.
+So, instead of using `Solid::Result` everywhere, you can use `Result` as an alias/shortcut.
 
 ```ruby
-Result::Success(:ok) # <BCDD::Result::Success type=:ok value=nil>
+Result::Success(:ok) # <Solid::Result::Success type=:ok value=nil>
 
-Result::Failure(:err) # <BCDD::Result::Failure type=:err value=nil>
+Result::Failure(:err) # <Solid::Result::Failure type=:err value=nil>
 ```
 
-If you have enabled constant aliasing, all examples in this README that use `BCDD::Result` can be implemented using `Result`.
+If you have enabled constant aliasing, all examples in this README that use `Solid::Result` can be implemented using `Result`.
 
-There are other aliases and configurations available. Check the [BCDD::Result.configuration]() section for more information.
+There are other aliases and configurations available. Check the [Solid::Result.configuration]() section for more information.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ## Reference
 
 ### Basic methods
 
-Both `BCDD::Result::Success` and `BCDD::Result::Failure` are composed of the same methods. Look at the basic ones:
+Both `Solid::Result::Success` and `Solid::Result::Failure` are composed of the same methods. Look at the basic ones:
 
-**BCDD::Result::Success**
+**Solid::Result::Success**
 
 ```ruby
 ################
 # With a value #
 ################
-result = BCDD::Result::Success(:ok, my: 'value')
+result = Solid::Result::Success(:ok, my: 'value')
 
 result.success?   # true
 result.failure?   # false
@@ -198,7 +198,7 @@ result.value      # {:my => "value"}
 ###################
 # Without a value #
 ###################
-result = BCDD::Result::Success(:yes)
+result = Solid::Result::Success(:yes)
 
 result.success?    # true
 result.failure?    # false
@@ -207,13 +207,13 @@ result.type        # :yes
 result.value       # nil
 ```
 
-**BCDD::Result::Failure**
+**Solid::Result::Failure**
 
 ```ruby
 ################
 # With a value #
 ################
-result = BCDD::Result::Failure(:err, 'my_value')
+result = Solid::Result::Failure(:err, 'my_value')
 
 result.success?    # false
 result.failure?    # true
@@ -224,7 +224,7 @@ result.value       # "my_value"
 ###################
 # Without a value #
 ###################
-result = BCDD::Result::Failure(:no)
+result = Solid::Result::Failure(:no)
 
 result.success?   # false
 result.failure?   # true
@@ -235,34 +235,34 @@ result.value      # nil
 
 In both cases, the `type` must be a symbol, and the `value` can be any kind of object.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Checking types with `result.is?` or `method missing`
 
 Beyond the `type?` method, you can also use the `is?` method to check the result type. If you want to check the type directly, you can write the type using a method that ends with a question mark.
 
 ```ruby
-result = BCDD::Result::Success(:ok)
+result = Solid::Result::Success(:ok)
 
 result.is?(:ok) # true
 result.ok?      # true
 
-result = BCDD::Result::Failure(:err)
+result = Solid::Result::Failure(:err)
 
 result.is?(:err) # true
 result.err?      # true
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Checking types with `result.success?` or `result.failure?`
 
-`BCDD::Result#success?` and `BCDD::Result#failure?` are methods that allow you to check if the result is a success or a failure.
+`Solid::Result#success?` and `Solid::Result#failure?` are methods that allow you to check if the result is a success or a failure.
 
 You can also check the result type by passing an argument to it. For example, `result.success?(:ok)` will check if the result is a success and if the type is `:ok`.
 
 ```ruby
-result = BCDD::Result::Success(:ok)
+result = Solid::Result::Success(:ok)
 
 result.success?(:ok)
 
@@ -271,10 +271,10 @@ result.success?(:ok)
 result.success? && result.type == :ok
 ```
 
-The same is valid for `BCDD::Result#failure?`.
+The same is valid for `Solid::Result#failure?`.
 
 ```ruby
-result = BCDD::Result::Failure(:err)
+result = Solid::Result::Failure(:err)
 
 result.failure?(:err)
 
@@ -283,7 +283,7 @@ result.failure?(:err)
 result.failure? && result.type == :err
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ### Result Hooks
 
@@ -292,20 +292,20 @@ To demonstrate their use, I will implement a method that can divide two numbers.
 
 ```ruby
 def divide(arg1, arg2)
-  arg1.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg1 must be numeric')
-  arg2.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg2 must be numeric')
+  arg1.is_a?(::Numeric) or return Solid::Result::Failure(:invalid_arg, 'arg1 must be numeric')
+  arg2.is_a?(::Numeric) or return Solid::Result::Failure(:invalid_arg, 'arg2 must be numeric')
 
-  return BCDD::Result::Failure(:division_by_zero, 'arg2 must not be zero') if arg2.zero?
+  return Solid::Result::Failure(:division_by_zero, 'arg2 must not be zero') if arg2.zero?
 
-  BCDD::Result::Success(:division_completed, arg1 / arg2)
+  Solid::Result::Success(:division_completed, arg1 / arg2)
 end
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.on`
 
-When you use `BCDD::Result#on`, the block will be executed only when the type matches the result type.
+When you use `Solid::Result#on`, the block will be executed only when the type matches the result type.
 
 However, even if the block is executed, the method will always return the result itself.
 
@@ -313,7 +313,7 @@ The value of the result will be available as the first argument of the block.
 
 ```ruby
 result = divide(nil, 2)
-#<BCDD::Result::Failure type=:invalid_arg data='arg1 must be numeric'>
+#<Solid::Result::Failure type=:invalid_arg data='arg1 must be numeric'>
 
 output =
   result
@@ -340,15 +340,15 @@ result.object_id == output.object_id # true
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.on_type`
 
-`BCDD::Result#on_type` is an alias of `BCDD::Result#on`.
+`Solid::Result#on_type` is an alias of `Solid::Result#on`.
 
 ```ruby
 result = divide(nil, 2)
-#<BCDD::Result::Failure type=:invalid_arg data='arg1 must be numeric'>
+#<Solid::Result::Failure type=:invalid_arg data='arg1 must be numeric'>
 
 output =
   result
@@ -362,11 +362,11 @@ result.object_id == output.object_id # true
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.on_success`
 
-The `BCDD::Result#on_success` method is quite similar to the `BCDD::Result#on` hook, but with a few key differences:
+The `Solid::Result#on_success` method is quite similar to the `Solid::Result#on` hook, but with a few key differences:
 
 1. It will only execute the block of code if the result is a success.
 2. If the type declaration is not included, the method will execute the block for any successful result, regardless of its type.
@@ -389,7 +389,7 @@ divide(4, 4).on_failure { |error| puts error }
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.on_failure`
 
@@ -416,11 +416,11 @@ divide(4, 0).on_success { |number| puts number }
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.on_unknown`
 
-`BCDD::Result#on_unknown` will execute the block when no other hook (`#on`, `#on_type`, `#on_failure`, `#on_success`) has been executed.
+`Solid::Result#on_unknown` will execute the block when no other hook (`#on`, `#on_type`, `#on_failure`, `#on_success`) has been executed.
 
 Regardless of the block being executed, the method will always return the result itself.
 
@@ -437,7 +437,7 @@ divide(4, 2)
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### `result.handle`
 
@@ -487,13 +487,13 @@ end
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ### Result Value
 
-To access the result value, you can simply call `BCDD::Result#value`.
+To access the result value, you can simply call `Solid::Result#value`.
 
-However, there may be instances where you need to retrieve the value of a successful result or a default value if the result is a failure. In such cases, you can make use of `BCDD::Result#value_or`.
+However, there may be instances where you need to retrieve the value of a successful result or a default value if the result is a failure. In such cases, you can make use of `Solid::Result#value_or`.
 
 #### `result.value_or`
 
@@ -501,12 +501,12 @@ However, there may be instances where you need to retrieve the value of a succes
 
 ```ruby
 def divide(arg1, arg2)
-  arg1.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg)
-  arg2.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg)
+  arg1.is_a?(::Numeric) or return Solid::Result::Failure(:invalid_arg)
+  arg2.is_a?(::Numeric) or return Solid::Result::Failure(:invalid_arg)
 
-  return BCDD::Result::Failure(:division_by_zero) if arg2.zero?
+  return Solid::Result::Failure(:division_by_zero) if arg2.zero?
 
-  BCDD::Result::Success(:division_completed, arg1 / arg2)
+  Solid::Result::Success(:division_completed, arg1 / arg2)
 end
 
 # When the result is success
@@ -520,22 +520,22 @@ divide(100, 0).value_or { 0 } # 0
 
 *PS: The `divide()` implementation is [here](#result-hooks).*
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ### Result Data
 
 #### `result.data`
 
-The `BCDD::Result#data` exposes the result attributes (kind, type, value) directly and as a hash (`to_h`/`to_hash`) and array (`to_a`/`to_ary`).
+The `Solid::Result#data` exposes the result attributes (kind, type, value) directly and as a hash (`to_h`/`to_hash`) and array (`to_a`/`to_ary`).
 
 This is helpful if you need to access the result attributes generically or want to use Ruby features like splat (`*`) and double splat (`**`) operators.
 
 See the examples below to understand how to use it.
 
 ```ruby
-result = BCDD::Result::Success(:ok, 1)
+result = Solid::Result::Success(:ok, 1)
 
-success_data = result.data # #<BCDD::Result::Data kind=:success type=:ok value=1>
+success_data = result.data # #<Solid::Result::Data kind=:success type=:ok value=1>
 
 success_data.kind  # :success
 success_data.type  # :ok
@@ -563,7 +563,7 @@ print_to_hash(**success_data) # [:success, :ok, 1]
 
 > **NOTE:** The example above uses a success result, but the same is valid for a failure result.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ### Railway Oriented Programming
 
@@ -589,20 +589,20 @@ module Divide
   private
 
   def validate_numbers(arg1, arg2)
-    arg1.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg1 must be numeric')
-    arg2.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg2 must be numeric')
+    arg1.is_a?(::Numeric) or return Solid::Result::Failure(:invalid_arg, 'arg1 must be numeric')
+    arg2.is_a?(::Numeric) or return Solid::Result::Failure(:invalid_arg, 'arg2 must be numeric')
 
-    BCDD::Result::Success(:ok, [arg1, arg2])
+    Solid::Result::Success(:ok, [arg1, arg2])
   end
 
   def validate_nonzero(numbers)
-    return BCDD::Result::Success(:ok, numbers) if numbers.last.nonzero?
+    return Solid::Result::Success(:ok, numbers) if numbers.last.nonzero?
 
-    BCDD::Result::Failure(:division_by_zero, 'arg2 must not be zero')
+    Solid::Result::Failure(:division_by_zero, 'arg2 must not be zero')
   end
 
   def divide((number1, number2))
-    BCDD::Result::Success(:division_completed, number1 / number2)
+    Solid::Result::Success(:division_completed, number1 / number2)
   end
 end
 ```
@@ -611,25 +611,25 @@ Example of outputs:
 
 ```ruby
 Divide.call('4', 2)
-#<BCDD::Result::Failure type=:invalid_arg data="arg1 must be numeric">
+#<Solid::Result::Failure type=:invalid_arg data="arg1 must be numeric">
 
 Divide.call(2, '2')
-#<BCDD::Result::Failure type=:invalid_arg data="arg2 must be numeric">
+#<Solid::Result::Failure type=:invalid_arg data="arg2 must be numeric">
 
 Divide.call(2, 0)
-#<BCDD::Result::Failure type=:division_by_zero data="arg2 must not be zero">
+#<Solid::Result::Failure type=:division_by_zero data="arg2 must not be zero">
 
 Divide.call(2, 2)
-#<BCDD::Result::Success type=:division_completed data=1>
+#<Solid::Result::Success type=:division_completed data=1>
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
-#### `BCDD::Result.mixin`
+#### `Solid::Result.mixin`
 
 This method generates a module that any object can include or extend. It adds two methods to the target object: `Success()` and `Failure()`.
 
-The main difference between these methods and `BCDD::Result::Success()`/`BCDD::Result::Failure()` is that the former will utilize the target object (which has received the include/extend) as the result's source.
+The main difference between these methods and `Solid::Result::Success()`/`Solid::Result::Failure()` is that the former will utilize the target object (which has received the include/extend) as the result's source.
 
 Because the result has a source, the `#and_then` method can call methods from it.
 
@@ -637,7 +637,7 @@ Because the result has a source, the `#and_then` method can call methods from it
 
 ```ruby
 class Divide
-  include BCDD::Result.mixin
+  include Solid::Result.mixin
 
   attr_reader :arg1, :arg2
 
@@ -674,18 +674,18 @@ class Divide
   end
 end
 
-Divide.new(4, 2).call #<BCDD::Result::Success type=:division_completed value=2>
+Divide.new(4, 2).call #<Solid::Result::Success type=:division_completed value=2>
 
-Divide.new(4, 0).call   #<BCDD::Result::Failure type=:division_by_zero value="arg2 must not be zero">
-Divide.new('4', 2).call #<BCDD::Result::Failure type=:invalid_arg value="arg1 must be numeric">
-Divide.new(4, '2').call #<BCDD::Result::Failure type=:invalid_arg value="arg2 must be numeric">
+Divide.new(4, 0).call   #<Solid::Result::Failure type=:division_by_zero value="arg2 must not be zero">
+Divide.new('4', 2).call #<Solid::Result::Failure type=:invalid_arg value="arg1 must be numeric">
+Divide.new(4, '2').call #<Solid::Result::Failure type=:invalid_arg value="arg2 must be numeric">
 ```
 
 ##### Module example (Singleton Methods)
 
 ```ruby
 module Divide
-  extend self, BCDD::Result.mixin
+  extend self, Solid::Result.mixin
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
@@ -713,26 +713,26 @@ module Divide
   end
 end
 
-Divide.call(4, 2) #<BCDD::Result::Success type=:division_completed value=2>
+Divide.call(4, 2) #<Solid::Result::Success type=:division_completed value=2>
 
-Divide.call(4, 0)   #<BCDD::Result::Failure type=:division_by_zero value="arg2 must not be zero">
-Divide.call('4', 2) #<BCDD::Result::Failure type=:invalid_arg value="arg1 must be numeric">
-Divide.call(4, '2') #<BCDD::Result::Failure type=:invalid_arg value="arg2 must be numeric">
+Divide.call(4, 0)   #<Solid::Result::Failure type=:division_by_zero value="arg2 must not be zero">
+Divide.call('4', 2) #<Solid::Result::Failure type=:invalid_arg value="arg1 must be numeric">
+Divide.call(4, '2') #<Solid::Result::Failure type=:invalid_arg value="arg2 must be numeric">
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ##### Important Requirement
 
 To use the `#and_then` method to call methods, they must use `Success()` and `Failure()` to produce the results.
 
-If you try to use `BCDD::Result::Success()`/`BCDD::Result::Failure()`, or results from another `BCDD::Result.mixin` instance with `#and_then`, it will raise an error because the sources are different.
+If you try to use `Solid::Result::Success()`/`Solid::Result::Failure()`, or results from another `Solid::Result.mixin` instance with `#and_then`, it will raise an error because the sources are different.
 
 **Note:** You can still use the block syntax, but all the results must be produced by the source's `Success()` and `Failure()` methods.
 
 ```ruby
 module ValidateNonzero
-  extend self, BCDD::Result.mixin
+  extend self, Solid::Result.mixin
 
   def call(numbers)
     return Success(:ok, numbers) unless numbers.last.zero?
@@ -742,7 +742,7 @@ module ValidateNonzero
 end
 
 module Divide
-  extend self, BCDD::Result.mixin
+  extend self, Solid::Result.mixin
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
@@ -774,17 +774,17 @@ Look at the error produced by the code above:
 ```ruby
 Divide.call(2, 0)
 
-# You cannot call #and_then and return a result that does not belong to the same source! (BCDD::Result::Error::InvalidResultSource)
+# You cannot call #and_then and return a result that does not belong to the same source! (Solid::Result::Error::InvalidResultSource)
 # Expected source: Divide
 # Given source: ValidateNonzero
-# Given result: #<BCDD::Result::Failure type=:division_by_zero value="arg2 must not be zero">
+# Given result: #<Solid::Result::Failure type=:division_by_zero value="arg2 must not be zero">
 ```
 
 In order to fix this, you must handle the result produced by `ValidateNonzero.call()` and return a result that belongs to the same source.
 
 ```ruby
 module ValidateNonzero
-  extend self, BCDD::Result.mixin
+  extend self, Solid::Result.mixin
 
   def call(numbers)
     return Success(:ok, numbers) unless numbers.last.zero?
@@ -794,7 +794,7 @@ module ValidateNonzero
 end
 
 module Divide
-  extend self, BCDD::Result.mixin
+  extend self, Solid::Result.mixin
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
@@ -832,21 +832,21 @@ Look at the output of the code above:
 ```ruby
 Divide.call(2, 0)
 
-#<BCDD::Result::Failure type=:division_by_zero value="arg2 must not be zero">
+#<Solid::Result::Failure type=:division_by_zero value="arg2 must not be zero">
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ##### Dependency Injection
 
-The `BCDD::Result#and_then` accepts a second argument that will be used to share a value with the source's method.
+The `Solid::Result#and_then` accepts a second argument that will be used to share a value with the source's method.
 To receive this argument, the source's method must have an arity of two, where the first argument will be the result value and the second will be the injected value.
 
 ```ruby
 require 'logger'
 
 module Divide
-  extend self, BCDD::Result.mixin
+  extend self, Solid::Result.mixin
 
   def call(arg1, arg2, logger: ::Logger.new(STDOUT))
     validate_numbers(arg1, arg2)
@@ -887,23 +887,23 @@ end
 Divide.call(4, 2)
 # I, [2023-10-11T00:08:05.546237 #18139]  INFO -- : The numbers are valid
 # I, [2023-10-11T00:08:05.546337 #18139]  INFO -- : The division result is 2
-#=> #<BCDD::Result::Success type=:division_completed value=2>
+#=> #<Solid::Result::Success type=:division_completed value=2>
 
 Divide.call(4, 2, logger: Logger.new(IO::NULL))
-#=> #<BCDD::Result::Success type=:division_completed value=2>
+#=> #<Solid::Result::Success type=:division_completed value=2>
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ##### Add-ons
 
-The `BCDD::Result.mixin` also accepts the `config:` argument. It is a hash that will be used to define custom behaviors for the mixin.
+The `Solid::Result.mixin` also accepts the `config:` argument. It is a hash that will be used to define custom behaviors for the mixin.
 
 **given**
 
 This addon is enabled by default. It will create the `Given(value)` method. Use it to add a value to the result chain and invoke the next step (through `and_then`).
 
-You can turn it off by passing `given: false` to the `config:` argument or using the `BCDD::Result.configuration`.
+You can turn it off by passing `given: false` to the `config:` argument or using the `Solid::Result.configuration`.
 
 **continue**
 
@@ -915,7 +915,7 @@ In this example below, the `validate_nonzero` will return a `Success(:division_c
 
 ```ruby
 module Divide
-  extend self, BCDD::Result.mixin(config: { addon: { continue: true } })
+  extend self, Solid::Result.mixin(config: { addon: { continue: true } })
 
   def call(arg1, arg2)
     Given([arg1, arg2])
@@ -949,11 +949,11 @@ module Divide
 end
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
-### `BCDD::Result::Expectations`
+### `Solid::Result::Expectations`
 
-This feature lets you define contracts for your results' types and values. There are two ways to use it: the standalone (`BCDD::Result::Expectations.new`) and the mixin (`BCDD::Result::Expectations.mixin`) mode.
+This feature lets you define contracts for your results' types and values. There are two ways to use it: the standalone (`Solid::Result::Expectations.new`) and the mixin (`Solid::Result::Expectations.mixin`) mode.
 
 It was designed to ensure all the aspects of the result's type and value. So, an error will be raised if you try to create or handle a result with an unexpected type or value.
 
@@ -963,7 +963,7 @@ The _**standalone mode**_ creates an object that knows how to produce and valida
 
 ```ruby
 module Divide
-  Result = BCDD::Result::Expectations.new(
+  Result = Solid::Result::Expectations.new(
     success: %i[numbers division_completed],
     failure: %i[invalid_arg division_by_zero]
   )
@@ -986,18 +986,18 @@ Look what happens if you try to create a result without one of the expected type
 ```ruby
 Divide::Result::Success(:ok)
 # type :ok is not allowed. Allowed types: :numbers, :division_completed
-# (BCDD::Result::Contract::Error::UnexpectedType)
+# (Solid::Result::Contract::Error::UnexpectedType)
 
 Divide::Result::Failure(:err)
 # type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero
-# (BCDD::Result::Contract::Error::UnexpectedType)
+# (Solid::Result::Contract::Error::UnexpectedType)
 ```
 
-The _**mixin mode**_ is similar to `BCDD::Result::Mixin`, but it also defines the expectations for the result's types and values.
+The _**mixin mode**_ is similar to `Solid::Result::Mixin`, but it also defines the expectations for the result's types and values.
 
 ```ruby
 class Divide
-  include BCDD::Result::Expectations.mixin(
+  include Solid::Result::Expectations.mixin(
     success: %i[numbers division_completed],
     failure: %i[invalid_arg division_by_zero]
   )
@@ -1036,15 +1036,15 @@ This mode also defines an `Result` constant to be used inside and outside the mo
 
 Now that you know the two modes, let's understand how expectations can be beneficial and powerful for defining contracts.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Type checking - Result Hooks
 
-The `BCDD::Result::Expectations` will check if the type of the result is valid. This checking will be performed in all methods that depend on the result’s type, such as `#success?`, `#failure?`, `#on`, `#on_type`, `#on_success`, `#on_failure`, and `#handle`.
+The `Solid::Result::Expectations` will check if the type of the result is valid. This checking will be performed in all methods that depend on the result’s type, such as `#success?`, `#failure?`, `#on`, `#on_type`, `#on_success`, `#on_failure`, and `#handle`.
 
 ##### `#success?` and `#failure?`
 
-When checking whether a result is a success or failure, `BCDD::Result::Expectations` will also verify if the result type is valid/expected. In case of an invalid type, an error will be raised.
+When checking whether a result is a success or failure, `Solid::Result::Expectations` will also verify if the result type is valid/expected. In case of an invalid type, an error will be raised.
 
 **Success example:**
 
@@ -1057,7 +1057,7 @@ result.success?(:division_completed) # true
 
 result.success?(:ok)
 # type :ok is not allowed. Allowed types: :numbers, :division_completed
-# (BCDD::Result::Contract::Error::UnexpectedType)
+# (Solid::Result::Contract::Error::UnexpectedType)
 ```
 
 **Failure example:**
@@ -1071,16 +1071,16 @@ result.failure?(:division_by_zero) # false
 
 result.failure?(:err)
 # type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero
-# (BCDD::Result::Contract::Error::UnexpectedType)
+# (Solid::Result::Contract::Error::UnexpectedType)
 ```
 
 *PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ##### `#on` and `#on_type`
 
-If you use `#on` or `#on_type` to execute a block, `BCDD::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
+If you use `#on` or `#on_type` to execute a block, `Solid::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
 
 ```ruby
 result = Divide.new.call(10, 2)
@@ -1093,16 +1093,16 @@ result
 
 result.on(:number) { |_| :this_type_does_not_exist }
 # type :number is not allowed. Allowed types: :numbers, :division_completed, :invalid_arg, :division_by_zero
-# (BCDD::Result::Contract::Error::UnexpectedType)
+# (Solid::Result::Contract::Error::UnexpectedType)
 ```
 
 *PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ##### `#on_success` and `#on_failure`
 
-If you use `#on_success` or `#on_failure` to execute a block, `BCDD::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
+If you use `#on_success` or `#on_failure` to execute a block, `Solid::Result::Expectations` will check whether the result type is valid/expected. Otherwise, an error will be raised.
 
 ```ruby
 result = Divide.new.call(10, '2')
@@ -1119,20 +1119,20 @@ result
 
 result.on_success(:ok) { |_| :this_type_does_not_exist }
 # type :ok is not allowed. Allowed types: :numbers, :division_completed
-# (BCDD::Result::Contract::Error::UnexpectedType)
+# (Solid::Result::Contract::Error::UnexpectedType)
 
 result.on_failure(:err) { |_| :this_type_does_not_exist }
 # type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero
-# (BCDD::Result::Contract::Error::UnexpectedType)
+# (Solid::Result::Contract::Error::UnexpectedType)
 ```
 
 *PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ##### `#handle`
 
-The `BCDD::Result::Expectations` will also be applied on all the handlers defined by the `#handle` method/block.
+The `Solid::Result::Expectations` will also be applied on all the handlers defined by the `#handle` method/block.
 
 ```ruby
 result = Divide.call(10, 2)
@@ -1140,26 +1140,26 @@ result = Divide.call(10, 2)
 result.handle do |on|
   on.type(:ok) { |_| :this_type_does_not_exist }
 end
-# type :ok is not allowed. Allowed types: :numbers, :division_completed, :invalid_arg, :division_by_zero (BCDD::Result::Contract::Error::UnexpectedType)
+# type :ok is not allowed. Allowed types: :numbers, :division_completed, :invalid_arg, :division_by_zero (Solid::Result::Contract::Error::UnexpectedType)
 
 result.handle do |on|
   on.success(:ok) { |_| :this_type_does_not_exist }
 end
-# type :ok is not allowed. Allowed types: :numbers, :division_completed (BCDD::Result::Contract::Error::UnexpectedType)
+# type :ok is not allowed. Allowed types: :numbers, :division_completed (Solid::Result::Contract::Error::UnexpectedType)
 
 result.handle do |on|
   on.failure(:err) { |_| :this_type_does_not_exist }
 end
-# type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero (BCDD::Result::Contract::Error::UnexpectedType)
+# type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero (Solid::Result::Contract::Error::UnexpectedType)
 ```
 
 *PS: The `Divide` implementation is [here](#standalone-versus-mixin-mode).*
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Type checking - Result Creation
 
-The `BCDD::Result::Expectations` will be used on the result creation `Success()` and `Failure()` methods. So, when the result type is valid/expected, the result will be created. Otherwise, an error will be raised.
+The `Solid::Result::Expectations` will be used on the result creation `Success()` and `Failure()` methods. So, when the result type is valid/expected, the result will be created. Otherwise, an error will be raised.
 
 This works for both modes (standalone and mixin).
 
@@ -1167,7 +1167,7 @@ This works for both modes (standalone and mixin).
 
 ```ruby
 module Divide
-  extend BCDD::Result::Expectations.mixin(success: :ok, failure: :err)
+  extend Solid::Result::Expectations.mixin(success: :ok, failure: :err)
 
   def self.call(arg1, arg2)
     arg1.is_a?(Numeric) or return Failure(:invalid_arg, 'arg1 must be numeric')
@@ -1181,20 +1181,20 @@ end
 
 Divide.call('4', 2)
 # type :invalid_arg is not allowed. Allowed types: :err
-# (BCDD::Result::Contract::Error::UnexpectedType)
+# (Solid::Result::Contract::Error::UnexpectedType)
 
 Divide.call(4, 2)
 # type :division_completed is not allowed. Allowed types: :ok
-# (BCDD::Result::Contract::Error::UnexpectedType)
+# (Solid::Result::Contract::Error::UnexpectedType)
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ##### Standalone mode
 
 ```ruby
 module Divide
-  Result = BCDD::Result::Expectations.new(success: :ok, failure: :err)
+  Result = Solid::Result::Expectations.new(success: :ok, failure: :err)
 
   def self.call(arg1, arg2)
     arg1.is_a?(Numeric) or return Result::Failure(:invalid_arg, 'arg1 must be numeric')
@@ -1208,14 +1208,14 @@ end
 
 Divide.call('4', 2)
 # type :invalid_arg is not allowed. Allowed types: :err
-# (BCDD::Result::Contract::Error::UnexpectedType)
+# (Solid::Result::Contract::Error::UnexpectedType)
 
 Divide.call(4, 2)
 # type :division_completed is not allowed. Allowed types: :ok
-# (BCDD::Result::Contract::Error::UnexpectedType)
+# (Solid::Result::Contract::Error::UnexpectedType)
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Value checking - Result Creation
 
@@ -1227,7 +1227,7 @@ To define expectations for your result's values, you must declare a Hash with th
 
 ```ruby
 module Divide
-  extend BCDD::Result::Expectations.mixin(
+  extend Solid::Result::Expectations.mixin(
     success: {
       numbers: ->(value) { value.is_a?(Array) && value.size == 2 && value.all?(Numeric) },
       division_completed: Numeric
@@ -1253,7 +1253,7 @@ end
 
 ```ruby
 module Divide
-  Result = BCDD::Result::Expectations.new(
+  Result = Solid::Result::Expectations.new(
     success: {
       numbers: ->(value) { value.is_a?(Array) && value.size == 2 && value.all?(Numeric) },
       division_completed: Numeric
@@ -1277,35 +1277,35 @@ end
 
 The value validation will only be performed through the methods `Success()` and `Failure()`.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ##### Success()
 
 ```ruby
 Divide::Result::Success(:ok)
-# type :ok is not allowed. Allowed types: :numbers, :division_completed (BCDD::Result::Contract::Error::UnexpectedType)
+# type :ok is not allowed. Allowed types: :numbers, :division_completed (Solid::Result::Contract::Error::UnexpectedType)
 
 Divide::Result::Success(:numbers, [1])
-# value [1] is not allowed for :numbers type (BCDD::Result::Contract::Error::UnexpectedValue)
+# value [1] is not allowed for :numbers type (Solid::Result::Contract::Error::UnexpectedValue)
 
 Divide::Result::Success(:division_completed, '2')
-# value "2" is not allowed for :division_completed type (BCDD::Result::Contract::Error::UnexpectedValue)
+# value "2" is not allowed for :division_completed type (Solid::Result::Contract::Error::UnexpectedValue)
 ```
 
 ##### Failure()
 
 ```ruby
 Divide::Result::Failure(:err)
-# type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero (BCDD::Result::Contract::Error::UnexpectedType)
+# type :err is not allowed. Allowed types: :invalid_arg, :division_by_zero (Solid::Result::Contract::Error::UnexpectedType)
 
 Divide::Result::Failure(:invalid_arg, :arg1_must_be_numeric)
-# value :arg1_must_be_numeric is not allowed for :invalid_arg type (BCDD::Result::Contract::Error::UnexpectedValue)
+# value :arg1_must_be_numeric is not allowed for :invalid_arg type (Solid::Result::Contract::Error::UnexpectedValue)
 
 Divide::Result::Failure(:division_by_zero, msg: 'arg2 must not be zero')
-# value {:msg=>"arg2 must not be zero"} is not allowed for :division_by_zero type (BCDD::Result::Contract::Error::UnexpectedValue)
+# value {:msg=>"arg2 must not be zero"} is not allowed for :division_by_zero type (Solid::Result::Contract::Error::UnexpectedValue)
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ##### Pattern Matching Support
 
@@ -1313,11 +1313,11 @@ The value checking has support for handling pattern-matching errors, and the cle
 
 How does this operator work? They raise an error when the pattern does not match but returns nil when it matches.
 
-Because of this, you will need to enable `nil` as a valid value checking. You can do it through the `BCDD::Result.configuration` or by allowing it directly on the mixin config.
+Because of this, you will need to enable `nil` as a valid value checking. You can do it through the `Solid::Result.configuration` or by allowing it directly on the mixin config.
 
 ```ruby
 module Divide
-  extend BCDD::Result::Expectations.mixin(
+  extend Solid::Result::Expectations.mixin(
     config: {
       pattern_matching: { nil_as_valid_value_checking: true }
     },
@@ -1338,24 +1338,24 @@ module Divide
 end
 
 Divide.call(10, 5)
-# value "2" is not allowed for :division_completed type ("2": Float === "2" does not return true) (BCDD::Result::Contract::Error::UnexpectedValue)
+# value "2" is not allowed for :division_completed type ("2": Float === "2" does not return true) (Solid::Result::Contract::Error::UnexpectedValue)
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
-#### `BCDD::Result::Expectations.mixin` add-ons
+#### `Solid::Result::Expectations.mixin` add-ons
 
-The `BCDD::Result::Expectations.mixin` also accepts the `config:` argument. It is a hash that can be used to define custom behaviors for the mixin.
+The `Solid::Result::Expectations.mixin` also accepts the `config:` argument. It is a hash that can be used to define custom behaviors for the mixin.
 
 **Continue**
 
-It is similar to `BCDD::Result.mixin(config: { addon: { continue: true } })`. The key difference is that the expectations will ignore the `Continue(value)`.
+It is similar to `Solid::Result.mixin(config: { addon: { continue: true } })`. The key difference is that the expectations will ignore the `Continue(value)`.
 
 Based on this, use the `Success()` to produce a terminal result and `Continue()` to produce a result that will be used in the next step.
 
 ```ruby
 class Divide
-  include BCDD::Result::Expectations.mixin(
+  include Solid::Result::Expectations.mixin(
     config: { addon: { continue: true } },
     success: :division_completed,
     failure: %i[invalid_arg division_by_zero]
@@ -1388,64 +1388,64 @@ class Divide
 end
 
 result = Divide.new.call(4, 2)
-# => #<BCDD::Result::Success type=:division_completed value=2>
+# => #<Solid::Result::Success type=:division_completed value=2>
 
 # The example below shows an error because the :ok type is not allowed.
 # But look at the allowed types have only one type (:division_completed).
 # This is because the :_continue_ type is ignored by the expectations.
 #
 result.success?(:ok)
-# type :ok is not allowed. Allowed types: :division_completed (BCDD::Result::Contract::Error::UnexpectedType)
+# type :ok is not allowed. Allowed types: :division_completed (Solid::Result::Contract::Error::UnexpectedType)
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
-### `BCDD::Context`
+### `Solid::Output`
 
-The `BCDD::Context` is a `BCDD::Result`, meaning it has all the features of the `BCDD::Result`. The main difference is that it only accepts keyword arguments as a value, which applies to the `and_then`: The called methods must receive keyword arguments, and the dependency injection will be performed through keyword arguments.
+The `Solid::Output` is a `Solid::Result`, meaning it has all the features of the `Solid::Result`. The main difference is that it only accepts keyword arguments as a value, which applies to the `and_then`: The called methods must receive keyword arguments, and the dependency injection will be performed through keyword arguments.
 
-As the input/output are hashes, the results of each `and_then` call will automatically accumulate. This is useful in operations chaining, as the result of the previous operations will be automatically available for the next one. Because of this behavior, the `BCDD::Context` has the `#and_expose` method to expose only the desired keys from the accumulated result.
+As the input/output are hashes, the results of each `and_then` call will automatically accumulate. This is useful in operations chaining, as the result of the previous operations will be automatically available for the next one. Because of this behavior, the `Solid::Output` has the `#and_expose` method to expose only the desired keys from the accumulated result.
 
 #### Defining successes and failures
 
-As the `BCDD::Result`, you can declare success and failures directly from `BCDD::Context`.
+As the `Solid::Result`, you can declare success and failures directly from `Solid::Output`.
 
 ```ruby
-BCDD::Context::Success(:ok, a: 1, b: 2)
-#<BCDD::Context::Success type=:ok value={:a=>1, :b=>2}>
+Solid::Output::Success(:ok, a: 1, b: 2)
+#<Solid::Output::Success type=:ok value={:a=>1, :b=>2}>
 
-BCDD::Context::Failure(:err, message: 'something went wrong')
-#<BCDD::Context::Failure type=:err value={:message=>"something went wrong"}>
+Solid::Output::Failure(:err, message: 'something went wrong')
+#<Solid::Output::Failure type=:err value={:message=>"something went wrong"}>
 ```
 
-But different from `BCDD::Result` that accepts any value, the `BCDD::Context` only takes keyword arguments.
+But different from `Solid::Result` that accepts any value, the `Solid::Output` only takes keyword arguments.
 
 ```ruby
-BCDD::Context::Success(:ok, [1, 2])
+Solid::Output::Success(:ok, [1, 2])
 # wrong number of arguments (given 2, expected 1) (ArgumentError)
 
-BCDD::Context::Failure(:err, { message: 'something went wrong' })
+Solid::Output::Failure(:err, { message: 'something went wrong' })
 # wrong number of arguments (given 2, expected 1) (ArgumentError)
 
 #
 # Use ** to convert a hash to keyword arguments
 #
-BCDD::Context::Success(:ok, **{ message: 'hashes can be converted to keyword arguments' })
-#<BCDD::Context::Success type=:ok value={:message=>"hashes can be converted to keyword arguments"}>
+Solid::Output::Success(:ok, **{ message: 'hashes can be converted to keyword arguments' })
+#<Solid::Output::Success type=:ok value={:message=>"hashes can be converted to keyword arguments"}>
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Hash methods
 
-The `BCDD::Context` only accepts hashes as its values. Because of this, its instances have some Hash's methods to query/access the values. The available methods are:
+The `Solid::Output` only accepts hashes as its values. Because of this, its instances have some Hash's methods to query/access the values. The available methods are:
 
 - `#slice` to extract only the desired keys.
 - `#[]`, `#dig`, `#fetch` to access the values.
 - `#values_at` and `#fetch_values` to get the values of the desired keys.
 
 ```ruby
-result = BCDD::Context::Success(:ok, a: 1, b: 2, c: {d: 4})
+result = Solid::Output::Success(:ok, a: 1, b: 2, c: {d: 4})
 
 result[:a]         # 1
 result.fetch(:a)   # 1
@@ -1457,13 +1457,13 @@ result.values_at(:a, :b) # [1, 2]
 result.fetch_values(:a, :b) # [1, 2]
 ```
 
-These methods are available for `BCDD::Context::Success` and `BCDD::Context::Failure` instances.
+These methods are available for `Solid::Output::Success` and `Solid::Output::Failure` instances.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
-#### `BCDD::Context.mixin`
+#### `Solid::Output.mixin`
 
-As in the `BCDD::Result`, you can use the `BCDD::Context.mixin` to add the `Success()` and `Failure()` methods to your classes/modules.
+As in the `Solid::Result`, you can use the `Solid::Output.mixin` to add the `Success()` and `Failure()` methods to your classes/modules.
 
 Let's see this feature and the data accumulation in action:
 
@@ -1473,7 +1473,7 @@ Let's see this feature and the data accumulation in action:
 require 'logger'
 
 class Divide
-  include BCDD::Context.mixin
+  include Solid::Output.mixin
 
   def call(arg1, arg2, logger: ::Logger.new(STDOUT))
     validate_numbers(arg1, arg2)
@@ -1510,29 +1510,29 @@ end
 
 Divide.new.call(10, 5)
 # I, [2023-10-27T01:51:46.905004 #76915]  INFO -- : The division result is 2
-#<BCDD::Context::Success type=:ok value={:number=>2}>
+#<Solid::Output::Success type=:ok value={:number=>2}>
 
 Divide.new.call('10', 5)
-#<BCDD::Context::Failure type=:err value={:message=>"arg1 must be numeric"}>
+#<Solid::Output::Failure type=:err value={:message=>"arg1 must be numeric"}>
 
 Divide.new.call(10, '5')
-#<BCDD::Context::Failure type=:err value={:message=>"arg2 must be numeric"}>
+#<Solid::Output::Failure type=:err value={:message=>"arg2 must be numeric"}>
 
 Divide.new.call(10, 0)
-#<BCDD::Context::Failure type=:err value={:message=>"arg2 must not be zero"}>
+#<Solid::Output::Failure type=:err value={:message=>"arg2 must not be zero"}>
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ##### `and_expose`
 
-This allows you to expose only the desired keys from the accumulated result. It can be used with any `BCDD::Context` object.
+This allows you to expose only the desired keys from the accumulated result. It can be used with any `Solid::Output` object.
 
 Let's add it to the previous example:
 
 ```ruby
 class Divide
-  include BCDD::Context.mixin
+  include Solid::Output.mixin
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
@@ -1562,7 +1562,7 @@ class Divide
 end
 
 Divide.new.call(10, 5)
-#<BCDD::Context::Success type=:division_completed value={:number=>2}>
+#<Solid::Output::Success type=:division_completed value={:number=>2}>
 ```
 
 As you can see, even with `divide` success exposing the division number with all the accumulated data (`**input`), the `#and_expose` could generate a new success with a new type and only with the desired keys.
@@ -1571,20 +1571,20 @@ Remove the `#and_expose` call to see the difference. This will be the outcome:
 
 ```ruby
 Divide.new.call(10, 5)
-#<BCDD::Context::Success type=:ok value={:number=>2, :number1=>10, :number2=>5}>
+#<Solid::Output::Success type=:ok value={:number=>2, :number1=>10, :number2=>5}>
 ```
 
 > PS: The `#and_expose` produces a terminal success by default. This means the next step will not be executed even if you call `#and_then` after `#and_expose`. To change this behavior, you can pass `terminal: false` to `#and_expose`.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ##### Module example (Singleton Methods)
 
-`BCDD::Context.mixin` can also produce singleton methods. Below is an example using a module (but it could be a class, too).
+`Solid::Output.mixin` can also produce singleton methods. Below is an example using a module (but it could be a class, too).
 
 ```ruby
 module Divide
-  extend self, BCDD::Context.mixin
+  extend self, Solid::Output.mixin
 
   def call(arg1, arg2)
     validate_numbers(arg1, arg2)
@@ -1614,29 +1614,29 @@ module Divide
 end
 
 Divide.call(10, 5)
-#<BCDD::Context::Success type=:division_completed value={:number=>2}>
+#<Solid::Output::Success type=:division_completed value={:number=>2}>
 
 Divide.call('10', 5)
-#<BCDD::Context::Failure type=:err value={:message=>"arg1 must be numeric"}>
+#<Solid::Output::Failure type=:err value={:message=>"arg1 must be numeric"}>
 
 Divide.call(10, '5')
-#<BCDD::Context::Failure type=:err value={:message=>"arg2 must be numeric"}>
+#<Solid::Output::Failure type=:err value={:message=>"arg2 must be numeric"}>
 
 Divide.call(10, 0)
-#<BCDD::Context::Failure type=:err value={:message=>"arg2 must not be zero"}>
+#<Solid::Output::Failure type=:err value={:message=>"arg2 must not be zero"}>
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
-#### `BCDD::Context::Expectations`
+#### `Solid::Output::Expectations`
 
-The `BCDD::Context::Expectations` is a `BCDD::Result::Expectations` with the `BCDD::Context` features.
+The `Solid::Output::Expectations` is a `Solid::Result::Expectations` with the `Solid::Output` features.
 
 This is an example using the mixin mode, but the standalone mode is also supported.
 
 ```ruby
 class Divide
-  include BCDD::Context::Expectations.mixin(
+  include Solid::Output::Expectations.mixin(
     config: {
       pattern_matching: { nil_as_valid_value_checking: true }
     },
@@ -1660,48 +1660,48 @@ class Divide
 end
 
 Divide.new.call(10, 5)
-#<BCDD::Context::Success type=:division_completed value={:number=>2}>
+#<Solid::Output::Success type=:division_completed value={:number=>2}>
 ```
 
-As in the `BCDD::Result::Expectations.mixin`, the `BCDD::Context::Expectations.mixin` will add a Result constant in the target class. It can generate success/failure results, which ensure the mixin expectations.
+As in the `Solid::Result::Expectations.mixin`, the `Solid::Output::Expectations.mixin` will add a Result constant in the target class. It can generate success/failure results, which ensure the mixin expectations.
 
 Let's see this using the previous example:
 
 ```ruby
 Divide::Result::Success(:division_completed, number: 2)
-#<BCDD::Context::Success type=:division_completed value={:number=>2}>
+#<Solid::Output::Success type=:division_completed value={:number=>2}>
 
 Divide::Result::Success(:division_completed, number: '2')
-# value {:number=>"2"} is not allowed for :division_completed type ({:number=>"2"}: Numeric === "2" does not return true) (BCDD::Result::Contract::Error::UnexpectedValue)
+# value {:number=>"2"} is not allowed for :division_completed type ({:number=>"2"}: Numeric === "2" does not return true) (Solid::Result::Contract::Error::UnexpectedValue)
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Mixin add-ons
 
-The `BCDD::Context.mixin` and `BCDD::Context::Expectations.mixin` also accepts the `config:` argument. And it works the same way as the `BCDD::Result` mixins.
+The `Solid::Output.mixin` and `Solid::Output::Expectations.mixin` also accepts the `config:` argument. And it works the same way as the `Solid::Result` mixins.
 
 **given**
 
 This addon is enabled by default. It will create the `Given(*value)` method. Use it to add a value to the result chain and invoke the next step (through `and_then`).
 
-You can turn it off by passing `given: false` to the `config:` argument or using the `BCDD::Result.configuration`.
+You can turn it off by passing `given: false` to the `config:` argument or using the `Solid::Result.configuration`.
 
-The `Given()` addon for a BCDD::Context can be called with one or more arguments. The arguments will be converted to a hash (`to_h`) and merged to define the first value of the result chain.
+The `Given()` addon for a Solid::Output can be called with one or more arguments. The arguments will be converted to a hash (`to_h`) and merged to define the first value of the result chain.
 
 **continue**
 
-The `BCDD::Context.mixin(config: { addon: { continue: true } })` or `BCDD::Context::Expectations.mixin(config: { addon: { continue: true } })` creates the `Continue(value)` method and change the `Success()` behavior to terminate the step chain.
+The `Solid::Output.mixin(config: { addon: { continue: true } })` or `Solid::Output::Expectations.mixin(config: { addon: { continue: true } })` creates the `Continue(value)` method and change the `Success()` behavior to terminate the step chain.
 
 So, if you want to advance to the next step, you must use `Continue(**value)` instead of `Success(type, **value)`. Otherwise, the step chain will be terminated.
 
-Let's use a mix of `BCDD::Context` features to see in action with this add-on:
+Let's use a mix of `Solid::Output` features to see in action with this add-on:
 
 ```ruby
 module Division
   require 'logger'
 
-  extend self, BCDD::Context::Expectations.mixin(
+  extend self, Solid::Output::Expectations.mixin(
     config: {
       addon:            { continue: true },
       pattern_matching: { nil_as_valid_value_checking: true }
@@ -1751,39 +1751,39 @@ end
 
 Division.call(14, 2)
 # I, [2023-10-27T02:01:05.812388 #77823]  INFO -- : The division result is 7
-#<BCDD::Context::Success type=:division_completed value={:number=>7}>
+#<Solid::Output::Success type=:division_completed value={:number=>7}>
 
 Division.call(0, 2)
-##<BCDD::Context::Success type=:division_completed value={:number=>0}>
+##<Solid::Output::Success type=:division_completed value={:number=>0}>
 
 Division.call('14', 2)
-#<BCDD::Context::Failure type=:invalid_arg value={:message=>"arg1 must be numeric"}>
+#<Solid::Output::Failure type=:invalid_arg value={:message=>"arg1 must be numeric"}>
 
 Division.call(14, '2')
-#<BCDD::Context::Failure type=:invalid_arg value={:message=>"arg2 must be numeric"}>
+#<Solid::Output::Failure type=:invalid_arg value={:message=>"arg2 must be numeric"}>
 
 Division.call(14, 0)
-#<BCDD::Context::Failure type=:division_by_zero value={:message=>"arg2 must not be zero"}>
+#<Solid::Output::Failure type=:division_by_zero value={:message=>"arg2 must not be zero"}>
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ## Pattern Matching
 
-The `BCDD::Result` and `BCDD::Context` also provides support to pattern matching.
+The `Solid::Result` and `Solid::Output` also provides support to pattern matching.
 
-### `BCDD::Result`
+### `Solid::Result`
 
 In the further examples, I will use the `Divide` lambda to exemplify its usage.
 
 ```ruby
 Divide = lambda do |arg1, arg2|
-  arg1.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg1 must be numeric')
-  arg2.is_a?(::Numeric) or return BCDD::Result::Failure(:invalid_arg, 'arg2 must be numeric')
+  arg1.is_a?(::Numeric) or return Solid::Result::Failure(:invalid_arg, 'arg1 must be numeric')
+  arg2.is_a?(::Numeric) or return Solid::Result::Failure(:invalid_arg, 'arg2 must be numeric')
 
-  return BCDD::Result::Failure(:division_by_zero, 'arg2 must not be zero') if arg2.zero?
+  return Solid::Result::Failure(:division_by_zero, 'arg2 must not be zero') if arg2.zero?
 
-  BCDD::Result::Success(:division_completed, arg1 / arg2)
+  Solid::Result::Success(:division_completed, arg1 / arg2)
 end
 ```
 
@@ -1791,61 +1791,61 @@ end
 
 ```ruby
 case Divide.call(4, 2)
-in BCDD::Failure[:invalid_arg, msg] then puts msg
-in BCDD::Failure[:division_by_zero, msg] then puts msg
-in BCDD::Success[:division_completed, num] then puts num
+in Solid::Failure[:invalid_arg, msg] then puts msg
+in Solid::Failure[:division_by_zero, msg] then puts msg
+in Solid::Success[:division_completed, num] then puts num
 end
 
 # The code above will print: 2
 
 case Divide.call(4, 0)
-in BCDD::Failure[:invalid_arg, msg] then puts msg
-in BCDD::Failure[:division_by_zero, msg] then puts msg
-in BCDD::Success[:division_completed, num] then puts num
+in Solid::Failure[:invalid_arg, msg] then puts msg
+in Solid::Failure[:division_by_zero, msg] then puts msg
+in Solid::Success[:division_completed, num] then puts num
 end
 
 # The code above will print: arg2 must not be zero
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### `Hash` patterns
 
 ```ruby
 case Divide.call(10, 2)
-in BCDD::Failure(type: :invalid_arg, value: msg) then puts msg
-in BCDD::Failure(type: :division_by_zero, value: msg) then puts msg
-in BCDD::Success(type: :division_completed, value: num) then puts num
+in Solid::Failure(type: :invalid_arg, value: msg) then puts msg
+in Solid::Failure(type: :division_by_zero, value: msg) then puts msg
+in Solid::Success(type: :division_completed, value: num) then puts num
 end
 
 # The code above will print: 5
 
 case Divide.call('10', 2)
-in BCDD::Failure(type: :invalid_arg, value: msg) then puts msg
-in BCDD::Failure(type: :division_by_zero, value: msg) then puts msg
-in BCDD::Success(type: :division_completed, value: num) then puts num
+in Solid::Failure(type: :invalid_arg, value: msg) then puts msg
+in Solid::Failure(type: :division_by_zero, value: msg) then puts msg
+in Solid::Success(type: :division_completed, value: num) then puts num
 end
 
 # The code above will print: arg1 must be numeric
 ```
 
-You can also use `BCDD::Result::Success` and `BCDD::Result::Failure` as patterns.
+You can also use `Solid::Result::Success` and `Solid::Result::Failure` as patterns.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 
-### `BCDD::Context`
+### `Solid::Output`
 
 In the further examples, I will use the `Divide` lambda to exemplify its usage.
 
 ```ruby
 Divide = lambda do |arg1, arg2|
-  arg1.is_a?(::Numeric) or return BCDD::Context::Failure(:invalid_arg, err: 'arg1 must be numeric')
-  arg2.is_a?(::Numeric) or return BCDD::Context::Failure(:invalid_arg, err: 'arg2 must be numeric')
+  arg1.is_a?(::Numeric) or return Solid::Output::Failure(:invalid_arg, err: 'arg1 must be numeric')
+  arg2.is_a?(::Numeric) or return Solid::Output::Failure(:invalid_arg, err: 'arg2 must be numeric')
 
-  return BCDD::Context::Failure(:division_by_zero, err: 'arg2 must not be zero') if arg2.zero?
+  return Solid::Output::Failure(:division_by_zero, err: 'arg2 must not be zero') if arg2.zero?
 
-  BCDD::Context::Success(:division_completed, num: arg1 / arg2)
+  Solid::Output::Success(:division_completed, num: arg1 / arg2)
 end
 ```
 
@@ -1853,23 +1853,23 @@ end
 
 ```ruby
 case Divide.call(4, 2)
-in BCDD::Failure[:invalid_arg, {msg:}] then puts msg
-in BCDD::Failure[:division_by_zero, {msg:}] then puts msg
-in BCDD::Success[:division_completed, {num:}] then puts num
+in Solid::Failure[:invalid_arg, {msg:}] then puts msg
+in Solid::Failure[:division_by_zero, {msg:}] then puts msg
+in Solid::Success[:division_completed, {num:}] then puts num
 end
 
 # The code above will print: 2
 
 case Divide.call(4, 0)
-in BCDD::Failure[:invalid_arg, {msg:}] then puts msg
-in BCDD::Failure[:division_by_zero, {msg:}] then puts msg
-in BCDD::Success[:division_completed, {num:}] then puts num
+in Solid::Failure[:invalid_arg, {msg:}] then puts msg
+in Solid::Failure[:division_by_zero, {msg:}] then puts msg
+in Solid::Success[:division_completed, {num:}] then puts num
 end
 
 # The code above will print: arg2 must not be zero
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### `Hash` patterns
 
@@ -1877,67 +1877,67 @@ If you don't provide the keys :type and :value, the pattern will match the resul
 
 ```ruby
 case Divide.call(10, 2)
-in BCDD::Failure({msg:}) then puts msg
-in BCDD::Success({num:}) then puts num
+in Solid::Failure({msg:}) then puts msg
+in Solid::Success({num:}) then puts num
 end
 ```
 
 ```ruby
 case Divide.call(10, 2)
-in BCDD::Failure(type: :invalid_arg, value: {msg:}) then puts msg
-in BCDD::Failure(type: :division_by_zero, value: {msg:}) then puts msg
-in BCDD::Success(type: :division_completed, value: {num:}) then puts num
+in Solid::Failure(type: :invalid_arg, value: {msg:}) then puts msg
+in Solid::Failure(type: :division_by_zero, value: {msg:}) then puts msg
+in Solid::Success(type: :division_completed, value: {num:}) then puts num
 end
 
 # The code above will print: 5
 
 case Divide.call('10', 2)
-in BCDD::Failure(type: :invalid_arg, value: {msg:}) then puts {msg:}
-in BCDD::Failure(type: :division_by_zero, value: {msg:}) then puts msg
-in BCDD::Success(type: :division_completed, value: {num:}) then puts num
+in Solid::Failure(type: :invalid_arg, value: {msg:}) then puts {msg:}
+in Solid::Failure(type: :division_by_zero, value: {msg:}) then puts msg
+in Solid::Success(type: :division_completed, value: {num:}) then puts num
 end
 
 # The code above will print: arg1 must be numeric
 ```
 
-You can also use `BCDD::Context::Success` and `BCDD::Context::Failure` as patterns.
+You can also use `Solid::Output::Success` and `Solid::Output::Failure` as patterns.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ### How to pattern match without the concept of success and failure
 
-You can use the classes `BCDD::Result` and `BCDD::Context` as patterns, and the pattern matching will work without the concept of success and failure.
+You can use the classes `Solid::Result` and `Solid::Output` as patterns, and the pattern matching will work without the concept of success and failure.
 
 ```ruby
 case Divide.call(10, 2)
-in BCDD::Context(:invalid_arg, {msg:}) then puts msg
-in BCDD::Context(:division_by_zero, {msg:}) then puts msg
-in BCDD::Context(:division_completed, {num:}) then puts num
+in Solid::Output(:invalid_arg, {msg:}) then puts msg
+in Solid::Output(:division_by_zero, {msg:}) then puts msg
+in Solid::Output(:division_completed, {num:}) then puts num
 end
 
 case Divide.call(10, 2)
-in BCDD::Result(:invalid_arg, msg) then puts msg
-in BCDD::Result(:division_by_zero, msg) then puts msg
-in BCDD::Result(:division_completed, num) then puts num
+in Solid::Result(:invalid_arg, msg) then puts msg
+in Solid::Result(:division_by_zero, msg) then puts msg
+in Solid::Result(:division_completed, num) then puts num
 end
 ```
 
-The `BCDD::Result` will also work with the `BCDD::Context`, but the opposite won't.
+The `Solid::Result` will also work with the `Solid::Output`, but the opposite won't.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
-## `BCDD::Result.event_logs`
+## `Solid::Result.event_logs`
 
-Use `BCDD::Result.event_logs(&block)` to track all the results produced in the same or between different operations (it works with `BCDD::Result` and `BCDD::Context`). When there is a nesting of `event_logs` blocks, this mechanism will be able to correlate parent and child blocks and present the duration of all operations in milliseconds.
+Use `Solid::Result.event_logs(&block)` to track all the results produced in the same or between different operations (it works with `Solid::Result` and `Solid::Output`). When there is a nesting of `event_logs` blocks, this mechanism will be able to correlate parent and child blocks and present the duration of all operations in milliseconds.
 
-When you wrap the creation of the result with `BCDD::Result.event_logs`, the final one will expose all the event log records through the `BCDD::Result#event_logs` method.
+When you wrap the creation of the result with `Solid::Result.event_logs`, the final one will expose all the event log records through the `Solid::Result#event_logs` method.
 
 ```ruby
 class Division
-  include BCDD::Result.mixin(config: { addon: { continue: true } })
+  include Solid::Result.mixin(config: { addon: { continue: true } })
 
   def call(arg1, arg2)
-    BCDD::Result.event_logs(name: 'Division', desc: 'divide two numbers') do
+    Solid::Result.event_logs(name: 'Division', desc: 'divide two numbers') do
       Given([arg1, arg2])
         .and_then(:require_numbers)
         .and_then(:check_for_zeros)
@@ -1970,10 +1970,10 @@ class Division
 end
 
 module SumDivisionsByTwo
-  extend self, BCDD::Result.mixin
+  extend self, Solid::Result.mixin
 
   def call(*numbers)
-    BCDD::Result.event_logs(name: 'SumDivisionsByTwo') do
+    Solid::Result.event_logs(name: 'SumDivisionsByTwo') do
       divisions = numbers.map { |number| Division.new.call(number, 2) }
 
       if divisions.any?(&:failure?)
@@ -1990,7 +1990,7 @@ Let's see the result of the `SumDivisionsByTwo` call:
 
 ```ruby
 result = SumDivisionsByTwo.call(20, 10)
-# => #<BCDD::Result::Success type=:sum value=15>
+# => #<Solid::Result::Success type=:sum value=15>
 
 result.event_logs
 {
@@ -2081,7 +2081,7 @@ result.event_logs
 }
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ### `metadata: {ids:}`
 
@@ -2138,21 +2138,21 @@ Use these data structures to build your own visualization.
                    # }
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ### Configuration
 
 #### Turning on/off
 
-You can use `BCDD::Result.config.feature.disable!(event_logs)` and `BCDD::Result.config.feature.enable!(event_logs)` to turn on/off the `BCDD::Result.event_logs` feature.
+You can use `Solid::Result.config.feature.disable!(event_logs)` and `Solid::Result.config.feature.enable!(event_logs)` to turn on/off the `Solid::Result.event_logs` feature.
 
 ```ruby
-BCDD::Result.configuration do |config|
+Solid::Result.configuration do |config|
   config.feature.disable!(event_logs)
 end
 
 result = SumDivisionsByTwo.call(20, 10)
-# => #<BCDD::Result::Success type=:sum value=15>
+# => #<Solid::Result::Success type=:sum value=15>
 
 result.event_logs
 {
@@ -2165,7 +2165,7 @@ result.event_logs
 }
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Setting a `trace_id` fetcher
 
@@ -2174,14 +2174,14 @@ You can define a lambda (arity 0) to fetch the trace_id. This lambda will be cal
 Use to correlate different or the same operation (executed multiple times).
 
 ```ruby
-BCDD::Result.config.event_logs.trace_id = -> { Thread.current[:bcdd_result_event_logs_trace_id] }
+Solid::Result.config.event_logs.trace_id = -> { Thread.current[:solid_result_event_logs_trace_id] }
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Setting a `listener`
 
-You can define a listener to be called during the event logs tracking (check out [this example](examples/single_listener/lib/single_event_logs_listener.rb)). It must be a class that includes `BCDD::Result::EventLogs::Listener`.
+You can define a listener to be called during the event logs tracking (check out [this example](examples/single_listener/lib/single_event_logs_listener.rb)). It must be a class that includes `Solid::Result::EventLogs::Listener`.
 
 Use it to build your additional logic on top of the tracking. Examples:
   - Log the event  logs.
@@ -2189,17 +2189,17 @@ Use it to build your additional logic on top of the tracking. Examples:
   - Instrument the event logs (measure/report).
   - Build a visualization (Diagrams, using the `records:` + `metadata: {ids:}` properties).
 
-After implementing your listener, you can set it to the `BCDD::Result.config.event_logs.listener=`:
+After implementing your listener, you can set it to the `Solid::Result.config.event_logs.listener=`:
 
 ```ruby
-BCDD::Result.config.event_logs.listener = MyEventLogsListener
+Solid::Result.config.event_logs.listener = MyEventLogsListener
 ```
 
 See the example below to understand how to implement one:
 
 ```ruby
 class MyEventLogsListener
-  include BCDD::Result::EventLogs::Listener
+  include Solid::Result::EventLogs::Listener
 
   # A listener will be initialized before the first event logs block, and it is discarded after the last one.
   def initialize
@@ -2275,11 +2275,11 @@ class MyEventLogsListener
 end
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Setting multiple `listeners`
 
-You can use `BCDD::Result::EventLogs::Listeners[]` to creates a listener of listeners (check out [this example](examples/multiple_listeners/Rakefile)), which will be called in the order they were added.
+You can use `Solid::Result::EventLogs::Listeners[]` to creates a listener of listeners (check out [this example](examples/multiple_listeners/Rakefile)), which will be called in the order they were added.
 
 **Attention:** It only allows one listener to handle `around_and_then` and another `around_event_logs` records.
 
@@ -2287,7 +2287,7 @@ You can use `BCDD::Result::EventLogs::Listeners[]` to creates a listener of list
 
 ```ruby
 class AroundAndThenListener
-  include BCDD::Result::EventLogs::Listener
+  include Solid::Result::EventLogs::Listener
 
   # It must be a static/singleton method.
   def self.around_and_then?
@@ -2300,7 +2300,7 @@ class AroundAndThenListener
 end
 
 class AroundEventLogsListener
-  include BCDD::Result::EventLogs::Listener
+  include Solid::Result::EventLogs::Listener
 
   # It must be a static/singleton method.
   def self.around_event_logs?
@@ -2313,7 +2313,7 @@ class AroundEventLogsListener
 end
 
 class MyEventLogsListener
-  include BCDD::Result::EventLogs::Listener
+  include Solid::Result::EventLogs::Listener
 end
 ```
 
@@ -2321,7 +2321,7 @@ How to use it:
 
 ```ruby
 # The listeners will be called in the order they were added.
-BCDD::Result.config.event_logs.listener = BCDD::Result::EventLogs::Listeners[
+Solid::Result.config.event_logs.listener = Solid::Result::EventLogs::Listeners[
   MyEventLogsListener,
   AroundAndThenListener,
   AroundEventLogsListener
@@ -2330,19 +2330,19 @@ BCDD::Result.config.event_logs.listener = BCDD::Result::EventLogs::Listeners[
 
 > Check out [this example](examples/multiple_listeners) to see a listener to print the event logs and another to store them in the database.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
-## `BCDD::Result.configuration`
+## `Solid::Result.configuration`
 
-The `BCDD::Result.configuration` allows you to configure default behaviors for `BCDD::Result` and `BCDD::Context` through a configuration block. After using it, the configuration is frozen, ensuring the expected behaviors for your application.
+The `Solid::Result.configuration` allows you to configure default behaviors for `Solid::Result` and `Solid::Output` through a configuration block. After using it, the configuration is frozen, ensuring the expected behaviors for your application.
 
-> Note: You can use `BCDD::Result.configuration(freeze: false) {}` to avoid the freezing. This can be useful in tests. Please be sure to use it with caution.
+> Note: You can use `Solid::Result.configuration(freeze: false) {}` to avoid the freezing. This can be useful in tests. Please be sure to use it with caution.
 
 ```ruby
-BCDD::Result.configuration do |config|
+Solid::Result.configuration do |config|
   config.addon.enable!(:given, :continue)
 
-  config.constant_alias.enable!('Result', 'BCDD::Context')
+  config.constant_alias.enable!('Result', 'Solid::Output')
 
   config.pattern_matching.disable!(:nil_as_valid_value_checking)
 
@@ -2356,129 +2356,124 @@ Let's see what each configuration in the example above does:
 
 ### `config.addon.enable!(:given, :continue)` <!-- omit in toc -->
 
-This configuration enables the `Continue()` method for `BCDD::Result.mixin`, `BCDD::Context.mixin`, `BCDD::Result::Expectation.mixin`, and `BCDD::Context::Expectation.mixin`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
+This configuration enables the `Continue()` method for `Solid::Result.mixin`, `Solid::Output.mixin`, `Solid::Result::Expectation.mixin`, and `Solid::Output::Expectation.mixin`. Link to documentations: [(1)](#add-ons) [(2)](#mixin-add-ons).
 
 It is also enabling the `Given()` which is already enabled by default. Link to documentation: [(1)](#add-ons) [(2)](#mixin-add-ons).
 
-### `config.constant_alias.enable!('Result', 'BCDD::Context')` <!-- omit in toc -->
+### `config.constant_alias.enable!('Result', 'Solid::Output')` <!-- omit in toc -->
 
-This configuration make `Result` a constant alias for `BCDD::Result`, and `BCDD::Context` a constant alias for `BCDD::Context`.
+This configuration make `Result` a constant alias for `Solid::Result`, and `Solid::Output` a constant alias for `Solid::Output`.
 
 Link to documentations:
-- [Result alias](#bcddresult-versus-result)
-- [Context aliases](#constant-aliases)
+- [Result alias](#solidresult-versus-result)
 
 ### `config.pattern_matching.disable!(:nil_as_valid_value_checking)` <!-- omit in toc -->
 
-This configuration disables the `nil_as_valid_value_checking` for `BCDD::Result` and `BCDD::Context`. Link to [documentation](#pattern-matching-support).
+This configuration disables the `nil_as_valid_value_checking` for `Solid::Result` and `Solid::Output`. Link to [documentation](#pattern-matching-support).
 
 ### `config.feature.disable!(:expectations)` <!-- omit in toc -->
 
-This configuration turns off the expectations for `BCDD::Result` and `BCDD::Context`. The expectations are helpful in development and test environments, but they can be disabled in production environments for performance gain.
+This configuration turns off the expectations for `Solid::Result` and `Solid::Output`. The expectations are helpful in development and test environments, but they can be disabled in production environments for performance gain.
 
 PS: I'm using `::Rails.env.production?` to check the environment, but you can use any logic you want.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
-### `BCDD::Result.config`
+### `Solid::Result.config`
 
-The `BCDD::Result.config` allows you to access the current configuration.
+The `Solid::Result.config` allows you to access the current configuration.
 
-#### **BCDD::Result.config.addon** <!-- omit in toc -->
+#### **Solid::Result.config.addon** <!-- omit in toc -->
 
 ```ruby
-BCDD::Result.config.addon.enabled?(:continue)
-BCDD::Result.config.addon.enabled?(:given)
+Solid::Result.config.addon.enabled?(:continue)
+Solid::Result.config.addon.enabled?(:given)
 
-BCDD::Result.config.addon.options
+Solid::Result.config.addon.options
 # {
 #   :continue=>{
 #     :enabled=>false,
 #     :affects=>[
-#       "BCDD::Result.mixin",
-#       "BCDD::Context.mixin",
-#       "BCDD::Result::Expectations.mixin",
-#       "BCDD::Context::Expectations.mixin"
+#       "Solid::Result.mixin",
+#       "Solid::Output.mixin",
+#       "Solid::Result::Expectations.mixin",
+#       "Solid::Output::Expectations.mixin"
 #     ]
 #   },
 #   :given=>{
 #     :enabled=>true,
 #     :affects=>[
-#       "BCDD::Result.mixin",
-#       "BCDD::Context.mixin",
-#       "BCDD::Result::Expectations.mixin",
-#       "BCDD::Context::Expectations.mixin"
+#       "Solid::Result.mixin",
+#       "Solid::Output.mixin",
+#       "Solid::Result::Expectations.mixin",
+#       "Solid::Output::Expectations.mixin"
 #     ]
 #   }
 # }
 ```
 
-#### **BCDD::Result.config.constant_alias** <!-- omit in toc -->
+#### **Solid::Result.config.constant_alias** <!-- omit in toc -->
 
 ```ruby
-BCDD::Result.config.constant_alias.enabled?('Result')
-BCDD::Result.config.constant_alias.enabled?('Context')
-BCDD::Result.config.constant_alias.enabled?('BCDD::Context')
+Solid::Result.config.constant_alias.enabled?('Result')
 
-BCDD::Result.config.constant_alias.options
+Solid::Result.config.constant_alias.options
 # {
-#   "Result"=>{:enabled=>false, :affects=>["Object"]},
-#   "Context"=>{:enabled=>false, :affects=>["Object"]},
-#   "BCDD::Context"=>{:enabled=>false, :affects=>["BCDD"]}
+#   "Result"=>{:enabled=>false, :affects=>["Object"]}
 # }
 ```
 
-#### **BCDD::Result.config.pattern_matching** <!-- omit in toc -->
+#### **Solid::Result.config.pattern_matching** <!-- omit in toc -->
 
 ```ruby
-BCDD::Result.config.pattern_matching.enabled?(:nil_as_valid_value_checking)
+Solid::Result.config.pattern_matching.enabled?(:nil_as_valid_value_checking)
 
-BCDD::Result.config.pattern_matching.options
+Solid::Result.config.pattern_matching.options
 # {
 #   :nil_as_valid_value_checking=>{
 #     :enabled=>false,
 #     :affects=>[
-#       "BCDD::Result::Expectations,
-#       "BCDD::Context::Expectations"
+#       "Solid::Result::Expectations,
+#       "Solid::Output::Expectations"
 #     ]
 #   }
 # }
 ```
 
-#### **BCDD::Result.config.feature** <!-- omit in toc -->
+#### **Solid::Result.config.feature** <!-- omit in toc -->
 
 ```ruby
-BCDD::Result.config.feature.enabled?(:expectations)
+Solid::Result.config.feature.enabled?(:expectations)
 
-BCDD::Result.config.feature.options
+Solid::Result.config.feature.options
 # {
 #   :expectations=>{
 #     :enabled=>true,
 #     :affects=>[
-#       "BCDD::Result::Expectations,
-#       "BCDD::Context::Expectations"
+#       "Solid::Result::Expectations,
+#       "Solid::Output::Expectations"
 #     ]
 #   },
 #   event_logs=>{
 #     :enabled=>true,
 #     :affects=>[
-#       "BCDD::Result",
-#       "BCDD::Context"
+#       "Solid::Result",
+#       "Solid::Output"
 #     ]
 #   },
 #   :and_then!=>{
 #     :enabled=>false,
 #     :affects=>[
-#       "BCDD::Result",
-#       "BCDD::Context"
+#       "Solid::Result",
+#       "Solid::Output"
 #     ]
 #   },
 # }
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
-## `BCDD::Result#and_then!`
+## `Solid::Result#and_then!`
 
 In the Ruby ecosystem, several gems facilitate operation composition using classes and modules. Two notable examples are the `interactor` gem and the `u-case` gem.
 
@@ -2513,15 +2508,15 @@ class PlaceOrder < Micro::Case
 end
 ```
 
-To facilitate migration for users accustomed to the above approaches, `bcdd-result` includes the `BCDD::Result#and_then!`/`BCDD::Context#and_then!` methods, which will invoke the method `call` of the given operation and expect it to return a `BCDD::Result`/`BCDD::Context` object.
+To facilitate migration for users accustomed to the above approaches, `solid-result` includes the `Solid::Result#and_then!`/`Solid::Output#and_then!` methods, which will invoke the method `call` of the given operation and expect it to return a `Solid::Result`/`Solid::Output` object.
 
 ```ruby
-BCDD::Result.configure do |config|
+Solid::Result.configure do |config|
   config.feature.enable!(:and_then!)
 end
 
 class PlaceOrder
-  include BCDD::Context.mixin
+  include Solid::Output.mixin
 
   def call(**input)
     Given(input)
@@ -2533,17 +2528,17 @@ class PlaceOrder
 end
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Dependency Injection
 
 Like `#and_then`, `#and_then!` also supports an additional argument for dependency injection.
 
-**In BCDD::Result**
+**In Solid::Result**
 
 ```ruby
 class PlaceOrder
-  include BCDD::Result.mixin
+  include Solid::Result.mixin
 
   def call(input, logger:)
     Given(input)
@@ -2553,11 +2548,11 @@ class PlaceOrder
 end
 ```
 
-**In BCDD::Context**
+**In Solid::Output**
 
 ```ruby
 class PlaceOrder
-  include BCDD::Context.mixin
+  include Solid::Output.mixin
 
   def call(logger:, **input)
     Given(input)
@@ -2567,12 +2562,12 @@ class PlaceOrder
 end
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Configuration
 
 ```ruby
-BCDD::Result.configure do |config|
+Solid::Result.configure do |config|
   config.feature.enable!(:and_then!)
 
   config.and_then!.default_method_name_to_call = :perform
@@ -2585,7 +2580,7 @@ end
 
 - `default_method_name_to_call`: Sets a default method other than `:call` for `and_then!`.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Analysis: Why is `and_then!` an Anti-pattern?
 
@@ -2597,9 +2592,9 @@ The `and_then!` approach, despite its brevity, introduces several issues:
 
 We recommend cautious use of `#and_then!`. Due to these issues, it is turned off by default and considered an antipattern.
 
-It should be a temporary solution, primarily for assisting in migration from another to gem to `bcdd-result`.
+It should be a temporary solution, primarily for assisting in migration from another to gem to `solid-result`.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### `#and_then` versus `#and_then!`
 
@@ -2607,11 +2602,11 @@ The main difference between the `#and_then` and `#and_then!` is that the latter 
 
 Attention: to ensure the correct behavior, do not mix `#and_then` and `#and_then!` in the same result chain.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 #### Analysis: Why is `#and_then` the antidote/standard?
 
-The `BCDD::Result#and_then`/`BCDD::Context#and_then` methods diverge from the above approach by requiring explicit invocation and mapping of the outcomes at each process step. This approach has the following advantages:
+The `Solid::Result#and_then`/`Solid::Output#and_then` methods diverge from the above approach by requiring explicit invocation and mapping of the outcomes at each process step. This approach has the following advantages:
 
 - **Clarity:** The input/output relationship between the steps is apparent and highly understandable.
 
@@ -2621,7 +2616,7 @@ See this example to understand what your code should look like:
 
 ```ruby
 class PlaceOrder
-  include BCDD::Context.mixin(config: { addon: { continue: true } })
+  include Solid::Output.mixin(config: { addon: { continue: true } })
 
   def call(**input)
     Given(input)
@@ -2663,13 +2658,13 @@ class PlaceOrder
 end
 ```
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ## About
 
 [Rodrigo Serradura](https://github.com/serradura) created this project. He is the B/CDD process/method creator and has already made similar gems like the [u-case](https://github.com/serradura/u-case) and [kind](https://github.com/serradura/kind/blob/main/lib/kind/result.rb). This gem can be used independently, but it also contains essential features that facilitate the adoption of B/CDD in code.
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ## Development
 
@@ -2677,20 +2672,20 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run 
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/B-CDD/bcdd-result. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/B-CDD/bcdd-result/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/solid-process/solid-result. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/solid-process/solid-result/blob/master/CODE_OF_CONDUCT.md).
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
 
-<p align="right"><a href="#-bcddresult">⬆️ &nbsp;back to top</a></p>
+<p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
 ## Code of Conduct
 
-Everyone interacting in the BCDD::Result project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/B-CDD/bcdd-result/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Solid::Result project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/solid-process/solid-result/blob/master/CODE_OF_CONDUCT.md).

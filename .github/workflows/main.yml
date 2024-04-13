@@ -23,11 +23,11 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-    - name: Run BCDD::Result.configuration test (Minitest)
+    - name: Run Solid::Result.configuration test (Minitest)
       run: bundle exec rake test_configuration TEST_CONFIG_FREEZING=true
 
-    - name: Run BCDD::Result.event_logs test (Minitest)
-      run: bundle exec rake test_event_logs_duration BCDD_RESULT_TEST_EVENT_LOGS_DURATION=true
+    - name: Run Solid::Result.event_logs test (Minitest)
+      run: bundle exec rake test_event_logs_duration Solid_RESULT_TEST_EVENT_LOGS_DURATION=true
 
     - name: Run tests (Minitest)
       run: bundle exec rake test

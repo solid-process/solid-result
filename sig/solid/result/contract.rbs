@@ -1,0 +1,120 @@
+module Solid::Result::Contract
+  NONE: Solid::Result::Contract::Evaluator
+
+  def self.evaluate: (
+    Solid::Result::Data,
+    Solid::Result::Contract::Evaluator
+  ) -> Solid::Result::Contract::TypeChecker
+
+  ToEnsure: ^(Hash[Symbol, untyped] | Array[Symbol], Hash[Symbol, Hash[Symbol, bool]])
+    -> Solid::Result::Contract::Interface
+
+  def self.new: (
+    success: Hash[Symbol, untyped] | Array[Symbol],
+    failure: Hash[Symbol, untyped] | Array[Symbol],
+    config: Hash[Symbol, Hash[Symbol, bool]]
+  ) -> Solid::Result::Contract::Evaluator
+end
+
+module Solid::Result::Contract
+  class TypeChecker
+    attr_reader result_type: Symbol
+    attr_reader expectations: Solid::Result::Contract::Evaluator
+
+    def initialize: (
+      Symbol,
+      expectations: Solid::Result::Contract::Evaluator
+    ) -> void
+
+    def allow!: (Symbol) -> Symbol
+    def allow?: (Array[Symbol]) -> bool
+    def allow_success?: (Array[Symbol]) -> bool
+    def allow_failure?: (Array[Symbol]) -> bool
+
+    private
+
+    def validate: (
+      Array[Symbol],
+      expected: Solid::Result::Contract::Interface,
+      allow_empty: bool
+    ) -> bool
+  end
+end
+
+class Solid::Result::Contract::Error < Solid::Result::Error
+  class UnexpectedType < Solid::Result::Contract::Error
+    def self.build: (type: Symbol, allowed_types: Set[Symbol])
+        -> Solid::Result::Contract::Error::UnexpectedType
+  end
+
+  class UnexpectedValue < Solid::Result::Contract::Error
+    def self.build: (type: Symbol, value: untyped, ?cause: Exception)
+      -> Solid::Result::Contract::Error::UnexpectedValue
+  end
+end
+
+module Solid::Result::Contract
+  module Interface
+    def ==: (Solid::Result::Contract::Interface) -> bool
+
+    def allowed_types: -> Set[Symbol]
+
+    def type?: (Symbol) -> bool
+
+    def type!: (Symbol) -> Symbol
+
+    def type_and_value!: (Solid::Result::Data) -> void
+
+    def !=: (untyped) -> bool
+  end
+end
+
+module Solid::Result::Contract
+  module Disabled
+    extend Interface
+
+    EMPTY_SET: Set[Symbol]
+  end
+end
+
+module Solid::Result::Contract
+  class ForTypes
+    include Interface
+
+    def initialize: (Array[Symbol]) -> void
+  end
+end
+
+module Solid::Result::Contract
+  class ForTypesAndValues
+    include Interface
+
+    def initialize: (
+      Hash[Symbol, untyped],
+      Hash[Symbol, Hash[Symbol, bool]]
+    ) -> void
+
+    private
+
+    def nil_as_valid_value_checking?: -> bool
+  end
+end
+
+module Solid::Result::Contract
+  class Evaluator
+    include Interface
+
+    attr_reader allowed_types: Set[Symbol]
+    attr_reader success: Solid::Result::Contract::Interface
+    attr_reader failure: Solid::Result::Contract::Interface
+
+    def initialize: (
+      Solid::Result::Contract::Interface,
+      Solid::Result::Contract::Interface
+    ) -> void
+
+    private
+
+    def for: (Solid::Result::Data) -> Solid::Result::Contract::Interface
+  end
+end

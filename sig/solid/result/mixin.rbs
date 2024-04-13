@@ -1,0 +1,45 @@
+class Solid::Result
+  module Mixin
+    module Factory
+      def self.module!: -> Module
+    end
+
+    module Methods
+      def Success: (Symbol type, ?untyped value) -> Solid::Result::Success
+
+      def Failure: (Symbol type, ?untyped value) -> Solid::Result::Failure
+
+      private
+
+      def _ResultAs: (singleton(Solid::Result), Symbol, untyped, ?terminal: bool) -> untyped
+    end
+
+    module Addons
+      module Continue
+        include Solid::Result::Mixin::Methods
+
+        private
+
+        def Continue: (untyped) -> Solid::Result::Success
+      end
+
+      module Given
+        include Solid::Result::Mixin::Methods
+
+        private
+
+        def Given: (untyped) -> Solid::Result::Success
+      end
+
+      OPTIONS: Hash[Symbol, Module]
+
+      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
+    end
+  end
+
+  def self.mixin: (?config: Hash[Symbol, Hash[Symbol, bool]]) -> Module
+
+  def self.mixin_module: -> singleton(Solid::Result::Mixin)
+
+  def self.result_factory: -> singleton(Solid::Result)
+end

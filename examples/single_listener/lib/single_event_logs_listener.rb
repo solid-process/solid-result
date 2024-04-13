@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SingleEventLogsListener
-  include BCDD::Result::EventLogs::Listener
+  include Solid::Result::EventLogs::Listener
 
   # A listener will be initialized before the first event log, and it is discarded after the last one.
   def initialize
@@ -101,7 +101,7 @@ class SingleEventLogsListener
 
     bc = ::ActiveSupport::BacktraceCleaner.new
     bc.add_filter { |line| line.gsub(__dir__.sub('/lib', ''), '').sub(/\A\//, '')}
-    bc.add_silencer { |line| /lib\/bcdd\/result/.match?(line) }
+    bc.add_silencer { |line| /lib\/solid\/result/.match?(line) }
     bc.add_silencer { |line| line.include?(RUBY_VERSION) }
 
     dir = "#{FileUtils.pwd[1..]}/"

@@ -1,0 +1,16 @@
+class Solid::Result
+  class Data
+    attr_reader kind: Symbol
+    attr_reader type: Symbol
+    attr_reader value: untyped
+    attr_reader to_h: Hash[Symbol, untyped]
+    attr_reader to_a: [Symbol, Symbol, untyped]
+
+    def initialize: (Symbol, Symbol, untyped) -> void
+
+    def inspect: -> String
+
+    alias to_ary to_a
+    alias to_hash to_h
+  end
+end

@@ -1,3 +1,0 @@
-class BCDD::Result
-  Context: BCDD::Context
-end

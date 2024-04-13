@@ -33,7 +33,7 @@ class ApplicationService
     end
 
     def inherited(subclass)
-      subclass.include ::BCDD::Context.mixin(config: { addon: { continue: true } })
+      subclass.include ::Solid::Output.mixin(config: { addon: { continue: true } })
     end
 
     def call(arg)
@@ -50,7 +50,7 @@ class ApplicationService
   end
 
   def call!
-    ::BCDD::Result.event_logs(name: self.class.name) do
+    ::Solid::Result.event_logs(name: self.class.name) do
       if input.invalid?
         Failure(:invalid_input, input: input)
       else

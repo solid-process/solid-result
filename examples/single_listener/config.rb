@@ -5,11 +5,11 @@ require 'bundler/inline'
 $LOAD_PATH.unshift(__dir__)
 
 require_relative 'config/boot'
-require_relative 'config/initializers/bcdd'
+require_relative 'config/initializers/solid_result'
 
 require 'db/setup'
 
-require 'lib/bcdd/result/rollback_on_failure'
+require 'lib/solid/result/rollback_on_failure'
 require 'lib/single_event_logs_listener'
 require 'lib/runtime_breaker'
 

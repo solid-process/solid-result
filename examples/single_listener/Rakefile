@@ -17,15 +17,15 @@ end
 # rake BREAK_USER_TOKEN_CREATION=t
 #
 # rake BREAK_ACCOUNT_CREATION=t HIDE_GIVEN_AND_CONTINUE=t
-task default: %i[bcdd_result_event_logs]
+task default: %i[solid_result_event_logs]
 
 task :config do
   require_relative 'config'
 end
 
-desc 'creates an account and an owner user through BCDD::Result'
-task bcdd_result_event_logs: %i[config] do
-  BCDD::Result.configuration do |config|
+desc 'creates an account and an owner user through Solid::Result'
+task solid_result_event_logs: %i[config] do
+  Solid::Result.configuration do |config|
     config.feature.disable!(:event_logs) if ENV['DISABLE_EVENT_LOGS']
 
     config.event_logs.listener = SingleEventLogsListener unless ENV['DISABLE_LISTENER']

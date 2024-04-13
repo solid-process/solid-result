@@ -2,11 +2,11 @@
 
 class Account
   class OwnerCreation
-    include BCDD::Context.mixin
-    include BCDD::Result::RollbackOnFailure
+    include Solid::Output.mixin
+    include Solid::Result::RollbackOnFailure
 
     def call(**input)
-      BCDD::Result.event_logs(name: self.class.name) do
+      Solid::Result.event_logs(name: self.class.name) do
         Given(input)
           .and_then(:normalize_input)
           .and_then(:validate_input)

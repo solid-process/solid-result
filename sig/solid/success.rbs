@@ -1,0 +1,13 @@
+module Solid
+  module Success
+    def success?: (?Symbol type) -> bool
+    def failure?: (?Symbol type) -> bool
+    def value_or: { () -> untyped } -> untyped
+    def value: -> untyped
+
+    private
+
+    def kind: -> Symbol
+    def type_checker: -> Solid::Result::Contract::TypeChecker
+  end
+end

@@ -18,7 +18,7 @@ AllCops:
 
 Lint/RescueException:
   Exclude:
-    - lib/bcdd/result/event_logs/tracking/enabled.rb
+    - lib/solid/result/event_logs/tracking/enabled.rb
 
 Layout/LineLength:
   Max: 120
@@ -34,7 +34,7 @@ Lint/UnderscorePrefixedVariableName:
 
 Lint/UnusedMethodArgument:
   Exclude:
-    - lib/bcdd/result/event_logs/listener.rb
+    - lib/solid/result/event_logs/listener.rb
 
 Style/AccessModifierDeclarations:
   Enabled: false
@@ -68,17 +68,17 @@ Naming/VariableName:
 
 Metrics/BlockLength:
   Exclude:
-    - bcdd-result.gemspec
+    - solid-result.gemspec
     - test/**/*.rb
 
 Metrics/ClassLength:
   Exclude:
-    - lib/bcdd/result/_self.rb
+    - lib/solid/result/_self.rb
     - test/**/*.rb
 
 Metrics/AbcSize:
   Exclude:
-    - lib/bcdd/result/event_logs/tracking/enabled.rb
+    - lib/solid/result/event_logs/tracking/enabled.rb
 
 Minitest/MultipleAssertions:
   Enabled: false
@@ -95,4 +95,4 @@ Minitest/AssertWithExpectedArgument:
 
 Naming/FileName:
   Exclude:
-    - lib/bcdd-result.rb
+    - lib/solid-result.rb
