@@ -1,0 +1,5 @@
+module Solid
+  class Result
+    VERSION: String
+  end
+end

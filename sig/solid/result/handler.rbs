@@ -1,0 +1,47 @@
+class Solid::Result
+  class Handler
+    UNDEFINED: Object
+
+    def initialize: (
+      Solid::Result,
+      type_checker: Solid::Result::Contract::TypeChecker
+    ) -> void
+
+    def []: (*Symbol) { (untyped, Symbol) -> void } -> untyped
+    def failure: (*Symbol) { (untyped, Symbol) -> void } -> untyped
+    def success: (*Symbol) { (untyped, Symbol) -> void } -> untyped
+    def unknown: () { (untyped, Symbol) -> void } -> untyped
+
+    alias type []
+
+    private
+
+    attr_reader result: Solid::Result
+    attr_reader allowed_types: Solid::Result::Handler::AllowedTypes
+
+    def outcome?: -> bool
+    def outcome=: (Proc) -> void
+    def outcome: -> untyped
+  end
+end
+
+class Solid::Result::Handler
+  class AllowedTypes
+    attr_reader unchecked: Set[Symbol]
+    attr_reader type_checker: Solid::Result::Contract::TypeChecker
+
+    def initialize: (
+      Solid::Result::Contract::TypeChecker
+    ) -> void
+
+    def allow?: (Array[Symbol]) -> bool
+    def allow_success?: (Array[Symbol]) -> bool
+    def allow_failure?: (Array[Symbol]) -> bool
+
+    def all_checked?: -> bool
+
+    private
+
+    def check!: (Array[Symbol], bool) -> bool
+  end
+end

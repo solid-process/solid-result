@@ -1,0 +1,175 @@
+class Solid::Output < Solid::Result
+  EXPECTED_OUTCOME: String
+
+  SourceMethodArity: ^(Method) -> Integer
+
+  attr_reader memo: Hash[Symbol, untyped]
+
+  def initialize: (
+    type: Symbol,
+    value: untyped,
+    ?source: untyped,
+    ?expectations: Solid::Result::Contract::Evaluator,
+    ?terminal: bool
+  ) -> void
+
+  def and_then: (?Symbol, **untyped) ?{ (Hash[Symbol, untyped]) -> untyped } -> untyped
+
+  def and_then!: (untyped, **untyped) -> untyped
+
+  private
+
+  def call_and_then_source_method: (Symbol, Hash[Symbol, untyped]) -> Solid::Output
+
+  def call_and_then_callable!: (untyped, value: untyped, injected_value: untyped, method_name: (Symbol | nil)) -> Solid::Output
+
+  def ensure_result_object: (untyped, origin: Symbol) -> Solid::Output
+
+  def raise_unexpected_outcome_error: (Solid::Output | untyped, Symbol) -> void
+end
+
+class Solid::Output
+  class Error < Solid::Result::Error
+    class InvalidExposure < Solid::Output::Error
+    end
+  end
+end
+
+class Solid::Output
+  class Success < Solid::Output
+    include Solid::Success
+
+    FetchValues: Proc
+
+    def and_expose: (Symbol, Array[Symbol], terminal: bool) -> Solid::Output::Success
+  end
+
+  def self.Success: (Symbol, **untyped) -> Solid::Output::Success
+end
+
+module Solid::Output::CallableAndThen
+  class Caller < Solid::Result::CallableAndThen::Caller
+    module KeyArgs
+      def self.parameters?: (untyped) -> bool
+
+      def self.invalid_arity: (untyped, Symbol) -> Solid::Result::CallableAndThen::Error::InvalidArity
+    end
+
+    def self.call: (
+      untyped source,
+      value: untyped,
+      injected_value: untyped,
+      method_name: (Symbol | nil),
+    ) -> Solid::Output
+
+    private
+
+    def self.call_proc!: (
+      untyped source,
+      Hash[Symbol, untyped] value,
+      nil injected_value
+    ) -> Solid::Output
+
+    def self.call_method!: (
+      untyped source,
+      Method method,
+      Hash[Symbol, untyped] value,
+      nil injected_value
+    ) -> Solid::Output
+
+    def self.callable_method: (
+      untyped source,
+      (Symbol | nil) method_name
+    ) -> ::Method
+
+    def self.ensure_result_object: (
+      untyped source,
+      untyped value,
+      Solid::Output result
+    ) -> Solid::Output
+
+    def self.expected_result_object: () -> singleton(Solid::Output)
+
+    def self.expected_outcome: () -> String
+  end
+end
+
+class Solid::Output
+  class Failure < Solid::Output
+    include Solid::Failure
+
+    def and_expose: (Symbol, Array[Symbol], **untyped) -> Solid::Output::Failure
+  end
+
+  def self.Failure: (Symbol, **untyped) -> Solid::Output::Failure
+end
+
+class Solid::Output
+  module Mixin
+    Factory: singleton(Solid::Result::Mixin::Factory)
+
+    module Methods
+      def Success: (Symbol, **untyped) -> Solid::Output::Success
+
+      def Failure: (Symbol, **untyped) -> Solid::Output::Failure
+
+      private
+
+      def _ResultAs: (singleton(Solid::Output), Symbol, untyped, ?terminal: bool) -> untyped
+    end
+
+    module Addons
+      module Continue
+        include Solid::Output::Mixin::Methods
+
+        private
+
+        def Continue: (**untyped) -> Solid::Output::Success
+      end
+
+      module Given
+        include Solid::Output::Mixin::Methods
+
+        private
+
+        def Given: (*untyped) -> Solid::Output::Success
+      end
+
+      OPTIONS: Hash[Symbol, Module]
+
+      def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
+    end
+  end
+
+  def self.mixin_module: -> singleton(Solid::Output::Mixin)
+
+  def self.result_factory: -> singleton(Solid::Output)
+end
+
+class Solid::Output::Expectations < Solid::Result::Expectations
+  def self.mixin_module: -> singleton(Solid::Output::Expectations::Mixin)
+
+  def self.result_factory_without_expectations: -> singleton(Solid::Result)
+
+  def Success: (Symbol, **untyped) -> Solid::Output::Success
+  def Failure: (Symbol, **untyped) -> Solid::Output::Failure
+end
+
+module Solid::Output::Expectations::Mixin
+  Methods: singleton(Solid::Result::Expectations::Mixin::Methods)
+  Factory: singleton(Solid::Result::Expectations::Mixin::Factory)
+
+  module Addons
+    module Continue
+      private def Continue: (**untyped) -> Solid::Output::Success
+    end
+
+    module Given
+      private def Given: (*untyped) -> Solid::Output::Success
+    end
+
+    OPTIONS: Hash[Symbol, Module]
+
+    def self.options: (Hash[Symbol, Hash[Symbol, bool]]) -> Hash[Symbol, Module]
+  end
+end

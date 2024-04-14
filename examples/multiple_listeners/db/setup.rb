@@ -10,7 +10,7 @@ ActiveRecord::Base.establish_connection(
 
 ActiveRecord::Schema.define do
   suppress_messages do
-    create_table :bcdd_result_event_logs do |t|
+    create_table :solid_result_event_logs do |t|
       t.string :root_name, null: false, index: true
       t.string :trace_id, index: true
       t.integer :version, null: false

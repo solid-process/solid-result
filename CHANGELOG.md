@@ -1,41 +1,43 @@
 - [\[Unreleased\]](#unreleased)
+- [2.0.0 - 2024-04-13](#200---2024-04-13)
+  - [Changed](#changed)
 - [1.1.0 - 2024-03-25](#110---2024-03-25)
   - [Added](#added)
 - [1.0.0 - 2024-03-16](#100---2024-03-16)
   - [Added](#added-1)
-  - [Changed](#changed)
+  - [Changed](#changed-1)
 - [\[0.13.0\] - 2024-02-01](#0130---2024-02-01)
   - [Added](#added-2)
-  - [Changed](#changed-1)
+  - [Changed](#changed-2)
 - [\[0.12.0\] - 2024-01-07](#0120---2024-01-07)
   - [Added](#added-3)
-  - [Changed](#changed-2)
+  - [Changed](#changed-3)
 - [\[0.11.0\] - 2024-01-02](#0110---2024-01-02)
   - [Added](#added-4)
-  - [Changed](#changed-3)
+  - [Changed](#changed-4)
 - [\[0.10.0\] - 2023-12-31](#0100---2023-12-31)
   - [Added](#added-5)
 - [\[0.9.1\] - 2023-12-12](#091---2023-12-12)
-  - [Changed](#changed-4)
+  - [Changed](#changed-5)
   - [Fixed](#fixed)
 - [\[0.9.0\] - 2023-12-12](#090---2023-12-12)
   - [Added](#added-6)
-  - [Changed](#changed-5)
+  - [Changed](#changed-6)
 - [\[0.8.0\] - 2023-12-11](#080---2023-12-11)
   - [Added](#added-7)
-  - [Changed](#changed-6)
+  - [Changed](#changed-7)
   - [Removed](#removed)
 - [\[0.7.0\] - 2023-10-27](#070---2023-10-27)
   - [Added](#added-8)
-  - [Changed](#changed-7)
+  - [Changed](#changed-8)
 - [\[0.6.0\] - 2023-10-11](#060---2023-10-11)
   - [Added](#added-9)
-  - [Changed](#changed-8)
+  - [Changed](#changed-9)
 - [\[0.5.0\] - 2023-10-09](#050---2023-10-09)
   - [Added](#added-10)
 - [\[0.4.0\] - 2023-09-28](#040---2023-09-28)
   - [Added](#added-11)
-  - [Changed](#changed-9)
+  - [Changed](#changed-10)
   - [Removed](#removed-1)
 - [\[0.3.0\] - 2023-09-26](#030---2023-09-26)
   - [Added](#added-12)
@@ -46,6 +48,14 @@
   - [Added](#added-14)
 
 ## [Unreleased]
+
+## 2.0.0 - 2024-04-13
+
+### Changed
+
+- **(BREAKING)** Rebrand the gem from `bcdd-result` to `Solid::Result`.
+  - `Solid::Result` replaces `BCDD::Result`.
+  - `Solid::Output` replaces `BCDD::Context`.
 
 ## 1.1.0 - 2024-03-25
 

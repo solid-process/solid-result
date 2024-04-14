@@ -1,0 +1,60 @@
+module Solid::Result::CallableAndThen
+  class Config
+    attr_accessor default_method_name_to_call: Symbol
+
+    def initialize: -> void
+
+    def options: () -> Hash[Symbol, untyped]
+  end
+
+  class Error < Solid::Result::Error
+  end
+
+  class Error::InvalidArity < Error
+    def self.build: (
+      source: untyped,
+      method: Symbol,
+      arity: String
+    ) -> Error::InvalidArity
+  end
+
+  class Caller
+    def self.call: (
+      untyped source,
+      value: untyped,
+      injected_value: untyped,
+      method_name: (Symbol | nil)
+    ) -> Solid::Result
+
+    private
+
+    def self.call_proc!: (
+      untyped source,
+      untyped value,
+      untyped injected_value
+    ) -> Solid::Result
+
+    def self.call_method!: (
+      untyped source,
+      Method method,
+      untyped value,
+      untyped injected_value
+    ) -> Solid::Result
+
+    def self.callable_method: (
+      untyped source,
+      (Symbol | nil) method_name
+    ) -> ::Method
+
+    def self.ensure_result_object: (
+      untyped source,
+      untyped value,
+      Solid::Result result
+    ) -> Solid::Result
+
+    def self.expected_result_object: () -> singleton(Solid::Result)
+
+    def self.expected_outcome: () -> String
+  end
+end
+

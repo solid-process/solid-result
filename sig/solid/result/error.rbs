@@ -1,0 +1,34 @@
+class Solid::Result
+  class Error < StandardError
+    def self.build: (**untyped) -> Solid::Result::Error
+
+    class NotImplemented < Solid::Result::Error
+    end
+
+    class MissingTypeArgument < Solid::Result::Error
+    end
+
+    class UnexpectedOutcome < Solid::Result::Error
+      def self.build: (outcome: untyped, origin: Symbol, ?expected: String)
+          -> Solid::Result::Error::UnexpectedOutcome
+    end
+
+    class InvalidResultSource < Solid::Result::Error
+      def self.build: (given_result: Solid::Result, expected_source: untyped)
+          -> Solid::Result::Error::InvalidResultSource
+    end
+
+    class InvalidSourceMethodArity < Solid::Result::Error
+      def self.build: (source: untyped, method: Method, max_arity: Integer)
+        -> Solid::Result::Error::InvalidSourceMethodArity
+    end
+
+    class UnhandledTypes < Solid::Result::Error
+      def self.build: (types: Set[Symbol])
+        -> Solid::Result::Error::UnhandledTypes
+    end
+
+    class CallableAndThenDisabled < Solid::Result::Error
+    end
+  end
+end

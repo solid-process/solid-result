@@ -5,7 +5,7 @@ require 'bundler/inline'
 $LOAD_PATH.unshift(__dir__)
 
 require_relative 'config/boot'
-require_relative 'config/initializers/bcdd'
+require_relative 'config/initializers/solid_result'
 
 require 'db/setup'
 

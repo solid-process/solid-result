@@ -2,10 +2,10 @@
 
 class User::Token
   class Creation
-    include BCDD::Context.mixin
+    include Solid::Output.mixin
 
     def call(**input)
-      BCDD::Result.event_logs(name: self.class.name) do
+      Solid::Result.event_logs(name: self.class.name) do
         Given(input)
           .and_then(:normalize_input)
           .and_then(:validate_input)

@@ -1,0 +1,9 @@
+class Solid::Result
+  module IgnoredTypes
+    LIST: ::Set[::Symbol]
+    GIVEN: ::Symbol
+    CONTINUE: ::Symbol
+
+    def self.include?: (::Symbol) -> bool
+  end
+end

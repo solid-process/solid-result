@@ -9,7 +9,7 @@ SimpleCov.start do
 end
 
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
-require 'bcdd/result'
+require 'solid/result'
 
 require 'minitest/autorun'
 
@@ -87,7 +87,7 @@ module HashSchemaAssertions
   end
 end
 
-module BCDDResultEventLogAssertions
+module SolidResultEventLogAssertions
   include HashSchemaAssertions
 
   def assert_empty_event_logs(result, version: 1)
