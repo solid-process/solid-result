@@ -2662,7 +2662,7 @@ end
 
 ## About
 
-[Rodrigo Serradura](https://github.com/serradura) created this project. He is the B/CDD process/method creator and has already made similar gems like the [u-case](https://github.com/serradura/u-case) and [kind](https://github.com/serradura/kind/blob/main/lib/kind/result.rb). This gem can be used independently, but it also contains essential features that facilitate the adoption of B/CDD in code.
+[Rodrigo Serradura](https://github.com/serradura) created this project. He is the Solid Process creator and has already made similar gems like the [u-case](https://github.com/serradura/u-case) and [kind](https://github.com/serradura/kind/blob/main/lib/kind/result.rb). This gem can be used independently, but it also contains essential features that facilitate the adoption of Solid Process (the method) in code.
 
 <p align="right"><a href="#-solidresult">⬆️ &nbsp;back to top</a></p>
 
