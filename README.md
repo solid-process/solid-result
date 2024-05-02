@@ -497,7 +497,7 @@ However, there may be instances where you need to retrieve the value of a succes
 
 #### `result.value_or`
 
-`BCCD::Result#value_or` returns the value when the result is a success. However, if it is a failure, the given block will be executed, and its outcome will be returned.
+`Solid::Result#value_or` returns the value when the result is a success. However, if it is a failure, the given block will be executed, and its outcome will be returned.
 
 ```ruby
 def divide(arg1, arg2)
